@@ -5,6 +5,21 @@
 const PT = {
   'hdr.sub': 'HA · Failover · Escala Vertical e Horizontal · CAP · Backup — material educativo, não é documentação oficial da MongoDB',
   'hdr.badge': 'Public Preview',
+  'view.basic': 'Essencial',
+  'view.detailed': 'Detalhado',
+  'val.k': 'Por que importa',
+  'val.arch': 'Compute e storage são <strong>camadas separadas</strong>: cada uma escala sozinha, em minutos, <strong>sem mover dados</strong> — mesmo MongoDB, mesmos drivers e APIs, sem mudar código.',
+  'valh.arch': 'Experimente <b>Atlas Core ↔ Atlas Infinite</b> e <b>▶ Simular Escrita</b>.',
+  'val.ha': 'Failover <strong>sem eleição e sem rollback</strong>: o standby assume já aquecido, e toda escrita confirmada está segura numa camada de storage distribuída em <strong>3 Availability Zones</strong>.',
+  'valh.ha': 'Clique num nó ou numa <b>Availability Zone</b> para simular a falha.',
+  'val.vs': 'Pague pelo <strong>compute que você precisa agora</strong> e pelo <strong>storage que realmente usa</strong>: trocar de tier leva menos de um minuto e não move dados; o storage cresce sozinho até <strong>128 TB</strong>.',
+  'valh.vs': 'Escolha um tier e dispare um <b>pico de agentes de IA</b> no auto-scaler.',
+  'val.hs': 'Precisa de mais leitura? <strong>Adicione um nó e ele atende leituras em minutos</strong> — conecta no storage compartilhado, sem copiar dados. MongoDB: <strong>&gt;96% menos tempo</strong> para escalar leituras do que no Atlas Core.',
+  'valh.hs': 'Adicione <b>nós read-only</b> e mude o readPreference para <b>secondaryPreferred</b>.',
+  'val.bk': 'Backups <strong>nunca competem com o seu workload</strong>: rodam na camada de storage, com <strong>restore point-in-time nas últimas 24 h</strong> e snapshots guardados por até <strong>3 anos</strong>.',
+  'valh.bk': 'Arraste o ponto de restore na linha do tempo.',
+  'val.lim': 'Public preview: <strong>somente AWS (10 regiões)</strong>, clusters single-region, M10–M60. Ainda não: <strong>multi-region, multi-cloud, sharding, Atlas Search e Vector Search</strong> — use o Atlas Core onde precisar deles.',
+  'valh.lim': 'Mude para <b>Detalhado</b> para ver a lista oficial completa e as fontes.',
   'hdr.limits': '⚠ Limitações do preview',
   'tab.arch': '① Arquitetura e Caminho da Escrita',
   'tab.ha': '② Alta Disponibilidade e Failover',
@@ -18,6 +33,7 @@ const PT = {
   'arch.ideas': 'Ideias-chave',
   'arch.cmp': 'Atlas Core vs Atlas Infinite — lado a lado',
   'arch.edition': 'Edição do banco de dados',
+  'cc.try': 'Experimente',
   'cc.title': 'Configurações de escrita e leitura',
   'opt.w0': 'w: 0 — sem confirmação',
   'opt.w1': 'w: 1 — somente o primário',
@@ -144,6 +160,30 @@ function setLang(lang) {
   try { history.replaceState(null, '', u); } catch (e) { /* file:// may refuse */ }
   applyStaticLang();
   if (typeof rerenderAll === 'function') rerenderAll();
+}
+
+function applyView() {
+  document.body.classList.toggle('view-basic', S.view === 'basic');
+  document.body.classList.toggle('view-detailed', S.view === 'detailed');
+  document.querySelectorAll('.view-toggle button').forEach(b => b.classList.toggle('on', b.dataset.view === S.view));
+}
+
+function setView(view) {
+  S.view = view === 'detailed' ? 'detailed' : 'basic';
+  try { localStorage.setItem('aiv-view', S.view); } catch (e) { /* storage unavailable */ }
+  const u = new URL(location.href);
+  u.searchParams.set('view', S.view);
+  try { history.replaceState(null, '', u); } catch (e) { /* file:// may refuse */ }
+  applyView();
+  if (typeof rerenderAll === 'function') rerenderAll();
+}
+
+function initView() {
+  let view = null;
+  try { view = new URL(location.href).searchParams.get('view'); } catch (e) { /* ignore */ }
+  if (!view) { try { view = localStorage.getItem('aiv-view'); } catch (e) { /* ignore */ } }
+  S.view = view === 'detailed' ? 'detailed' : 'basic';
+  applyView();
 }
 
 function initLang() {

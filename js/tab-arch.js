@@ -28,10 +28,10 @@ function archRender() {
   // Bands
   s += `<rect x="20" y="64" width="760" height="156" rx="12" fill="#E3FCF7" stroke="rgba(0,104,74,.35)" stroke-width="1.5"/>
     <text x="34" y="83" font-size="10" font-weight="800" fill="#00684A" letter-spacing="1">${tx('COMPUTE LAYER', 'CAMADA DE COMPUTE')}</text>
-    <text x="766" y="83" text-anchor="end" font-size="9" fill="rgba(0,30,43,.72)">${tx('queries & transactions · scales by tier and by node count', 'queries e transações · escala por tier e por número de nós')}</text>
+    <text class="dt" x="766" y="83" text-anchor="end" font-size="9" fill="rgba(0,30,43,.72)">${tx('queries & transactions · scales by tier and by node count', 'queries e transações · escala por tier e por número de nós')}</text>
     <rect x="20" y="238" width="760" height="274" rx="12" fill="#F9EBFF" stroke="rgba(0,30,43,.16)" stroke-width="1.5"/>
     <text x="34" y="257" font-size="10" font-weight="800" fill="#001E2B" letter-spacing="1">${tx('STORAGE LAYER', 'CAMADA DE STORAGE')}</text>
-    <text x="766" y="257" text-anchor="end" font-size="9" fill="rgba(0,30,43,.72)">${tx('durability · replication · failover coordination · backup', 'durabilidade · replicação · coordenação de failover · backup')}</text>`;
+    <text class="dt" x="766" y="257" text-anchor="end" font-size="9" fill="rgba(0,30,43,.72)">${tx('durability · replication · failover coordination · backup', 'durabilidade · replicação · coordenação de failover · backup')}</text>`;
 
   // AZ columns
   AP.log = []; AP.page = []; AP.s3 = [];
@@ -45,16 +45,16 @@ function archRender() {
     s += `<line x1="${px}" y1="${y + 50}" x2="${px}" y2="438" stroke="rgba(0,30,43,.35)" stroke-width="1.5" class="repl-slow"/>`;
     s += logIcon(lx, y, down) + pageIcon(px, y, down);
     s += `<text x="${lx}" y="${y + 33}" text-anchor="middle" font-size="9" font-weight="700" fill="#001E2B">Log Service</text>
-      <text x="${lx}" y="${y + 44}" text-anchor="middle" font-size="8" fill="rgba(0,30,43,.5)">${tx('consensus replica', 'réplica de consenso')}</text>
+      <text class="dt" x="${lx}" y="${y + 44}" text-anchor="middle" font-size="8" fill="rgba(0,30,43,.5)">${tx('consensus replica', 'réplica de consenso')}</text>
       <text x="${px}" y="${y + 33}" text-anchor="middle" font-size="9" font-weight="700" fill="#00684A">Page Service</text>
-      <text x="${px}" y="${y + 44}" text-anchor="middle" font-size="8" fill="rgba(0,30,43,.5)">${tx('warm materialized pages', 'páginas materializadas')}</text>`;
+      <text class="dt" x="${px}" y="${y + 44}" text-anchor="middle" font-size="8" fill="rgba(0,30,43,.5)">${tx('warm materialized pages', 'páginas materializadas')}</text>`;
   }
   // Object storage
   s += `<rect x="40" y="438" width="720" height="62" rx="10" fill="#FFFFFF" stroke="rgba(0,30,43,.28)" stroke-width="1.5"/>
     ${bucketIcon(72, 449)}
     <text x="122" y="462" font-size="11" font-weight="700" fill="#001E2B">Object Index Service → Amazon S3</text>
-    <text x="122" y="478" font-size="9" fill="#001E2B">${tx('durability floor — designed for eleven nines of durability', 'piso de durabilidade — projetado para onze noves de durabilidade')} (blog)</text>
-    <text x="122" y="491" font-size="8.5" fill="#00684A">${tx('backups, restores and point-in-time recovery also run here, independent of compute', 'backups, restores e point-in-time recovery também rodam aqui, independentes do compute')}</text>`;
+    <text class="dt" x="122" y="478" font-size="9" fill="#001E2B">${tx('durability floor — designed for eleven nines of durability', 'piso de durabilidade — projetado para onze noves de durabilidade')} (blog)</text>
+    <text class="dt" x="122" y="491" font-size="8.5" fill="#00684A">${tx('backups, restores and point-in-time recovery also run here, independent of compute', 'backups, restores e point-in-time recovery também rodam aqui, independentes do compute')}</text>`;
 
   // Compute nodes
   AP.client = [400, 46];
@@ -78,7 +78,7 @@ function archRender() {
     if (li !== undefined) {
       const [lx, ly] = AP.log[li];
       s += `<path d="M${lx + 8},${ly - 20} C${lx + 8},${ly - 70} ${sx + 40},${sy + 90} ${sx + 40},${sy + 20}" fill="none" stroke="#00684A" stroke-width="1.3" stroke-dasharray="2 4" opacity=".8"/>
-        <text x="${sx + 46}" y="${sy + 34}" font-size="8" fill="#00684A" font-weight="600">${tx('tails the oplog', 'acompanha o oplog')}</text>`;
+        <text class="dt" x="${sx + 46}" y="${sy + 34}" font-size="8" fill="#00684A" font-weight="600">${tx('tails the oplog', 'acompanha o oplog')}</text>`;
     }
   }
   nodes.forEach(n => {
@@ -93,7 +93,7 @@ function archRender() {
   if (!extra.length) {
     s += `<rect x="400" y="108" width="362" height="66" rx="10" fill="none" stroke="rgba(0,30,43,.4)" stroke-dasharray="5 4"/>
       <text x="581" y="136" text-anchor="middle" font-size="10" font-weight="600" fill="rgba(0,30,43,.5)">${tx('+ up to 5 read-only / analytics nodes', '+ até 5 nós read-only / analytics')}</text>
-      <text x="581" y="152" text-anchor="middle" font-size="8.5" fill="rgba(0,30,43,.4)">${tx('add them in tab ④ — they attach to storage, no initial sync', 'adicione na aba ④ — conectam no storage, sem initial sync')}</text>`;
+      <text class="dt" x="581" y="152" text-anchor="middle" font-size="8.5" fill="rgba(0,30,43,.4)">${tx('add them in tab ④ — they attach to storage, no initial sync', 'adicione na aba ④ — conectam no storage, sem initial sync')}</text>`;
   } else {
     extra.forEach((n, i) => {
       const x = 440 + i * 72, y = 140;
@@ -103,7 +103,7 @@ function archRender() {
         <text x="${x}" y="${y + 31}" text-anchor="middle" font-size="8" fill="rgba(0,30,43,.72)">${n.id}</text>
         ${roleBadge(x, y + 36, n.type, n.state, lbl)}`;
     });
-    s += `<text x="${440 + (extra.length - 1) * 36}" y="${206}" text-anchor="middle" font-size="8" fill="#00684A">${tx('↓ read pages straight from the Page Service', '↓ leem páginas direto do Page Service')}</text>`;
+    s += `<text class="dt" x="${440 + (extra.length - 1) * 36}" y="${206}" text-anchor="middle" font-size="8" fill="#00684A">${tx('↓ read pages straight from the Page Service', '↓ leem páginas direto do Page Service')}</text>`;
   }
   s += `</svg>`;
   $('arch-svg').innerHTML = s;
@@ -130,13 +130,13 @@ function archRenderCore() {
     s += roleBadge(x, 208, i === 0 ? 'PRIMARY' : 'SECONDARY', 'UP', i === 0 ? tx('PRIMARY', 'PRIMÁRIO') : tx('SECONDARY', 'SECUNDÁRIO'));
     s += `<line x1="${x}" y1="226" x2="${x}" y2="270" stroke="#001E2B" stroke-width="1.3"/>`;
     s += diskIcon(x, 300, 110, 46, tx('full data copy', 'cópia completa'));
-    s += `<text x="${x}" y="356" text-anchor="middle" font-size="8.5" fill="rgba(0,30,43,.5)">${tx('local volume — sized by tier', 'volume local — dimensionado pelo tier')}</text>`;
+    s += `<text class="dt" x="${x}" y="356" text-anchor="middle" font-size="8.5" fill="rgba(0,30,43,.5)">${tx('local volume — sized by tier', 'volume local — dimensionado pelo tier')}</text>`;
   });
   s += `<rect x="40" y="396" width="720" height="36" rx="8" fill="rgba(0,30,43,.05)"/>
     <text x="400" y="411" text-anchor="middle" font-size="9.5" fill="#001E2B" font-weight="600">${tx('Each node stores and replicates a full copy of the data', 'Cada nó armazena e replica uma cópia completa dos dados')}</text>
     <text x="400" y="425" text-anchor="middle" font-size="8.5" fill="rgba(0,30,43,.72)">${tx('Adding or replacing a node means copying data (initial sync) · failover = election by majority vote', 'Adicionar ou substituir um nó implica copiar dados (initial sync) · failover = eleição por voto majoritário')}</text>`;
-  s += `<text x="400" y="472" text-anchor="middle" font-size="10" fill="rgba(0,30,43,.72)">${tx('Atlas Core runs on AWS, Azure and Google Cloud with the full Atlas feature set —', 'O Atlas Core roda em AWS, Azure e Google Cloud com o conjunto completo de recursos do Atlas —')}</text>
-    <text x="400" y="487" text-anchor="middle" font-size="10" fill="rgba(0,30,43,.72)">${tx('multi-region, multi-cloud, sharding, Atlas Search and Vector Search.', 'multi-region, multi-cloud, sharding, Atlas Search e Vector Search.')}</text>`;
+  s += `<text class="dt" x="400" y="472" text-anchor="middle" font-size="10" fill="rgba(0,30,43,.72)">${tx('Atlas Core runs on AWS, Azure and Google Cloud with the full Atlas feature set —', 'O Atlas Core roda em AWS, Azure e Google Cloud com o conjunto completo de recursos do Atlas —')}</text>
+    <text class="dt" x="400" y="487" text-anchor="middle" font-size="10" fill="rgba(0,30,43,.72)">${tx('multi-region, multi-cloud, sharding, Atlas Search and Vector Search.', 'multi-region, multi-cloud, sharding, Atlas Search e Vector Search.')}</text>`;
   s += `</svg>`;
   $('arch-svg').innerHTML = s;
   $('arch-mode-label').textContent = tx('Atlas Core · coupled', 'Atlas Core · acoplado');
@@ -233,18 +233,18 @@ function archRenderIdeas() {
 function archRenderCmp() {
   const rows = [
     [tx('Architecture', 'Arquitetura'), tx('Compute + storage on each node (full copy per node)', 'Compute + storage em cada nó (cópia completa por nó)'), tx(`Compute and storage as independent layers${src('D2')}`, `Compute e storage como camadas independentes${src('D2')}`)],
-    [tx('High availability', 'Alta disponibilidade'), tx('Replica set of 3+ electable, data-bearing nodes', 'Replica set com 3+ nós elegíveis que guardam dados'), tx(`An "HA shard" of 2 electable compute nodes (primary + standby) in separate AZs + storage layer replicated across 3 AZs${src('D1', 'D2', 'B4')}`, `Um "HA shard" com 2 nós de compute elegíveis (primário + standby) em AZs separadas + camada de storage replicada em 3 AZs${src('D1', 'D2', 'B4')}`)],
+    ['xr', tx('High availability', 'Alta disponibilidade'), tx('Replica set of 3+ electable, data-bearing nodes', 'Replica set com 3+ nós elegíveis que guardam dados'), tx(`An "HA shard" of 2 electable compute nodes (primary + standby) in separate AZs + storage layer replicated across 3 AZs${src('D1', 'D2', 'B4')}`, `Um "HA shard" com 2 nós de compute elegíveis (primário + standby) em AZs separadas + camada de storage replicada em 3 AZs${src('D1', 'D2', 'B4')}`)],
     [tx('Failover', 'Failover'), tx('Election — nodes vote, majority wins', 'Eleição — nós votam, a maioria vence'), tx(`Coordinated by the storage layer — no vote among compute nodes${src('D2')}`, `Coordenado pela camada de storage — sem votação entre nós de compute${src('D2')}`)],
-    [tx('"majority" means', '"majority" significa'), tx('Majority of voting nodes', 'Maioria dos nós votantes'), tx(`Majority within the storage layer${src('D2')}`, `Maioria dentro da camada de storage${src('D2')}`)],
-    [tx('Rollbacks', 'Rollbacks'), tx('Possible for writes not majority-committed', 'Possíveis para escritas não confirmadas pela maioria'), tx(`Don't occur — the storage layer commits writes${src('D8', 'D17')}`, `Não ocorrem — a camada de storage faz o commit das escritas${src('D8', 'D17')}`)],
+    ['xr', tx('"majority" means', '"majority" significa'), tx('Majority of voting nodes', 'Maioria dos nós votantes'), tx(`Majority within the storage layer${src('D2')}`, `Maioria dentro da camada de storage${src('D2')}`)],
+    ['xr', tx('Rollbacks', 'Rollbacks'), tx('Possible for writes not majority-committed', 'Possíveis para escritas não confirmadas pela maioria'), tx(`Don't occur — the storage layer commits writes${src('D8', 'D17')}`, `Não ocorrem — a camada de storage faz o commit das escritas${src('D8', 'D17')}`)],
     [tx('Storage', 'Storage'), tx(`Tied to the cluster tier; shard when nearing the tier limit${src('B7')}`, `Atrelado ao tier; shard quando se aproxima do limite do tier${src('B7')}`), tx(`Grows automatically up to 128 TB (logical) per replica set, independent of tier${src('D4', 'B7')}`, `Cresce automaticamente até 128 TB (lógico) por replica set, independente do tier${src('D4', 'B7')}`)],
     [tx('Adding read capacity', 'Adicionar capacidade de leitura'), tx('New node needs an initial sync (data copy)', 'Novo nó precisa de initial sync (cópia de dados)'), tx(`Read-only nodes attach to storage and serve reads in minutes — no initial sync${src('D6', 'B3')}`, `Nós read-only se conectam ao storage e atendem leituras em minutos — sem initial sync${src('D6', 'B3')}`)],
-    [tx('Write scale-out', 'Escala horizontal de escrita'), tx(`Sharding & Global Clusters${src('B7')}`, `Sharding e Global Clusters${src('B7')}`), tx(`Not available in public preview${src('D1')}`, `Não disponível no public preview${src('D1')}`)],
+    ['xr', tx('Write scale-out', 'Escala horizontal de escrita'), tx(`Sharding & Global Clusters${src('B7')}`, `Sharding e Global Clusters${src('B7')}`), tx(`Not available in public preview${src('D1')}`, `Não disponível no public preview${src('D1')}`)],
     [tx('Pricing model', 'Modelo de preço'), tx(`Provision-based${src('B7')}`, `Baseado em provisionamento${src('B7')}`), tx(`Compute on a reserved instance tier (billed for the running HA shard, not query volume); storage metered by data stored; backup billed separately${src('B6', 'D3')}`, `Compute num tier de instância reservada (cobrado pelo HA shard em execução, não por volume de queries); storage medido pelos dados armazenados; backup cobrado à parte${src('B6', 'D3')}`)],
     [tx('Clouds & regions', 'Clouds e regiões'), tx(`AWS, Azure, Google Cloud · multi-region · multi-cloud${src('B7')}`, `AWS, Azure, Google Cloud · multi-region · multi-cloud${src('B7')}`), tx(`AWS only, single region, select regions (public preview)${src('D1', 'B1')}`, `Somente AWS, single-region, regiões selecionadas (public preview)${src('D1', 'B1')}`)],
   ];
   $('arch-cmp').innerHTML = `<table class="cmp"><thead><tr><th></th><th>Atlas Core</th><th class="inf">Atlas Infinite</th></tr></thead><tbody>
-    ${rows.map(r => `<tr><td>${r[0]}</td><td>${r[1]}</td><td class="inf">${r[2]}</td></tr>`).join('')}</tbody></table>`;
+    ${rows.map(r => { const xr = r[0] === 'xr', c = xr ? r.slice(1) : r; return `<tr class="${xr ? 'xr' : ''}"><td>${c[0]}</td><td>${c[1]}</td><td class="inf">${c[2]}</td></tr>`; }).join('')}</tbody></table>`;
 }
 
 // ── Animations ───────────────────────────────────────────────────────────────
@@ -310,7 +310,7 @@ async function archSimWrite() {
   if (upAZ.length < 2) {
     flash('arch-svg', 400, 236, tx('no storage majority', 'sem maioria no storage'), '#C0392B');
     setStep('arch-steps', 3, 'active');
-    $('arch-steps').children[3].innerHTML = tx('<b>Waiting… no storage-layer majority.</b> Only 1 of 3 AZs is reachable, so a majority write can\'t be acknowledged. Without <b>wtimeout</b> the write waits indefinitely.', '<b>Esperando… sem maioria na camada de storage.</b> Só 1 de 3 AZs está acessível, então uma escrita majority não pode ser confirmada. Sem <b>wtimeout</b>, a escrita espera indefinidamente.');
+    $('arch-steps').children[3].innerHTML = stepHTML(tx('<b>Waiting… no storage-layer majority.</b> Only 1 of 3 AZs is reachable, so a majority write can\'t be acknowledged. Without <b>wtimeout</b> the write waits indefinitely.', '<b>Esperando… sem maioria na camada de storage.</b> Só 1 de 3 AZs está acessível, então uma escrita majority não pode ser confirmada. Sem <b>wtimeout</b>, a escrita espera indefinidamente.'));
     log('ERROR', 'STORAGE', tx('Log Service has 1/3 replicas — majority (2) unavailable; majority writes cannot be acknowledged', 'Log Service com 1/3 réplicas — maioria (2) indisponível; escritas majority não podem ser confirmadas'));
     await Promise.all(flights);
     await ackP;

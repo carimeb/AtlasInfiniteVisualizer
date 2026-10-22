@@ -66,6 +66,22 @@ function limRender() {
     ]],
   ];
   const ico = { no: '✕', lim: '!', yes: '✓', plan: '→' };
+  // Essentials: the restrictions that matter most when positioning Atlas Infinite
+  const key = [
+    ['no', tx('Multi-region clusters', 'Clusters multi-region')],
+    ['no', tx('Multi-cloud (AWS only for now)', 'Multi-cloud (por enquanto só AWS)')],
+    ['no', tx('Atlas Search', 'Atlas Search')],
+    ['no', tx('Atlas Vector Search', 'Atlas Vector Search')],
+    ['no', tx('Sharded & Global Clusters', 'Clusters shardeados e Global Clusters')],
+    ['no', tx('Uptime SLA (during preview)', 'SLA de uptime (durante o preview)')],
+    ['lim', tx('Tiers M10–M60 (no M80+)', 'Tiers M10–M60 (sem M80+)')],
+    ['no', tx('Online Archive · Kubernetes Operator', 'Online Archive · Kubernetes Operator')],
+    ['no', tx('Live migration from Atlas Core', 'Live migration a partir do Atlas Core')],
+    ['plan', tx('Other clouds & Atlas for Government: planned', 'Outras clouds e Atlas for Government: planejados')],
+  ];
+  $('lim-basic').innerHTML = `<div class="card-title">${tx('Not available yet in the public preview', 'Ainda não disponível no public preview')}</div>
+    <div class="mini-list">${key.map(([k, t]) => `<div class="lim-item"><span class="ico ${k}">${ico[k]}</span><span><b>${t}</b></span></div>`).join('')}</div>`;
+
   $('lim-grid').innerHTML = groups.map(([i, t, items]) => `<div class="card lim-group" style="margin-bottom:0"><h3>${i} ${t}</h3>
     ${items.map(([k, h, ids]) => `<div class="lim-item"><span class="ico ${k}">${ico[k]}</span><span>${h}${src(...ids)}</span></div>`).join('')}</div>`).join('');
 

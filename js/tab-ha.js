@@ -65,13 +65,13 @@ function haRender() {
     s += logIcon(lx, y, down) + pageIcon(px, y, down);
     s += `<text x="${lx}" y="${y + 33}" text-anchor="middle" font-size="9" font-weight="700" fill="${C.slate}">Log Service</text>
       <text x="${px}" y="${y + 33}" text-anchor="middle" font-size="9" font-weight="700" fill="${C.slate}">Page Service</text>
-      <text x="${(lx + px) / 2}" y="${y + 50}" text-anchor="middle" font-size="8" fill="${down ? C.bad : C.t3}">${down ? tx('replicas unreachable', 'réplicas inacessíveis') : tx('replica in this zone', 'réplica nesta zona')}</text>`;
+      <text class="dt" x="${(lx + px) / 2}" y="${y + 50}" text-anchor="middle" font-size="8" fill="${down ? C.bad : C.t3}">${down ? tx('replicas unreachable', 'réplicas inacessíveis') : tx('replica in this zone', 'réplica nesta zona')}</text>`;
   }
   // S3
   s += `<rect x="24" y="408" width="752" height="54" rx="10" fill="${C.white}" stroke="${C.line}" stroke-width="1.3"/>
     ${bucketIcon(44, 414)}
     <text x="92" y="431" font-size="10.5" font-weight="700" fill="${C.slate}">Object Index Service → Amazon S3</text>
-    <text x="92" y="447" font-size="8.8" fill="${C.t2}">${tx('regional object storage — the durability floor beneath the log and page replicas', 'object storage regional — o piso de durabilidade abaixo das réplicas de log e de páginas')} ${tx('(engineering blog)', '(blog de engenharia)')}</text>`;
+    <text class="dt" x="92" y="447" font-size="8.8" fill="${C.t2}">${tx('regional object storage — the durability floor beneath the log and page replicas', 'object storage regional — o piso de durabilidade abaixo das réplicas de log e de páginas')} ${tx('(engineering blog)', '(blog de engenharia)')}</text>`;
   // status strip
   const prim = haPrimary();
   const wState = haWriteState();
@@ -197,7 +197,7 @@ function haUpdateInfo() {
     row(tx('Reads', 'Leituras') + ` (${S.rp})`, reads.length ? '✓ ' + reads.map(n => n.id).join(', ') : tx('✕ no eligible node', '✕ nenhum nó elegível'), reads.length > 0) +
     row(tx('Acknowledged writes', 'Escritas confirmadas'), wcRisk, S.wc === 'wmaj' || S.wc === 'wnum' ? true : (S.wc === 'w1' ? null : false)) +
     row(tx('Read-only nodes', 'Nós read-only'), S.extra.length ? tx('keep serving reads; never become primary', 'seguem atendendo leituras; nunca viram primário') : tx('none (add in tab ④)', 'nenhum (adicione na aba ④)'), true) +
-    `<div class="desc lav" style="margin-top:8px">${tx('Timings in this animation are illustrative. The public preview docs don\'t publish an Atlas Infinite failover duration.', 'Os tempos desta animação são ilustrativos. A documentação do public preview não publica uma duração de failover para o Atlas Infinite.')}</div>`;
+    `<div class="desc lav only-detailed" style="margin-top:8px">${tx('Timings in this animation are illustrative. The public preview docs don\'t publish an Atlas Infinite failover duration.', 'Os tempos desta animação são ilustrativos. A documentação do public preview não publica uma duração de failover para o Atlas Infinite.')}</div>`;
 
   haRenderCmp();
   updateCAP();
@@ -327,7 +327,7 @@ function haFailover(reason) {
   setStep('ha-steps', 0, 'done');
   if (!sb) {
     setStep('ha-steps', 1, 'fail');
-    $('ha-steps').children[1].innerHTML = tx('<b>No standby available.</b> There is no other electable compute node to promote right now. Data stays durable in the storage layer; service resumes when a compute node is back.', '<b>Nenhum standby disponível.</b> Não há outro nó de compute elegível para promover agora. Os dados seguem duráveis na camada de storage; o serviço volta quando um nó de compute retornar.');
+    $('ha-steps').children[1].innerHTML = stepHTML(tx('<b>No standby available.</b> There is no other electable compute node to promote right now. Data stays durable in the storage layer; service resumes when a compute node is back.', '<b>Nenhum standby disponível.</b> Não há outro nó de compute elegível para promover agora. Os dados seguem duráveis na camada de storage; o serviço volta quando um nó de compute retornar.'));
     log('ERROR', 'ATLAS', tx('Primary lost and no standby available', 'Primário perdido e nenhum standby disponível'));
     haRender(); syncAll();
     return;

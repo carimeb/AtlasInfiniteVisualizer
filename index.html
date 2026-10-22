@@ -29,7 +29,7 @@ code{font-family:'SF Mono','Consolas',monospace;font-size:.92em;background:var(-
 
 /* HEADER */
 #hdr{background:var(--slate);padding:9px 20px;display:flex;align-items:center;gap:12px;flex-shrink:0;flex-wrap:wrap}
-.hdr-title{color:var(--white);font-size:14px;font-weight:600;display:flex;align-items:baseline;gap:10px;flex:1;min-width:220px;flex-wrap:wrap}
+.hdr-title{color:var(--white);font-size:14px;font-weight:600;display:flex;align-items:center;gap:10px;flex:1;min-width:220px;flex-wrap:wrap}
 .hdr-title .brand{color:var(--spring);font-weight:700}
 .hdr-title .inf{color:var(--spring)}
 .hdr-sub{font-size:10.5px;color:rgba(255,255,255,.6);font-weight:400}
@@ -248,6 +248,29 @@ svg text{font-family:'Lexend Deca',sans-serif}
 ::-webkit-scrollbar-track{background:var(--bg1)}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
 
+/* LOGO (official, unaltered — see assets/) */
+.hdr-logo{height:22px;width:auto;display:block;flex-shrink:0}
+
+/* VIEW MODE — Essentials (basic) vs Deep dive (detailed) */
+.view-toggle{display:flex;border:1px solid rgba(0,237,100,.35);border-radius:6px;overflow:hidden}
+.view-toggle button{background:none;border:none;color:rgba(255,255,255,.65);font-family:inherit;font-size:10.5px;font-weight:700;padding:4px 10px;cursor:pointer;letter-spacing:.3px;white-space:nowrap}
+.view-toggle button.on{background:var(--spring);color:var(--slate)}
+body.view-basic .only-detailed{display:none !important}
+body.view-detailed .only-basic{display:none !important}
+body.view-basic a.src{display:none}
+body.view-basic #log{display:none}
+body.view-basic .hdr-sub{display:none}
+body.view-basic svg .dt{display:none}
+body.view-basic .steps li .sd{display:none}
+body.view-basic .banner .bt ~ div{display:none}
+body.view-basic .cmp tr.xr{display:none}
+.value{background:var(--slate);color:var(--white);border-radius:10px;padding:13px 16px;margin-bottom:12px;display:flex;gap:14px;align-items:flex-start;font-size:13.5px;line-height:1.6;box-shadow:var(--shadow-sm)}
+.value .vk{color:var(--spring);font-weight:800;text-transform:uppercase;font-size:10px;letter-spacing:1px;white-space:nowrap;margin-top:4px;flex-shrink:0}
+.value strong{color:var(--spring);font-weight:700}
+.value .vh{display:block;font-size:11.5px;color:rgba(255,255,255,.65);margin-top:5px}
+.value .vh b{color:var(--white)}
+.mini-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:4px 18px}
+
 /* RESPONSIVE */
 @media (max-width:1100px){
   .two-col{grid-template-columns:minmax(0,1fr)}
@@ -255,6 +278,7 @@ svg text{font-family:'Lexend Deca',sans-serif}
   #main.cap-visible #viz{display:none}
 }
 @media (max-width:700px){
+  .value{flex-direction:column;gap:4px}
   #hdr{padding:8px 12px;gap:8px}
   .hdr-sub{display:none}
   #tab-nav{padding:0 8px}
@@ -265,14 +289,19 @@ svg text{font-family:'Lexend Deca',sans-serif}
 }
 </style>
 </head>
-<body>
+<body class="view-basic">
 
 <div id="hdr">
   <div class="hdr-title">
-    <span><span class="brand">MongoDB</span> Atlas <span class="inf">Infinite</span> Visualizer</span>
+    <img class="hdr-logo" src="assets/mongodb-logo-spring-green.svg" alt="MongoDB">
+    <span>Atlas <span class="inf">Infinite</span> Visualizer</span>
     <span class="hdr-sub" data-i18n="hdr.sub">HA · Failover · Vertical &amp; Horizontal Scaling · CAP · Backup — educational, not official MongoDB documentation</span>
   </div>
   <span class="hdr-badge" data-i18n="hdr.badge">Public Preview</span>
+  <div class="view-toggle" role="group" aria-label="View">
+    <button data-view="basic" onclick="setView('basic')" data-i18n="view.basic">Essentials</button>
+    <button data-view="detailed" onclick="setView('detailed')" data-i18n="view.detailed">Deep dive</button>
+  </div>
   <div class="lang" role="group" aria-label="Language">
     <button data-lang="en" onclick="setLang('en')">EN</button>
     <button data-lang="pt" onclick="setLang('pt')">PT</button>
@@ -295,7 +324,8 @@ svg text{font-family:'Lexend Deca',sans-serif}
 
     <!-- ═══════════════ TAB 1: ARCHITECTURE & WRITE PATH ═══════════════ -->
     <div id="tab-arch" class="tc active">
-      <div class="tip" data-i18n="arch.tip"><strong>Atlas Infinite separates compute from storage.</strong> Compute nodes run queries and transactions; an independent, multi-AZ <strong>storage layer</strong> keeps data durable and coordinates failover. Toggle <strong>Atlas Core ↔ Atlas Infinite</strong> to compare, then press <strong>▶ Simulate Write</strong> or <strong>▶ Simulate Read</strong> to follow each step.</div>
+      <div class="value only-basic"><span class="vk" data-i18n="val.k">Why it matters</span><div><span data-i18n="val.arch">Compute and storage are <strong>separate layers</strong>: each one scales on its own, in minutes, <strong>without moving data</strong> — same MongoDB, same drivers and APIs, no code changes.</span><span class="vh" data-i18n="valh.arch">Try <b>Atlas Core ↔ Atlas Infinite</b> and <b>▶ Simulate Write</b>.</span></div></div>
+      <div class="tip only-detailed" data-i18n="arch.tip"><strong>Atlas Infinite separates compute from storage.</strong> Compute nodes run queries and transactions; an independent, multi-AZ <strong>storage layer</strong> keeps data durable and coordinates failover. Toggle <strong>Atlas Core ↔ Atlas Infinite</strong> to compare, then press <strong>▶ Simulate Write</strong> or <strong>▶ Simulate Read</strong> to follow each step.</div>
       <div class="two-col">
         <div>
           <div class="card">
@@ -303,7 +333,7 @@ svg text{font-family:'Lexend Deca',sans-serif}
             <div class="leg" id="arch-legend"></div>
             <div id="arch-svg"></div>
           </div>
-          <div class="card">
+          <div class="card only-detailed">
             <div class="card-title" data-i18n="arch.ideas">Key ideas</div>
             <div class="ideas" id="arch-ideas"></div>
           </div>
@@ -319,10 +349,12 @@ svg text{font-family:'Lexend Deca',sans-serif}
               <button data-mode="core" onclick="archSetMode('core')">Atlas Core</button>
               <button data-mode="infinite" onclick="archSetMode('infinite')" class="on">Atlas Infinite</button>
             </div>
-            <div class="desc" id="arch-mode-desc"></div>
+            <div class="desc only-detailed" id="arch-mode-desc"></div>
           </div>
           <div class="card">
-            <div class="card-title" data-i18n="cc.title">Write &amp; read settings</div>
+            <div class="card-title only-detailed" data-i18n="cc.title">Write &amp; read settings</div>
+            <div class="card-title only-basic" data-i18n="cc.try">Try it</div>
+            <div class="only-detailed">
             <label class="fld"><span class="lbl">writeConcern</span>
               <select class="sync-wc" onchange="setWC(this.value)">
                 <option value="w0" data-i18n="opt.w0">w: 0 — unacknowledged</option>
@@ -351,6 +383,7 @@ svg text{font-family:'Lexend Deca',sans-serif}
               </select>
             </label>
             <div class="desc" id="arch-read-desc"></div>
+            </div>
             <div class="btn-row">
               <button class="btn btn-p" id="arch-btn-w" onclick="archSimWrite()" data-i18n="btn.simw">▶ Simulate Write</button>
               <button class="btn btn-g" id="arch-btn-r" onclick="archSimRead()" data-i18n="btn.simr">▶ Simulate Read</button>
@@ -366,7 +399,8 @@ svg text{font-family:'Lexend Deca',sans-serif}
 
     <!-- ═══════════════ TAB 2: HIGH AVAILABILITY & FAILOVER ═══════════════ -->
     <div id="tab-ha" class="tc">
-      <div class="tip" data-i18n="ha.tip"><strong>Click any compute node</strong> to make it fail, or <strong>click an Availability Zone header</strong> to take the whole zone down (compute + its storage replicas). Watch how the <strong>storage layer coordinates failover</strong> — no election among compute nodes — and how the <strong>Log Service majority (2 of 3 AZs)</strong> keeps writes durable.</div>
+      <div class="value only-basic"><span class="vk" data-i18n="val.k">Why it matters</span><div><span data-i18n="val.ha">Failover <strong>without elections and without rollbacks</strong>: the standby takes over already warm, and every acknowledged write is safe in a storage layer spread across <strong>3 Availability Zones</strong>.</span><span class="vh" data-i18n="valh.ha">Click a node or an <b>Availability Zone</b> to make it fail.</span></div></div>
+      <div class="tip only-detailed" data-i18n="ha.tip"><strong>Click any compute node</strong> to make it fail, or <strong>click an Availability Zone header</strong> to take the whole zone down (compute + its storage replicas). Watch how the <strong>storage layer coordinates failover</strong> — no election among compute nodes — and how the <strong>Log Service majority (2 of 3 AZs)</strong> keeps writes durable.</div>
       <div class="banner bn-amber" id="ha-bn-fo"><div class="bt"><span data-i18n="ha.bn.fo.t">⏳ Failover in progress — storage layer is promoting the standby</span><span class="timer" id="ha-fo-timer"></span></div><div data-i18n="ha.bn.fo.d">Drivers detect the primary change and <strong>retry eligible reads and writes</strong> (retryable reads/writes). Acknowledged majority writes are already in the storage layer, so nothing has to be replayed or rolled back.</div></div>
       <div class="banner bn-info" id="ha-bn-az"><div class="bt" data-i18n="ha.bn.az.t">🛡 One Availability Zone is down — the cluster keeps serving</div><div data-i18n="ha.bn.az.d">The Log Service still holds a <strong>majority (2 of 3 zones)</strong>, so writes keep being committed durably. If the primary lived in the failed zone, the standby in another zone took over.</div></div>
       <div class="banner bn-red" id="ha-bn-q"><div class="bt" data-i18n="ha.bn.q.t">⛔ Storage-layer majority lost — writes cannot be acknowledged</div><div id="ha-bn-q-d"></div></div>
@@ -378,7 +412,7 @@ svg text{font-family:'Lexend Deca',sans-serif}
             <div class="leg" id="ha-legend"></div>
             <div id="ha-svg"></div>
           </div>
-          <div class="card">
+          <div class="card only-detailed">
             <div class="card-title" data-i18n="ha.cmp">Failover: Atlas Core vs Atlas Infinite</div>
             <div class="tbl-wrap" id="ha-cmp"></div>
           </div>
@@ -391,11 +425,13 @@ svg text{font-family:'Lexend Deca',sans-serif}
               <button class="btn btn-s btn-sm" onclick="haTestFailover()" data-i18n="ha.btn.test">⚡ Test Primary Failover</button>
               <button class="btn btn-g btn-sm" onclick="haReset()" data-i18n="btn.reset">↺ Restore all</button>
             </div>
+            <div class="only-detailed">
             <label class="fld" style="margin-top:10px"><span class="lbl" data-i18n="ha.region">AWS region (Atlas Infinite–supported)</span>
               <select id="ha-region" onchange="S.ha.region=this.value;haRender()"></select>
             </label>
             <label class="chk" style="margin-top:4px"><input type="checkbox" id="ha-autoheal" checked onchange="S.ha.autoHeal=this.checked"> <span data-i18n="ha.autoheal">Atlas recovers failed compute nodes (no data copy)</span></label>
             <div class="desc" id="ha-quorum-info"></div>
+            </div>
           </div>
           <div class="card">
             <div class="card-title" data-i18n="ha.timeline">Failover timeline</div>
@@ -403,6 +439,7 @@ svg text{font-family:'Lexend Deca',sans-serif}
           </div>
           <div class="card">
             <div class="card-title" data-i18n="ha.client">What the application sees</div>
+            <div class="only-detailed">
             <label class="fld"><span class="lbl">writeConcern</span>
               <select class="sync-wc" onchange="setWC(this.value)">
                 <option value="w0" data-i18n="opt.w0">w: 0 — unacknowledged</option>
@@ -420,6 +457,7 @@ svg text{font-family:'Lexend Deca',sans-serif}
                 <option value="nearest">nearest</option>
               </select>
             </label>
+            </div>
             <div id="ha-app-view"></div>
           </div>
         </div>
@@ -428,7 +466,8 @@ svg text{font-family:'Lexend Deca',sans-serif}
 
     <!-- ═══════════════ TAB 3: VERTICAL SCALING & STORAGE ═══════════════ -->
     <div id="tab-vs" class="tc">
-      <div class="tip" data-i18n="vs.tip"><strong>Compute and storage scale independently.</strong> The cluster tier sets compute (plus storage throughput and IOPS) — storage capacity grows on its own up to 128 TB per replica set. Pick a tier to watch a <strong>vertical resize without moving data</strong>, then unleash an <strong>AI-agent traffic spike</strong> on the auto-scaler.</div>
+      <div class="value only-basic"><span class="vk" data-i18n="val.k">Why it matters</span><div><span data-i18n="val.vs">Pay for the <strong>compute you need now</strong> and the <strong>storage you actually use</strong>: tier changes take under a minute and move no data; storage grows on its own up to <strong>128 TB</strong>.</span><span class="vh" data-i18n="valh.vs">Pick a tier, then fire an <b>AI-agent spike</b> at the auto-scaler.</span></div></div>
+      <div class="tip only-detailed" data-i18n="vs.tip"><strong>Compute and storage scale independently.</strong> The cluster tier sets compute (plus storage throughput and IOPS) — storage capacity grows on its own up to 128 TB per replica set. Pick a tier to watch a <strong>vertical resize without moving data</strong>, then unleash an <strong>AI-agent traffic spike</strong> on the auto-scaler.</div>
       <div class="banner bn-red" id="vs-bn-block"><div class="bt" data-i18n="vs.bn.block.t">✋ Max storage limit reached — writes blocked, reads still served</div><div data-i18n="vs.bn.block.d">The logical data size approached the max storage limit you set. Atlas <strong>blocks writes but keeps serving reads</strong>. Raise the limit (or delete data) to resume writes — no tier change needed.</div></div>
       <div class="two-col">
         <div>
@@ -440,8 +479,8 @@ svg text{font-family:'Lexend Deca',sans-serif}
             <div class="card-title"><span data-i18n="vs.as">Compute auto-scaling — demand vs provisioned capacity</span> <span class="hl" id="vs-as-label"></span></div>
             <div class="leg" id="vs-chart-legend"></div>
             <div class="chart-wrap" id="vs-chart-wrap"><div id="vs-chart"></div><div class="chart-tip" id="vs-chart-tip"></div></div>
-            <div class="desc" id="vs-why" style="margin-top:8px;line-height:1.7"></div>
-            <div class="desc warn" style="margin-top:8px" data-i18n="vs.as.note">The rules follow the documented criteria (CPU as a proxy for CPU + memory): <strong>scale up</strong> one tier after &gt;90% for 10 min (20 min on M10/M20) or a 1-hour average &gt;75%; <strong>scale down</strong> only after 4 h below 45%, a 24-hour average below 50%, and at most once per 24 h. <strong>Predictive</strong> (M30+, after 2 weeks of history) scales up to 2 tiers ahead of cyclical peaks and never scales down. Scaling is rolling with no downtime and stays within your min/max tiers and tier class. Atlas may not auto-scale fast enough for sudden bursts such as bulk inserts — scale up ahead of planned spikes. Capacity units and the demand curves are illustrative.<a class="src" data-src="D5"></a></div>
+            <div class="desc only-detailed" id="vs-why" style="margin-top:8px;line-height:1.7"></div>
+            <div class="desc warn only-detailed" style="margin-top:8px" data-i18n="vs.as.note">The rules follow the documented criteria (CPU as a proxy for CPU + memory): <strong>scale up</strong> one tier after &gt;90% for 10 min (20 min on M10/M20) or a 1-hour average &gt;75%; <strong>scale down</strong> only after 4 h below 45%, a 24-hour average below 50%, and at most once per 24 h. <strong>Predictive</strong> (M30+, after 2 weeks of history) scales up to 2 tiers ahead of cyclical peaks and never scales down. Scaling is rolling with no downtime and stays within your min/max tiers and tier class. Atlas may not auto-scale fast enough for sudden bursts such as bulk inserts — scale up ahead of planned spikes. Capacity units and the demand curves are illustrative.<a class="src" data-src="D5"></a></div>
           </div>
         </div>
         <div>
@@ -456,11 +495,13 @@ svg text{font-family:'Lexend Deca',sans-serif}
           </div>
           <div class="card">
             <div class="card-title" data-i18n="vs.asset">Auto-scaling settings</div>
+            <div class="only-detailed">
             <label class="chk"><input type="checkbox" id="vs-as-on" checked onchange="vsSetAS()"> <span data-i18n="vs.as.on">Compute auto-scaling (recommended)</span></label>
             <label class="chk"><input type="checkbox" id="vs-pred-on" checked onchange="vsSetAS()"> <span data-i18n="vs.as.pred">Predictive scale-up</span></label>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
               <label class="fld"><span class="lbl" data-i18n="vs.min">Min tier</span><select id="vs-min" onchange="vsSetAS()"></select></label>
               <label class="fld"><span class="lbl" data-i18n="vs.max">Max tier</span><select id="vs-max" onchange="vsSetAS()"></select></label>
+            </div>
             </div>
             <div class="lbl" style="margin:4px 0 6px" data-i18n="vs.pattern">Traffic pattern</div>
             <div class="btn-row" style="margin-top:0">
@@ -490,7 +531,7 @@ svg text{font-family:'Lexend Deca',sans-serif}
               <button class="btn btn-p btn-sm" onclick="vsIngest(1)" data-i18n="vs.ingest">＋ Ingest data</button>
               <button class="btn btn-g btn-sm" onclick="vsIngest(-1)" data-i18n="vs.delete">− Delete data</button>
             </div>
-            <div class="desc" id="vs-storage-desc" style="margin-top:10px"></div>
+            <div class="desc only-detailed" id="vs-storage-desc" style="margin-top:10px"></div>
           </div>
         </div>
       </div>
@@ -498,7 +539,8 @@ svg text{font-family:'Lexend Deca',sans-serif}
 
     <!-- ═══════════════ TAB 4: HORIZONTAL READ SCALING ═══════════════ -->
     <div id="tab-hs" class="tc">
-      <div class="tip" data-i18n="hs.tip"><strong>Scale reads out in minutes.</strong> Add up to <strong>5 read-only or analytics nodes</strong> (7 nodes max). New nodes read straight from the shared storage layer — <strong>no initial sync, no data copy</strong>. Then change the <strong>read preference</strong> and <strong>tags</strong> to see where every read lands.</div>
+      <div class="value only-basic"><span class="vk" data-i18n="val.k">Why it matters</span><div><span data-i18n="val.hs">Need more read capacity? <strong>Add a node and it serves reads in minutes</strong> — it attaches to the shared storage, with no data copy. MongoDB: <strong>&gt;96% less time</strong> to scale reads than Atlas Core.</span><span class="vh" data-i18n="valh.hs">Add <b>read-only nodes</b> and switch readPreference to <b>secondaryPreferred</b>.</span></div></div>
+      <div class="tip only-detailed" data-i18n="hs.tip"><strong>Scale reads out in minutes.</strong> Add up to <strong>5 read-only or analytics nodes</strong> (7 nodes max). New nodes read straight from the shared storage layer — <strong>no initial sync, no data copy</strong>. Then change the <strong>read preference</strong> and <strong>tags</strong> to see where every read lands.</div>
       <div class="two-col">
         <div>
           <div class="card">
@@ -506,7 +548,7 @@ svg text{font-family:'Lexend Deca',sans-serif}
             <div class="leg" id="hs-legend"></div>
             <div id="hs-svg"></div>
           </div>
-          <div class="card dark">
+          <div class="card dark only-detailed">
             <div class="card-title"><span data-i18n="hs.chart">Reads served per node</span> <span class="hl" id="hs-chart-label"></span></div>
             <div class="leg" id="hs-chart-legend"></div>
             <div class="chart-wrap"><div id="hs-chart"></div><div class="chart-tip" id="hs-chart-tip"></div></div>
@@ -526,7 +568,7 @@ svg text{font-family:'Lexend Deca',sans-serif}
             <div class="btn-row">
               <button class="btn btn-g btn-sm" id="hs-rm" onclick="hsRemove()" data-i18n="hs.rm">− Remove last</button>
             </div>
-            <div class="desc" id="hs-count-desc" style="margin-top:10px"></div>
+            <div class="desc only-detailed" id="hs-count-desc" style="margin-top:10px"></div>
           </div>
           <div class="card">
             <div class="card-title" data-i18n="hs.ops">Operational app</div>
@@ -539,6 +581,7 @@ svg text{font-family:'Lexend Deca',sans-serif}
                 <option value="nearest">nearest</option>
               </select>
             </label>
+            <div class="only-detailed">
             <label class="fld"><span class="lbl">readPreferenceTags</span>
               <select id="hs-tags" onchange="S.hs.tags=this.value;hsUpdate()">
                 <option value="none" selected data-i18n="hs.tag.none">(none — any eligible node)</option>
@@ -549,9 +592,10 @@ svg text{font-family:'Lexend Deca',sans-serif}
             <label class="fld"><span class="lbl" data-i18n="hs.rps">Read traffic</span>
               <input type="range" id="hs-rps" min="1" max="10" value="5" oninput="S.hs.rps=+this.value;hsUpdate()">
             </label>
+            </div>
             <div class="desc" id="hs-route-desc"></div>
           </div>
-          <div class="card">
+          <div class="card only-detailed">
             <div class="card-title" data-i18n="hs.bi">Analytics / BI app</div>
             <label class="chk"><input type="checkbox" id="hs-bi-on" checked onchange="S.hs.bi=this.checked;hsUpdate()"> <span data-i18n="hs.bi.on">Run analytics queries — readPreference: secondary, tags { nodeType: "ANALYTICS" }</span></label>
             <div class="desc" id="hs-bi-desc"></div>
@@ -562,7 +606,8 @@ svg text{font-family:'Lexend Deca',sans-serif}
 
     <!-- ═══════════════ TAB 5: BACKUP & RESTORE ═══════════════ -->
     <div id="tab-bk" class="tc">
-      <div class="tip" data-i18n="bk.tip"><strong>Backups run in the storage layer</strong> — independent of compute, so they don't compete with your queries. Atlas Infinite includes a <strong>24-hour continuous cloud backup window</strong> for point-in-time restore, plus <strong>Additional Backup Retention</strong> (on by default) to keep snapshots for up to 3 years. Drag the restore point and pick a target.</div>
+      <div class="value only-basic"><span class="vk" data-i18n="val.k">Why it matters</span><div><span data-i18n="val.bk">Backups <strong>never compete with your workload</strong>: they run in the storage layer, with <strong>point-in-time restore over the last 24 h</strong> and snapshots kept for up to <strong>3 years</strong>.</span><span class="vh" data-i18n="valh.bk">Drag the restore point along the timeline.</span></div></div>
+      <div class="tip only-detailed" data-i18n="bk.tip"><strong>Backups run in the storage layer</strong> — independent of compute, so they don't compete with your queries. Atlas Infinite includes a <strong>24-hour continuous cloud backup window</strong> for point-in-time restore, plus <strong>Additional Backup Retention</strong> (on by default) to keep snapshots for up to 3 years. Drag the restore point and pick a target.</div>
       <div class="two-col">
         <div>
           <div class="card">
@@ -573,11 +618,11 @@ svg text{font-family:'Lexend Deca',sans-serif}
             <div class="card-title"><span data-i18n="bk.timeline">Recovery timeline</span> <span class="hl" id="bk-label"></span></div>
             <div id="bk-timeline"></div>
             <input type="range" id="bk-slider" min="0" max="1000" value="985" oninput="bkSetPoint(+this.value)">
-            <div class="expl" id="bk-expl" style="margin-top:8px"></div>
+            <div class="expl only-detailed" id="bk-expl" style="margin-top:8px"></div>
           </div>
         </div>
         <div>
-          <div class="card">
+          <div class="card only-detailed">
             <div class="card-title" data-i18n="bk.target">Restore target</div>
             <label class="fld"><span class="lbl" data-i18n="bk.target.l">Restore into…</span>
               <select id="bk-target" onchange="S.bk.target=this.value;bkUpdate()">
@@ -604,10 +649,12 @@ svg text{font-family:'Lexend Deca',sans-serif}
 
     <!-- ═══════════════ TAB 6: PREVIEW LIMITS & SOURCES ═══════════════ -->
     <div id="tab-lim" class="tc">
-      <div class="tip" data-i18n="lim.tip"><strong>Atlas Infinite is in Public Preview</strong> (announced Sept 29–30, 2026 at MongoDB.local NYC). Capabilities and documentation may change before general availability. Below is what is <strong>not yet available</strong> or limited — check the linked official pages before making decisions.</div>
+      <div class="value only-basic"><span class="vk" data-i18n="val.k">Why it matters</span><div><span data-i18n="val.lim">Public preview: <strong>AWS only (10 regions)</strong>, single-region clusters, M10–M60. Not yet: <strong>multi-region, multi-cloud, sharding, Atlas Search and Vector Search</strong> — use Atlas Core where you need them.</span><span class="vh" data-i18n="valh.lim">Switch to <b>Deep dive</b> for the full official list and sources.</span></div></div>
+      <div class="tip only-detailed" data-i18n="lim.tip"><strong>Atlas Infinite is in Public Preview</strong> (announced Sept 29–30, 2026 at MongoDB.local NYC). Capabilities and documentation may change before general availability. Below is what is <strong>not yet available</strong> or limited — check the linked official pages before making decisions.</div>
       <div class="lim-hero" id="lim-hero"></div>
-      <div class="lim-grid" id="lim-grid"></div>
-      <div class="card" style="margin-top:12px">
+      <div class="card only-basic" id="lim-basic"></div>
+      <div class="lim-grid only-detailed" id="lim-grid"></div>
+      <div class="card only-detailed" style="margin-top:12px">
         <div class="card-title" data-i18n="lim.sources">Official sources used in this visualizer</div>
         <ul class="src-list" id="src-list"></ul>
         <div class="desc warn" style="margin-top:10px" data-i18n="lim.legend">Chips like <a class="src">D2</a> point to MongoDB documentation; <a class="src blog">B4</a> point to MongoDB blog posts, press releases or product pages (vendor claims). Everything else in this tool is a simplified illustration.</div>
@@ -620,7 +667,7 @@ svg text{font-family:'Lexend Deca',sans-serif}
   <!-- ═══════════════ CAP PANEL ═══════════════ -->
   <div id="cap">
     <div class="panel-title" data-i18n="cap.title">CAP Theorem Position</div>
-    <div class="note-y" data-i18n="cap.note"><strong style="display:block;margin-bottom:2px">📌 Simplified model — for illustration only</strong>A directional compass, not a formal proof. It reacts to your writeConcern, readConcern, readPreference and to the failures you simulate. Use it as a conversation anchor, not as a specification.</div>
+    <div class="note-y only-detailed" data-i18n="cap.note"><strong style="display:block;margin-bottom:2px">📌 Simplified model — for illustration only</strong>A directional compass, not a formal proof. It reacts to your writeConcern, readConcern, readPreference and to the failures you simulate. Use it as a conversation anchor, not as a specification.</div>
     <svg id="cap-svg" viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <linearGradient id="triGrad" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -655,11 +702,11 @@ svg text{font-family:'Lexend Deca',sans-serif}
         <span data-i18n="cap.l">← Availability</span><span data-i18n="cap.r">Consistency →</span>
       </div>
     </div>
-    <div>
+    <div class="only-detailed">
       <div class="panel-title" style="margin-bottom:6px" data-i18n="cap.metrics">Impact metrics</div>
       <div id="cap-metrics"></div>
     </div>
-    <div>
+    <div class="only-detailed">
       <div class="panel-title" style="margin-bottom:6px" data-i18n="cap.p.title">Partition tolerance in Atlas Infinite</div>
       <div class="cap-desc" id="cap-p-text"></div>
     </div>
@@ -667,7 +714,7 @@ svg text{font-family:'Lexend Deca',sans-serif}
       <div class="panel-title" style="margin-bottom:6px" data-i18n="cap.expl">Explanation</div>
       <div class="cap-desc" id="cap-desc-text"></div>
     </div>
-    <div>
+    <div class="only-detailed">
       <div class="panel-title" style="margin-bottom:6px" data-i18n="cap.active">Active settings</div>
       <div id="cap-config-tbl"></div>
     </div>

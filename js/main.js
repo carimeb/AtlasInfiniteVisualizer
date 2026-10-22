@@ -69,6 +69,7 @@ function rerenderAll() {
 }
 
 window.addEventListener('load', () => {
+  initView();
   initLang();
   haInitNodes();
   S.vs.spikeAt = 10;

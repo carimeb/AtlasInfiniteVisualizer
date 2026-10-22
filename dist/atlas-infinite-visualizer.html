@@ -29,7 +29,7 @@ code{font-family:'SF Mono','Consolas',monospace;font-size:.92em;background:var(-
 
 /* HEADER */
 #hdr{background:var(--slate);padding:9px 20px;display:flex;align-items:center;gap:12px;flex-shrink:0;flex-wrap:wrap}
-.hdr-title{color:var(--white);font-size:14px;font-weight:600;display:flex;align-items:baseline;gap:10px;flex:1;min-width:220px;flex-wrap:wrap}
+.hdr-title{color:var(--white);font-size:14px;font-weight:600;display:flex;align-items:center;gap:10px;flex:1;min-width:220px;flex-wrap:wrap}
 .hdr-title .brand{color:var(--spring);font-weight:700}
 .hdr-title .inf{color:var(--spring)}
 .hdr-sub{font-size:10.5px;color:rgba(255,255,255,.6);font-weight:400}
@@ -248,6 +248,29 @@ svg text{font-family:'Lexend Deca',sans-serif}
 ::-webkit-scrollbar-track{background:var(--bg1)}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
 
+/* LOGO (official, unaltered — see assets/) */
+.hdr-logo{height:22px;width:auto;display:block;flex-shrink:0}
+
+/* VIEW MODE — Essentials (basic) vs Deep dive (detailed) */
+.view-toggle{display:flex;border:1px solid rgba(0,237,100,.35);border-radius:6px;overflow:hidden}
+.view-toggle button{background:none;border:none;color:rgba(255,255,255,.65);font-family:inherit;font-size:10.5px;font-weight:700;padding:4px 10px;cursor:pointer;letter-spacing:.3px;white-space:nowrap}
+.view-toggle button.on{background:var(--spring);color:var(--slate)}
+body.view-basic .only-detailed{display:none !important}
+body.view-detailed .only-basic{display:none !important}
+body.view-basic a.src{display:none}
+body.view-basic #log{display:none}
+body.view-basic .hdr-sub{display:none}
+body.view-basic svg .dt{display:none}
+body.view-basic .steps li .sd{display:none}
+body.view-basic .banner .bt ~ div{display:none}
+body.view-basic .cmp tr.xr{display:none}
+.value{background:var(--slate);color:var(--white);border-radius:10px;padding:13px 16px;margin-bottom:12px;display:flex;gap:14px;align-items:flex-start;font-size:13.5px;line-height:1.6;box-shadow:var(--shadow-sm)}
+.value .vk{color:var(--spring);font-weight:800;text-transform:uppercase;font-size:10px;letter-spacing:1px;white-space:nowrap;margin-top:4px;flex-shrink:0}
+.value strong{color:var(--spring);font-weight:700}
+.value .vh{display:block;font-size:11.5px;color:rgba(255,255,255,.65);margin-top:5px}
+.value .vh b{color:var(--white)}
+.mini-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:4px 18px}
+
 /* RESPONSIVE */
 @media (max-width:1100px){
   .two-col{grid-template-columns:minmax(0,1fr)}
@@ -255,6 +278,7 @@ svg text{font-family:'Lexend Deca',sans-serif}
   #main.cap-visible #viz{display:none}
 }
 @media (max-width:700px){
+  .value{flex-direction:column;gap:4px}
   #hdr{padding:8px 12px;gap:8px}
   .hdr-sub{display:none}
   #tab-nav{padding:0 8px}
@@ -265,14 +289,19 @@ svg text{font-family:'Lexend Deca',sans-serif}
 }
 </style>
 </head>
-<body>
+<body class="view-basic">
 
 <div id="hdr">
   <div class="hdr-title">
-    <span><span class="brand">MongoDB</span> Atlas <span class="inf">Infinite</span> Visualizer</span>
+    <img class="hdr-logo" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMjcgMzIiIGZpbGw9Im5vbmUiIHJvbGU9ImltZyIgYXJpYS1sYWJlbD0iTW9uZ29EQiBMb2dvIj4KPCEtLSBPZmZpY2lhbCBNb25nb0RCIGxvZ28sIHVuYWx0ZXJlZDogcGF0aHMgZnJvbSBAbGVhZnlncmVlbi11aS9sb2dvIDExLjEuMSAoTW9uZ29EQkxvZ28sIGNvbG9yICJncmVlbi1iYXNlIiA9ICMwMEVENjQgU3ByaW5nIEdyZWVuKSAtLT4KPHBhdGggZD0iTTkuNDkxMDkgMy4yOTQ4OEM4LjIzNzU0IDEuODIyODIgNy4xNjggMC4zMjc3NjMgNi45NDk0OSAwLjAxNzI1MDdDNi45MjY0OSAtMC4wMDU3NTAyMiA2Ljg5MTk5IC0wLjAwNTc1MDIyIDYuODY4OTkgMC4wMTcyNTA3QzYuNjUwNDggMC4zMjc3NjMgNS41ODA5NCAxLjgyMjgyIDQuMzM4ODkgMy4yOTQ4OEMtNi4zMjIwMyAxNi44NzY5IDYuMDE3OTUgMjYuMDMxMyA2LjAxNzk1IDI2LjAzMTNMNi4xMjE0NiAyNi4xMDAzQzYuMjEzNDYgMjcuNTE0OCA2LjQ0MzQ3IDI5LjU1MDQgNi40NDM0NyAyOS41NTA0SDYuOTAzNDlINy4zNjM1MUM3LjM2MzUxIDI5LjU1MDQgNy41OTM1MSAyNy41MjYzIDcuNjg1NTIgMjYuMTAwM0w3Ljc4OTAyIDI2LjAxOThDNy44MDA1MiAyNi4wMzEzIDIwLjE1MiAxNi44NzY5IDkuNDkxMDkgMy4yOTQ4OFpNNi45MTQ5OSAyNS44MzU4QzYuOTE0OTkgMjUuODM1OCA2LjM2Mjk3IDI1LjM2NDIgNi4yMTM0NiAyNS4xMjI3VjI1LjA5OTdMNi44ODA0OSAxMC4zMTAyQzYuODgwNDkgMTAuMjY0MiA2Ljk0OTQ5IDEwLjI2NDIgNi45NDk0OSAxMC4zMTAyTDcuNjE2NTIgMjUuMDk5N1YyNS4xMjI3QzcuNDY3MDEgMjUuMzY0MiA2LjkxNDk5IDI1LjgzNTggNi45MTQ5OSAyNS44MzU4WiIgZmlsbD0iIzAwRUQ2NCIvPgo8cGF0aCBkPSJNMjkuOTYxOSAyMi44MTExTDI0Ljg0NDIgMTAuMzIxNkwyNC44MzI3IDEwLjI4NzFIMjAuODQyMVYxMS4xMjY3SDIxLjQ4NjFDMjEuNjgxNiAxMS4xMjY3IDIxLjg2NTYgMTEuMjA3MiAyMi4wMDM2IDExLjM0NTJDMjIuMTQxNiAxMS40ODMyIDIyLjIxMDYgMTEuNjY3MiAyMi4yMTA2IDExLjg2MjdMMjIuMDk1NiAyNC40MzI3QzIyLjA5NTYgMjQuODIzNyAyMS43NzM2IDI1LjE0NTcgMjEuMzgyNiAyNS4xNTcyTDIwLjcyNzEgMjUuMTY4N1YyNS45OTY4SDI0LjYxNDJWMjUuMTY4N0wyNC4yMTE3IDI1LjE1NzJDMjMuODIwNyAyNS4xNDU3IDIzLjQ5ODcgMjQuODIzNyAyMy40OTg3IDI0LjQzMjdWMTIuNTg3MkwyOS4wNzY0IDI1Ljk4NTJDMjkuMTU2OSAyNi4xODA4IDI5LjM0MDkgMjYuMzA3MyAyOS41NDc5IDI2LjMwNzNDMjkuNzU0OSAyNi4zMDczIDI5LjkzODkgMjYuMTgwOCAzMC4wMTk0IDI1Ljk4NTJMMzUuNDgyMSAxMi44NzQ3TDM1LjU2MjYgMjQuNDIxMkMzNS41NjI2IDI0LjgyMzcgMzUuMjQwNiAyNS4xNDU3IDM0LjgzODEgMjUuMTU3MkgzNC40MjQxVjI1Ljk4NTJIMzguOTg5OFYyNS4xNTcySDM4LjM2ODdDMzcuOTc3NyAyNS4xNTcyIDM3LjY1NTcgMjQuODIzNyAzNy42NDQyIDI0LjQzMjdMMzcuNjA5NyAxMS44NjI3QzM3LjYwOTcgMTEuNDYwMiAzNy45MzE3IDExLjEzODIgMzguMzIyNyAxMS4xMjY3TDM4Ljk4OTggMTEuMTE1MlYxMC4yNzU2SDM1LjEwMjZMMjkuOTYxOSAyMi44MTExWiIgZmlsbD0iIzAwRUQ2NCIvPgo8cGF0aCBkPSJNNjUuNzk3MyAyNC45NjE3QzY1LjY3MDggMjQuODM1MiA2NS42MDE4IDI0LjY2MjcgNjUuNjAxOCAyNC40NTU3VjE4LjI5MTVDNjUuNjAxOCAxNy4xMTg0IDY1LjI1NjggMTYuMTk4NCA2NC41NjY4IDE1LjU0MjlDNjMuODg4MiAxNC44ODczIDYyLjk0NTIgMTQuNTUzOCA2MS43NzIyIDE0LjU1MzhDNjAuMTI3NiAxNC41NTM4IDU4LjgyOCAxNS4yMjA5IDU3LjkxOTUgMTYuNTMxOUM1Ny45MDggMTYuNTU0OSA1Ny44NzM1IDE2LjU2NjQgNTcuODM5IDE2LjU2NjRDNTcuODA0NSAxNi41NjY0IDU3Ljc4MTUgMTYuNTQzNCA1Ny43ODE1IDE2LjUwODlMNTcuMzU2IDE0Ljg2NDNINTYuNjQzTDU0LjgxNDQgMTUuOTEwOVYxNi40ODU5SDU1LjI4NTlDNTUuNTA0NCAxNi40ODU5IDU1LjY4ODQgMTYuNTQzNCA1NS44MTQ5IDE2LjY1ODRDNTUuOTQxNCAxNi43NzM0IDU2LjAxMDQgMTYuOTQ1OSA1Ni4wMTA0IDE3LjE4NzRWMjQuNDQ0MkM1Ni4wMTA0IDI0LjY1MTIgNTUuOTQxNCAyNC44MjM3IDU1LjgxNDkgMjQuOTUwMkM1NS42ODg0IDI1LjA3NjcgNTUuNTE1OSAyNS4xNDU3IDU1LjMwODkgMjUuMTQ1N0g1NC44NDg5VjI1Ljk4NTNINTkuMDU4MVYyNS4xNDU3SDU4LjU5OEM1OC4zOTEgMjUuMTQ1NyA1OC4yMTg1IDI1LjA3NjcgNTguMDkyIDI0Ljk1MDJDNTcuOTY1NSAyNC44MjM3IDU3Ljg5NjUgMjQuNjUxMiA1Ny44OTY1IDI0LjQ0NDJWMTkuNjZDNTcuODk2NSAxOS4wNTA1IDU4LjAzNDUgMTguNDQxIDU4LjI4NzUgMTcuODQzQzU4LjU1MiAxNy4yNTY0IDU4Ljk0MzEgMTYuNzYxOSA1OS40NjA2IDE2LjM4MjRDNTkuOTc4MSAxNi4wMDI5IDYwLjU5OTEgMTUuODE4OSA2MS4zMTIxIDE1LjgxODlDNjIuMTE3MiAxNS44MTg5IDYyLjcyNjcgMTYuMDcxOSA2My4xMDYyIDE2LjU3NzlDNjMuNDg1NyAxNy4wODM5IDYzLjY4MTIgMTcuNzM5NSA2My42ODEyIDE4LjUyMTVWMjQuNDU1N0M2My42ODEyIDI0LjY2MjcgNjMuNjEyMiAyNC44MzUyIDYzLjQ4NTcgMjQuOTYxN0M2My4zNTkyIDI1LjA4ODIgNjMuMTg2NyAyNS4xNTcyIDYyLjk3OTcgMjUuMTU3Mkg2Mi41MTk3VjI1Ljk5NjhINjYuNzI4OVYyNS4xNTcySDY2LjI2ODhDNjYuMDk2MyAyNS4xNTcyIDY1LjkyMzggMjUuMDk5NyA2NS43OTczIDI0Ljk2MTdaIiBmaWxsPSIjMDBFRDY0Ii8+CjxwYXRoIGQ9Ik0xMDQuNDA0IDExLjIzMDNDMTAzLjIzMSAxMC42MDkyIDEwMS45MiAxMC4yODcyIDEwMC41MDYgMTAuMjg3Mkg5NC45ODU0VjExLjEyNjhIOTUuNTI1OUM5NS43MzI5IDExLjEyNjggOTUuOTE2OSAxMS4yMDczIDk2LjEwMSAxMS4zOTEzQzk2LjI3MzUgMTEuNTYzOCA5Ni4zNjU1IDExLjc1OTMgOTYuMzY1NSAxMS45NjYzVjI0LjM0MDhDOTYuMzY1NSAyNC41NDc4IDk2LjI3MzUgMjQuNzQzMyA5Ni4xMDEgMjQuOTE1OEM5NS45Mjg0IDI1LjA4ODMgOTUuNzMyOSAyNS4xODAzIDk1LjUyNTkgMjUuMTgwM0g5NC45ODU0VjI2LjAxOThIMTAwLjUwNkMxMDEuOTIgMjYuMDE5OCAxMDMuMjMxIDI1LjY5NzggMTA0LjQwNCAyNS4wNzY4QzEwNS41NzcgMjQuNDU1OCAxMDYuNTMyIDIzLjUzNTcgMTA3LjIyMiAyMi4zNjI3QzEwNy45MTIgMjEuMTg5NyAxMDguMjY4IDE5Ljc3NTEgMTA4LjI2OCAxOC4xNjVDMTA4LjI2OCAxNi41NTUgMTA3LjkxMiAxNS4xNTE5IDEwNy4yMjIgMTMuOTY3NEMxMDYuNTMyIDEyLjc3MTMgMTA1LjU4OSAxMS44NTEzIDEwNC40MDQgMTEuMjMwM1pNMTA2LjA2IDE4LjE0MkMxMDYuMDYgMTkuNjE0MSAxMDUuNzk2IDIwLjg1NjEgMTA1LjI3OCAyMS44NTY3QzEwNC43NjEgMjIuODU3MiAxMDQuMDcxIDIzLjYwNDggMTAzLjIyIDI0LjA4NzhDMTAyLjM2OSAyNC41NzA4IDEwMS40MjYgMjQuODEyMyAxMDAuNDE0IDI0LjgxMjNIOTkuMjk4MUM5OS4wOTExIDI0LjgxMjMgOTguOTA3MSAyNC43MzE4IDk4LjcyMzEgMjQuNTQ3OEM5OC41NTA2IDI0LjM3NTMgOTguNDU4NSAyNC4xNzk4IDk4LjQ1ODUgMjMuOTcyOFYxMi4zMTEzQzk4LjQ1ODUgMTIuMTA0MyA5OC41MzkxIDExLjkyMDMgOTguNzIzMSAxMS43MzYzQzk4Ljg5NTYgMTEuNTYzOCA5OS4wOTExIDExLjQ3MTggOTkuMjk4MSAxMS40NzE4SDEwMC40MTRDMTAxLjQyNiAxMS40NzE4IDEwMi4zNjkgMTEuNzEzMyAxMDMuMjIgMTIuMTk2M0MxMDQuMDcxIDEyLjY3OTMgMTA0Ljc2MSAxMy40MjY5IDEwNS4yNzggMTQuNDI3NEMxMDUuNzk2IDE1LjQyNzkgMTA2LjA2IDE2LjY3IDEwNi4wNiAxOC4xNDJaIiBmaWxsPSIjMDBFRDY0Ii8+CjxwYXRoIGQ9Ik0xMjEuMjc1IDE4Ljk3QzEyMC43NjkgMTguMzgzNSAxMTkuNzkyIDE3Ljg4ODkgMTE4LjY0MiAxNy42MjQ0QzEyMC4yMjkgMTYuODMwOSAxMjEuMDQ1IDE1LjcxNTMgMTIxLjA0NSAxNC4yNzc4QzEyMS4wNDUgMTMuNDk1OCAxMjAuODM4IDEyLjc5NDIgMTIwLjQyNCAxMi4xOTYyQzEyMC4wMSAxMS41OTgyIDExOS40MjQgMTEuMTE1MiAxMTguNjc2IDEwLjc4MTdDMTE3LjkyOSAxMC40NDgxIDExNy4wNTUgMTAuMjc1NiAxMTYuMDY2IDEwLjI3NTZIMTA5Ljg2N1YxMS4xMTUySDExMC4zNjJDMTEwLjU2OSAxMS4xMTUyIDExMC43NTMgMTEuMTk1NyAxMTAuOTM3IDExLjM3OTdDMTExLjEwOSAxMS41NTIyIDExMS4yMDEgMTEuNzQ3NyAxMTEuMjAxIDExLjk1NDdWMjQuMzI5MkMxMTEuMjAxIDI0LjUzNjIgMTExLjEwOSAyNC43MzE3IDExMC45MzcgMjQuOTA0MkMxMTAuNzY0IDI1LjA3NjcgMTEwLjU2OSAyNS4xNjg3IDExMC4zNjIgMjUuMTY4N0gxMDkuODIxVjI2LjAwODJIMTE2LjU0OUMxMTcuNTcyIDI2LjAwODIgMTE4LjUyNyAyNS44MzU3IDExOS4zODkgMjUuNDkwN0MxMjAuMjUyIDI1LjE0NTcgMTIwLjk0MiAyNC42Mzk3IDEyMS40MzYgMjMuOTcyN0MxMjEuOTQzIDIzLjMwNTYgMTIyLjE5NiAyMi40ODkxIDEyMi4xOTYgMjEuNTQ2MUMxMjIuMTk2IDIwLjUzNCAxMjEuODg1IDE5LjY4MyAxMjEuMjc1IDE4Ljk3Wk0xMTMuNTcgMjQuNTQ3N0MxMTMuMzk4IDI0LjM3NTIgMTEzLjMwNiAyNC4xNzk3IDExMy4zMDYgMjMuOTcyN1YxOC40MThIMTE2LjUwM0MxMTcuNjMgMTguNDE4IDExOC40OTIgMTguNzA1NSAxMTkuMDkgMTkuMjgwNUMxMTkuNjg4IDE5Ljg1NTUgMTE5Ljk4NyAyMC42MDMgMTE5Ljk4NyAyMS41MjMxQzExOS45ODcgMjIuMDc1MSAxMTkuODQ5IDIyLjYxNTYgMTE5LjU5NiAyMy4xMTAxQzExOS4zMzIgMjMuNjE2MiAxMTguOTQxIDI0LjAxODcgMTE4LjQxMiAyNC4zMjkyQzExNy44OTQgMjQuNjM5NyAxMTcuMjUgMjQuODAwNyAxMTYuNTAzIDI0LjgwMDdIMTE0LjE0NUMxMTMuOTI3IDI0LjgxMjIgMTEzLjc0MyAyNC43MzE3IDExMy41NyAyNC41NDc3Wk0xMTMuMzA2IDE3LjIzMzRWMTIuMjk5N0MxMTMuMzA2IDEyLjA5MjcgMTEzLjM4NiAxMS45MDg3IDExMy41NyAxMS43MjQ3QzExMy43NDMgMTEuNTUyMiAxMTMuOTM4IDExLjQ2MDIgMTE0LjE0NSAxMS40NjAySDExNS42NjNDMTE2Ljc1NiAxMS40NjAyIDExNy41NjEgMTEuNzM2MiAxMTguMDY3IDEyLjI2NTJDMTE4LjU3MyAxMi44MDU3IDExOC44MjYgMTMuNDk1OCAxMTguODI2IDE0LjM0NjhDMTE4LjgyNiAxNS4yMjA4IDExOC41ODQgMTUuOTIyNCAxMTguMTEzIDE2LjQ1MTRDMTE3LjY0MSAxNi45Njg5IDExNi45MjggMTcuMjMzNCAxMTUuOTg1IDE3LjIzMzRIMTEzLjMwNloiIGZpbGw9IiMwMEVENjQiLz4KPHBhdGggZD0iTTQ5Ljc1NDIgMTUuMzAxM0M0OC44Njg2IDE0LjgxODMgNDcuODc5NiAxNC41NjUzIDQ2LjgxIDE0LjU2NTNDNDUuNzQwNSAxNC41NjUzIDQ0Ljc0IDE0LjgwNjggNDMuODY1OSAxNS4zMDEzQzQyLjk4MDQgMTUuNzg0NCA0Mi4yNzg5IDE2LjQ4NTkgNDEuNzYxMyAxNy4zNzE0QzQxLjI0MzggMTguMjU3IDQwLjk3OTMgMTkuMjkyIDQwLjk3OTMgMjAuNDQyQzQwLjk3OTMgMjEuNTkyMSA0MS4yNDM4IDIyLjYyNzEgNDEuNzYxMyAyMy41MTI3QzQyLjI3ODkgMjQuMzk4MiA0Mi45ODA0IDI1LjA5OTcgNDMuODY1OSAyNS41ODI3QzQ0Ljc1MTUgMjYuMDY1OCA0NS43NDA1IDI2LjMxODggNDYuODEgMjYuMzE4OEM0Ny44Nzk2IDI2LjMxODggNDguODgwMSAyNi4wNzczIDQ5Ljc1NDIgMjUuNTgyN0M1MC42Mzk3IDI1LjA5OTcgNTEuMzQxMiAyNC4zOTgyIDUxLjg1ODcgMjMuNTEyN0M1Mi4zNzYzIDIyLjYyNzEgNTIuNjQwOCAyMS41OTIxIDUyLjY0MDggMjAuNDQyQzUyLjY0MDggMTkuMjkyIDUyLjM3NjMgMTguMjU3IDUxLjg1ODcgMTcuMzcxNEM1MS4zNDEyIDE2LjQ3NDQgNTAuNjI4MiAxNS43ODQ0IDQ5Ljc1NDIgMTUuMzAxM1pNNTAuNjA1MiAyMC40NDJDNTAuNjA1MiAyMS44NTY2IDUwLjI2MDIgMjMuMDA2NiA0OS41NzAxIDIzLjgzNDdDNDguODkxNiAyNC42NjI3IDQ3Ljk2MDEgMjUuMDg4MiA0Ni44MSAyNS4wODgyQzQ1LjY2IDI1LjA4ODIgNDQuNzI4NSAyNC42NjI3IDQ0LjA0OTkgMjMuODM0N0M0My4zNTk5IDIzLjAwNjYgNDMuMDE0OSAyMS44NTY2IDQzLjAxNDkgMjAuNDQyQzQzLjAxNDkgMTkuMDI3NSA0My4zNTk5IDE3Ljg3NzQgNDQuMDQ5OSAxNy4wNDk0QzQ0LjcyODUgMTYuMjIxNCA0NS42NiAxNS43OTU5IDQ2LjgxIDE1Ljc5NTlDNDcuOTYwMSAxNS43OTU5IDQ4Ljg5MTYgMTYuMjIxNCA0OS41NzAxIDE3LjA0OTRDNTAuMjYwMiAxNy44Nzc0IDUwLjYwNTIgMTkuMDE2IDUwLjYwNTIgMjAuNDQyWiIgZmlsbD0iIzAwRUQ2NCIvPgo8cGF0aCBkPSJNOTAuMzM5MiAxNS4zMDEzQzg5LjQ1MzcgMTQuODE4MyA4OC40NjQ3IDE0LjU2NTMgODcuMzk1MSAxNC41NjUzQzg2LjMyNTYgMTQuNTY1MyA4NS4zMjUgMTQuODA2OCA4NC40NTEgMTUuMzAxM0M4My41NjU1IDE1Ljc4NDQgODIuODYzOSAxNi40ODU5IDgyLjM0NjQgMTcuMzcxNEM4MS44Mjg5IDE4LjI1NyA4MS41NjQ0IDE5LjI5MiA4MS41NjQ0IDIwLjQ0MkM4MS41NjQ0IDIxLjU5MjEgODEuODI4OSAyMi42MjcxIDgyLjM0NjQgMjMuNTEyN0M4Mi44NjM5IDI0LjM5ODIgODMuNTY1NSAyNS4wOTk3IDg0LjQ1MSAyNS41ODI3Qzg1LjMzNjUgMjYuMDY1OCA4Ni4zMjU2IDI2LjMxODggODcuMzk1MSAyNi4zMTg4Qzg4LjQ2NDcgMjYuMzE4OCA4OS40NjUyIDI2LjA3NzMgOTAuMzM5MiAyNS41ODI3QzkxLjIyNDggMjUuMDk5NyA5MS45MjYzIDI0LjM5ODIgOTIuNDQzOCAyMy41MTI3QzkyLjk2MTMgMjIuNjI3MSA5My4yMjU4IDIxLjU5MjEgOTMuMjI1OCAyMC40NDJDOTMuMjI1OCAxOS4yOTIgOTIuOTYxMyAxOC4yNTcgOTIuNDQzOCAxNy4zNzE0QzkxLjkyNjMgMTYuNDc0NCA5MS4yMjQ4IDE1Ljc4NDQgOTAuMzM5MiAxNS4zMDEzWk05MS4xOTAzIDIwLjQ0MkM5MS4xOTAzIDIxLjg1NjYgOTAuODQ1MyAyMy4wMDY2IDkwLjE1NTIgMjMuODM0N0M4OS40NzY3IDI0LjY2MjcgODguNTQ1MiAyNS4wODgyIDg3LjM5NTEgMjUuMDg4MkM4Ni4yNDUxIDI1LjA4ODIgODUuMzEzNSAyNC42NjI3IDg0LjYzNSAyMy44MzQ3QzgzLjk0NSAyMy4wMDY2IDgzLjYgMjEuODU2NiA4My42IDIwLjQ0MkM4My42IDE5LjAxNiA4My45NDUgMTcuODc3NCA4NC42MzUgMTcuMDQ5NEM4NS4zMTM1IDE2LjIyMTQgODYuMjQ1MSAxNS43OTU5IDg3LjM5NTEgMTUuNzk1OUM4OC41NDUyIDE1Ljc5NTkgODkuNDc2NyAxNi4yMjE0IDkwLjE1NTIgMTcuMDQ5NEM5MC44NDUzIDE3Ljg3NzQgOTEuMTkwMyAxOS4wMTYgOTEuMTkwMyAyMC40NDJaIiBmaWxsPSIjMDBFRDY0Ii8+CjxwYXRoIGQ9Ik03My45NjI2IDE0LjU2NTNDNzMuMDQyNiAxNC41NjUzIDcyLjIwMyAxNC43NjA4IDcxLjQ0NCAxNS4xNTE4QzcwLjY4NSAxNS41NDI4IDcwLjA4NyAxNi4wNzE5IDY5LjY2MTQgMTYuNzUwNEM2OS4yMzU5IDE3LjQxNzQgNjkuMDE3NCAxOC4xNjQ5IDY5LjAxNzQgMTguOTU4NUM2OS4wMTc0IDE5LjY3MTUgNjkuMTc4NCAyMC4zMjcgNjkuNTExOSAyMC45MTM2QzY5LjgzNCAyMS40NzcxIDcwLjI3MSAyMS45NDg2IDcwLjgyMyAyMi4zMzk2TDY5LjE3ODQgMjQuNTcwN0M2OC45NzE0IDI0Ljg0NjcgNjguOTQ4NCAyNS4yMTQ3IDY5LjA5NzkgMjUuNTEzN0M2OS4yNTg5IDI1LjgyNDIgNjkuNTU3OSAyNi4wMDgzIDY5LjkwMyAyNi4wMDgzSDcwLjM3NDVDNjkuOTE0NSAyNi4zMTg4IDY5LjU0NjQgMjYuNjg2OCA2OS4yOTM0IDI3LjEyMzhDNjguOTk0NCAyNy42MTgzIDY4Ljg0NDkgMjguMTM1OCA2OC44NDQ5IDI4LjY2NDlDNjguODQ0OSAyOS42NTM5IDY5LjI4MTkgMzAuNDcwNCA3MC4xNDQ1IDMxLjA4QzcwLjk5NTUgMzEuNjg5NSA3Mi4xOTE1IDMyIDczLjY5ODEgMzJDNzQuNzQ0NiAzMiA3NS43NDUyIDMxLjgyNzUgNzYuNjUzNyAzMS40OTRDNzcuNTczOCAzMS4xNjA1IDc4LjMyMTMgMzAuNjY1OSA3OC44NzMzIDMwLjAyMTlDNzkuNDM2OCAyOS4zNzc5IDc5LjcyNDMgMjguNTk1OSA3OS43MjQzIDI3LjY5ODhDNzkuNzI0MyAyNi43NTU4IDc5LjM3OTMgMjYuMDg4OCA3OC41NzQzIDI1LjQ0NDdDNzcuODg0MyAyNC45MDQyIDc2LjgwMzIgMjQuNjE2NyA3NS40NTc3IDI0LjYxNjdINzAuODU3NUM3MC44NDYgMjQuNjE2NyA3MC44MzQ1IDI0LjYwNTIgNzAuODM0NSAyNC42MDUyQzcwLjgzNDUgMjQuNjA1MiA3MC44MjMgMjQuNTgyMiA3MC44MzQ1IDI0LjU3MDdMNzIuMDMwNSAyMi45NjA2QzcyLjM1MjUgMjMuMTEwMSA3Mi42NTE2IDIzLjIwMjEgNzIuOTE2MSAyMy4yNTk2QzczLjE5MjEgMjMuMzE3MiA3My41MDI2IDIzLjM0MDIgNzMuODQ3NiAyMy4zNDAyQzc0LjgxMzYgMjMuMzQwMiA3NS42ODc3IDIzLjE0NDYgNzYuNDQ2NyAyMi43NTM2Qzc3LjIwNTcgMjIuMzYyNiA3Ny44MTUzIDIxLjgzMzYgNzguMjUyMyAyMS4xNTUxQzc4LjY4OTMgMjAuNDg4IDc4LjkwNzggMTkuNzQwNSA3OC45MDc4IDE4Ljk0N0M3OC45MDc4IDE4LjA5NTkgNzguNDkzOCAxNi41NDM0IDc3LjM2NjcgMTUuNzQ5OUM3Ny4zNjY3IDE1LjczODQgNzcuMzc4MiAxNS43Mzg0IDc3LjM3ODIgMTUuNzM4NEw3OS44NTA4IDE2LjAxNDRWMTQuODc1OEg3NS44OTQ3Qzc1LjI3MzcgMTQuNjY4OCA3NC42MTgxIDE0LjU2NTMgNzMuOTYyNiAxNC41NjUzWk03NS4zNDI3IDIxLjc2NDZDNzQuOTA1NiAyMS45OTQ2IDc0LjQzNDEgMjIuMTIxMSA3My45NjI2IDIyLjEyMTFDNzMuMTkyMSAyMi4xMjExIDcyLjUxMzYgMjEuODQ1MSA3MS45Mzg1IDIxLjMwNDZDNzEuMzYzNSAyMC43NjQxIDcxLjA3NiAxOS45NzA1IDcxLjA3NiAxOC45NTg1QzcxLjA3NiAxNy45NDY0IDcxLjM2MzUgMTcuMTUyOSA3MS45Mzg1IDE2LjYxMjRDNzIuNTEzNiAxNi4wNzE5IDczLjE5MjEgMTUuNzk1OSA3My45NjI2IDE1Ljc5NTlDNzQuNDQ1NiAxNS43OTU5IDc0LjkwNTYgMTUuOTEwOSA3NS4zNDI3IDE2LjE1MjRDNzUuNzc5NyAxNi4zODI0IDc2LjEzNjIgMTYuNzM4OSA3Ni40MjM3IDE3LjIxMDRDNzYuNjk5NyAxNy42ODE5IDc2Ljg0OTIgMTguMjY4NSA3Ni44NDkyIDE4Ljk1ODVDNzYuODQ5MiAxOS42NiA3Ni43MTEyIDIwLjI0NjUgNzYuNDIzNyAyMC43MDY1Qzc2LjEzNjIgMjEuMTc4MSA3NS43Nzk3IDIxLjUyMzEgNzUuMzQyNyAyMS43NjQ2Wk03Mi4yMTQ1IDI1Ljk5NjhINzUuMzMxMkM3Ni4xOTM3IDI1Ljk5NjggNzYuNzQ1NyAyNi4xNjkzIDc3LjExMzcgMjYuNTM3M0M3Ny40ODE3IDI2LjkwNTMgNzcuNjY1OCAyNy4zOTk4IDc3LjY2NTggMjcuOTc0OEM3Ny42NjU4IDI4LjgxNDQgNzcuMzMyMiAyOS41MDQ0IDc2LjY2NTIgMzAuMDIxOUM3NS45OTgyIDMwLjUzOTQgNzUuMTAxMiAzMC44MDM5IDczLjk5NzEgMzAuODAzOUM3My4wMzExIDMwLjgwMzkgNzIuMjI2IDMwLjU4NTQgNzEuNjM5NSAzMC4xNzE0QzcxLjA1MyAyOS43NTc0IDcwLjc1NCAyOS4xMjQ5IDcwLjc1NCAyOC4zMTk4QzcwLjc1NCAyNy44MTM4IDcwLjg5MiAyNy4zNDIzIDcxLjE2OCAyNi45MjgzQzcxLjQ1NTUgMjYuNTE0MyA3MS43ODkgMjYuMjE1MyA3Mi4yMTQ1IDI1Ljk5NjhaIiBmaWxsPSIjMDBFRDY0Ii8+CjxwYXRoIGQ9Ik0xMjQuNTQyIDI1Ljg1ODhDMTI0LjMxMiAyNS43MzIzIDEyNC4xMzkgMjUuNTQ4MyAxMjQuMDAxIDI1LjMyOThDMTIzLjg3NSAyNS4wOTk4IDEyMy44MDYgMjQuODU4MiAxMjMuODA2IDI0LjU5MzdDMTIzLjgwNiAyNC4zMjkyIDEyMy44NzUgMjQuMDc2MiAxMjQuMDAxIDIzLjg1NzdDMTI0LjEyOCAyMy42Mjc3IDEyNC4zMTIgMjMuNDU1MiAxMjQuNTQyIDIzLjMyODdDMTI0Ljc3MiAyMy4yMDIyIDEyNS4wMjUgMjMuMTMzMiAxMjUuMzEyIDIzLjEzMzJDMTI1LjYgMjMuMTMzMiAxMjUuODUzIDIzLjIwMjIgMTI2LjA4MyAyMy4zMjg3QzEyNi4zMTMgMjMuNDU1MiAxMjYuNDg1IDIzLjYzOTIgMTI2LjYyMyAyMy44NTc3QzEyNi43NSAyNC4wODc3IDEyNi44MTkgMjQuMzI5MiAxMjYuODE5IDI0LjU5MzdDMTI2LjgxOSAyNC44NTgyIDEyNi43NSAyNS4xMTEzIDEyNi42MjMgMjUuMzI5OEMxMjYuNDk3IDI1LjU1OTggMTI2LjMxMyAyNS43MzIzIDEyNi4wODMgMjUuODU4OEMxMjUuODUzIDI1Ljk4NTMgMTI1LjYgMjYuMDU0MyAxMjUuMzEyIDI2LjA1NDNDMTI1LjAyNSAyNi4wNTQzIDEyNC43NzIgMjUuOTg1MyAxMjQuNTQyIDI1Ljg1ODhaTTEyNS45NTYgMjUuNjg2M0MxMjYuMTUyIDI1LjU4MjggMTI2LjI5IDI1LjQyMTggMTI2LjQwNSAyNS4yMzc4QzEyNi41MDggMjUuMDQyMyAxMjYuNTY2IDI0LjgyMzcgMTI2LjU2NiAyNC41ODIyQzEyNi41NjYgMjQuMzQwNyAxMjYuNTA4IDI0LjEyMjIgMTI2LjQwNSAyMy45MjY3QzEyNi4zMDEgMjMuNzMxMiAxMjYuMTUyIDIzLjU4MTcgMTI1Ljk1NiAyMy40NzgyQzEyNS43NjEgMjMuMzc0NyAxMjUuNTU0IDIzLjMxNzIgMTI1LjMxMiAyMy4zMTcyQzEyNS4wNzEgMjMuMzE3MiAxMjQuODY0IDIzLjM3NDcgMTI0LjY2OCAyMy40NzgyQzEyNC40NzMgMjMuNTgxNyAxMjQuMzM1IDIzLjc0MjcgMTI0LjIyIDIzLjkyNjdDMTI0LjExNiAyNC4xMjIyIDEyNC4wNTkgMjQuMzQwNyAxMjQuMDU5IDI0LjU4MjJDMTI0LjA1OSAyNC44MjM3IDEyNC4xMTYgMjUuMDQyMyAxMjQuMjIgMjUuMjM3OEMxMjQuMzIzIDI1LjQzMzMgMTI0LjQ3MyAyNS41ODI4IDEyNC42NjggMjUuNjg2M0MxMjQuODY0IDI1Ljc4OTggMTI1LjA3MSAyNS44NDczIDEyNS4zMTIgMjUuODQ3M0MxMjUuNTU0IDI1Ljg0NzMgMTI1Ljc2MSAyNS44MDEzIDEyNS45NTYgMjUuNjg2M1pNMTI0LjY5MSAyNS4yODM4VjI1LjE4MDNMMTI0LjcxNCAyNS4xNjg4SDEyNC43ODNDMTI0LjgwNiAyNS4xNjg4IDEyNC44MjkgMjUuMTU3MyAxMjQuODQxIDI1LjE0NThDMTI0Ljg2NCAyNS4xMjI4IDEyNC44NjQgMjUuMTExMyAxMjQuODY0IDI1LjA4ODNWMjQuMDE4N0MxMjQuODY0IDIzLjk5NTcgMTI0Ljg1MiAyMy45NzI3IDEyNC44NDEgMjMuOTYxMkMxMjQuODE4IDIzLjkzODIgMTI0LjgwNiAyMy45MzgyIDEyNC43ODMgMjMuOTM4MkgxMjQuNzE0TDEyNC42OTEgMjMuOTI2N1YyMy44MjMyTDEyNC43MTQgMjMuODExN0gxMjUuMzEyQzEyNS40ODUgMjMuODExNyAxMjUuNjExIDIzLjg0NjIgMTI1LjcxNSAyMy45MjY3QzEyNS44MTggMjQuMDA3MiAxMjUuODY0IDI0LjExMDcgMTI1Ljg2NCAyNC4yNDg3QzEyNS44NjQgMjQuMzUyMiAxMjUuODMgMjQuNDU1NyAxMjUuNzQ5IDI0LjUyNDdDMTI1LjY2OSAyNC42MDUyIDEyNS41NzcgMjQuNjUxMiAxMjUuNDYyIDI0LjY2MjdMMTI1LjYgMjQuNzA4N0wxMjUuODY0IDI1LjEzNDNDMTI1Ljg4NyAyNS4xNjg4IDEyNS45MSAyNS4xODAzIDEyNS45NDUgMjUuMTgwM0gxMjYuMDE0TDEyNi4wMjUgMjUuMTkxOFYyNS4yOTUzTDEyNi4wMTQgMjUuMzA2OEgxMjUuNjU3TDEyNS42MzQgMjUuMjk1M0wxMjUuMjY2IDI0LjY3NDJIMTI1LjE3NFYyNS4wODgzQzEyNS4xNzQgMjUuMTExMyAxMjUuMTg2IDI1LjEzNDMgMTI1LjE5NyAyNS4xNDU4QzEyNS4yMiAyNS4xNjg4IDEyNS4yMzIgMjUuMTY4OCAxMjUuMjU1IDI1LjE2ODhIMTI1LjMyNEwxMjUuMzQ3IDI1LjE4MDNWMjUuMjgzOEwxMjUuMzI0IDI1LjI5NTNIMTI0LjcxNEwxMjQuNjkxIDI1LjI4MzhaTTEyNS4yNjYgMjQuNTM2MkMxMjUuMzU4IDI0LjUzNjIgMTI1LjQzOSAyNC41MTMyIDEyNS40ODUgMjQuNDU1N0MxMjUuNTMxIDI0LjQwOTcgMTI1LjU2NSAyNC4zMjkyIDEyNS41NjUgMjQuMjM3MkMxMjUuNTY1IDI0LjE0NTIgMTI1LjU0MiAyNC4wNzYyIDEyNS40OTYgMjQuMDE4N0MxMjUuNDUgMjMuOTYxMiAxMjUuMzgxIDIzLjkzODIgMTI1LjMwMSAyMy45MzgySDEyNS4yNTVDMTI1LjIzMiAyMy45MzgyIDEyNS4yMDkgMjMuOTQ5NyAxMjUuMTk3IDIzLjk2MTJDMTI1LjE3NCAyMy45ODQyIDEyNS4xNzQgMjMuOTk1NyAxMjUuMTc0IDI0LjAxODdWMjQuNTM2MkgxMjUuMjY2WiIgZmlsbD0iIzAwRUQ2NCIvPgo8L3N2Zz4K" alt="MongoDB">
+    <span>Atlas <span class="inf">Infinite</span> Visualizer</span>
     <span class="hdr-sub" data-i18n="hdr.sub">HA · Failover · Vertical &amp; Horizontal Scaling · CAP · Backup — educational, not official MongoDB documentation</span>
   </div>
   <span class="hdr-badge" data-i18n="hdr.badge">Public Preview</span>
+  <div class="view-toggle" role="group" aria-label="View">
+    <button data-view="basic" onclick="setView('basic')" data-i18n="view.basic">Essentials</button>
+    <button data-view="detailed" onclick="setView('detailed')" data-i18n="view.detailed">Deep dive</button>
+  </div>
   <div class="lang" role="group" aria-label="Language">
     <button data-lang="en" onclick="setLang('en')">EN</button>
     <button data-lang="pt" onclick="setLang('pt')">PT</button>
@@ -295,7 +324,8 @@ svg text{font-family:'Lexend Deca',sans-serif}
 
     <!-- ═══════════════ TAB 1: ARCHITECTURE & WRITE PATH ═══════════════ -->
     <div id="tab-arch" class="tc active">
-      <div class="tip" data-i18n="arch.tip"><strong>Atlas Infinite separates compute from storage.</strong> Compute nodes run queries and transactions; an independent, multi-AZ <strong>storage layer</strong> keeps data durable and coordinates failover. Toggle <strong>Atlas Core ↔ Atlas Infinite</strong> to compare, then press <strong>▶ Simulate Write</strong> or <strong>▶ Simulate Read</strong> to follow each step.</div>
+      <div class="value only-basic"><span class="vk" data-i18n="val.k">Why it matters</span><div><span data-i18n="val.arch">Compute and storage are <strong>separate layers</strong>: each one scales on its own, in minutes, <strong>without moving data</strong> — same MongoDB, same drivers and APIs, no code changes.</span><span class="vh" data-i18n="valh.arch">Try <b>Atlas Core ↔ Atlas Infinite</b> and <b>▶ Simulate Write</b>.</span></div></div>
+      <div class="tip only-detailed" data-i18n="arch.tip"><strong>Atlas Infinite separates compute from storage.</strong> Compute nodes run queries and transactions; an independent, multi-AZ <strong>storage layer</strong> keeps data durable and coordinates failover. Toggle <strong>Atlas Core ↔ Atlas Infinite</strong> to compare, then press <strong>▶ Simulate Write</strong> or <strong>▶ Simulate Read</strong> to follow each step.</div>
       <div class="two-col">
         <div>
           <div class="card">
@@ -303,7 +333,7 @@ svg text{font-family:'Lexend Deca',sans-serif}
             <div class="leg" id="arch-legend"></div>
             <div id="arch-svg"></div>
           </div>
-          <div class="card">
+          <div class="card only-detailed">
             <div class="card-title" data-i18n="arch.ideas">Key ideas</div>
             <div class="ideas" id="arch-ideas"></div>
           </div>
@@ -319,10 +349,12 @@ svg text{font-family:'Lexend Deca',sans-serif}
               <button data-mode="core" onclick="archSetMode('core')">Atlas Core</button>
               <button data-mode="infinite" onclick="archSetMode('infinite')" class="on">Atlas Infinite</button>
             </div>
-            <div class="desc" id="arch-mode-desc"></div>
+            <div class="desc only-detailed" id="arch-mode-desc"></div>
           </div>
           <div class="card">
-            <div class="card-title" data-i18n="cc.title">Write &amp; read settings</div>
+            <div class="card-title only-detailed" data-i18n="cc.title">Write &amp; read settings</div>
+            <div class="card-title only-basic" data-i18n="cc.try">Try it</div>
+            <div class="only-detailed">
             <label class="fld"><span class="lbl">writeConcern</span>
               <select class="sync-wc" onchange="setWC(this.value)">
                 <option value="w0" data-i18n="opt.w0">w: 0 — unacknowledged</option>
@@ -351,6 +383,7 @@ svg text{font-family:'Lexend Deca',sans-serif}
               </select>
             </label>
             <div class="desc" id="arch-read-desc"></div>
+            </div>
             <div class="btn-row">
               <button class="btn btn-p" id="arch-btn-w" onclick="archSimWrite()" data-i18n="btn.simw">▶ Simulate Write</button>
               <button class="btn btn-g" id="arch-btn-r" onclick="archSimRead()" data-i18n="btn.simr">▶ Simulate Read</button>
@@ -366,7 +399,8 @@ svg text{font-family:'Lexend Deca',sans-serif}
 
     <!-- ═══════════════ TAB 2: HIGH AVAILABILITY & FAILOVER ═══════════════ -->
     <div id="tab-ha" class="tc">
-      <div class="tip" data-i18n="ha.tip"><strong>Click any compute node</strong> to make it fail, or <strong>click an Availability Zone header</strong> to take the whole zone down (compute + its storage replicas). Watch how the <strong>storage layer coordinates failover</strong> — no election among compute nodes — and how the <strong>Log Service majority (2 of 3 AZs)</strong> keeps writes durable.</div>
+      <div class="value only-basic"><span class="vk" data-i18n="val.k">Why it matters</span><div><span data-i18n="val.ha">Failover <strong>without elections and without rollbacks</strong>: the standby takes over already warm, and every acknowledged write is safe in a storage layer spread across <strong>3 Availability Zones</strong>.</span><span class="vh" data-i18n="valh.ha">Click a node or an <b>Availability Zone</b> to make it fail.</span></div></div>
+      <div class="tip only-detailed" data-i18n="ha.tip"><strong>Click any compute node</strong> to make it fail, or <strong>click an Availability Zone header</strong> to take the whole zone down (compute + its storage replicas). Watch how the <strong>storage layer coordinates failover</strong> — no election among compute nodes — and how the <strong>Log Service majority (2 of 3 AZs)</strong> keeps writes durable.</div>
       <div class="banner bn-amber" id="ha-bn-fo"><div class="bt"><span data-i18n="ha.bn.fo.t">⏳ Failover in progress — storage layer is promoting the standby</span><span class="timer" id="ha-fo-timer"></span></div><div data-i18n="ha.bn.fo.d">Drivers detect the primary change and <strong>retry eligible reads and writes</strong> (retryable reads/writes). Acknowledged majority writes are already in the storage layer, so nothing has to be replayed or rolled back.</div></div>
       <div class="banner bn-info" id="ha-bn-az"><div class="bt" data-i18n="ha.bn.az.t">🛡 One Availability Zone is down — the cluster keeps serving</div><div data-i18n="ha.bn.az.d">The Log Service still holds a <strong>majority (2 of 3 zones)</strong>, so writes keep being committed durably. If the primary lived in the failed zone, the standby in another zone took over.</div></div>
       <div class="banner bn-red" id="ha-bn-q"><div class="bt" data-i18n="ha.bn.q.t">⛔ Storage-layer majority lost — writes cannot be acknowledged</div><div id="ha-bn-q-d"></div></div>
@@ -378,7 +412,7 @@ svg text{font-family:'Lexend Deca',sans-serif}
             <div class="leg" id="ha-legend"></div>
             <div id="ha-svg"></div>
           </div>
-          <div class="card">
+          <div class="card only-detailed">
             <div class="card-title" data-i18n="ha.cmp">Failover: Atlas Core vs Atlas Infinite</div>
             <div class="tbl-wrap" id="ha-cmp"></div>
           </div>
@@ -391,11 +425,13 @@ svg text{font-family:'Lexend Deca',sans-serif}
               <button class="btn btn-s btn-sm" onclick="haTestFailover()" data-i18n="ha.btn.test">⚡ Test Primary Failover</button>
               <button class="btn btn-g btn-sm" onclick="haReset()" data-i18n="btn.reset">↺ Restore all</button>
             </div>
+            <div class="only-detailed">
             <label class="fld" style="margin-top:10px"><span class="lbl" data-i18n="ha.region">AWS region (Atlas Infinite–supported)</span>
               <select id="ha-region" onchange="S.ha.region=this.value;haRender()"></select>
             </label>
             <label class="chk" style="margin-top:4px"><input type="checkbox" id="ha-autoheal" checked onchange="S.ha.autoHeal=this.checked"> <span data-i18n="ha.autoheal">Atlas recovers failed compute nodes (no data copy)</span></label>
             <div class="desc" id="ha-quorum-info"></div>
+            </div>
           </div>
           <div class="card">
             <div class="card-title" data-i18n="ha.timeline">Failover timeline</div>
@@ -403,6 +439,7 @@ svg text{font-family:'Lexend Deca',sans-serif}
           </div>
           <div class="card">
             <div class="card-title" data-i18n="ha.client">What the application sees</div>
+            <div class="only-detailed">
             <label class="fld"><span class="lbl">writeConcern</span>
               <select class="sync-wc" onchange="setWC(this.value)">
                 <option value="w0" data-i18n="opt.w0">w: 0 — unacknowledged</option>
@@ -420,6 +457,7 @@ svg text{font-family:'Lexend Deca',sans-serif}
                 <option value="nearest">nearest</option>
               </select>
             </label>
+            </div>
             <div id="ha-app-view"></div>
           </div>
         </div>
@@ -428,7 +466,8 @@ svg text{font-family:'Lexend Deca',sans-serif}
 
     <!-- ═══════════════ TAB 3: VERTICAL SCALING & STORAGE ═══════════════ -->
     <div id="tab-vs" class="tc">
-      <div class="tip" data-i18n="vs.tip"><strong>Compute and storage scale independently.</strong> The cluster tier sets compute (plus storage throughput and IOPS) — storage capacity grows on its own up to 128 TB per replica set. Pick a tier to watch a <strong>vertical resize without moving data</strong>, then unleash an <strong>AI-agent traffic spike</strong> on the auto-scaler.</div>
+      <div class="value only-basic"><span class="vk" data-i18n="val.k">Why it matters</span><div><span data-i18n="val.vs">Pay for the <strong>compute you need now</strong> and the <strong>storage you actually use</strong>: tier changes take under a minute and move no data; storage grows on its own up to <strong>128 TB</strong>.</span><span class="vh" data-i18n="valh.vs">Pick a tier, then fire an <b>AI-agent spike</b> at the auto-scaler.</span></div></div>
+      <div class="tip only-detailed" data-i18n="vs.tip"><strong>Compute and storage scale independently.</strong> The cluster tier sets compute (plus storage throughput and IOPS) — storage capacity grows on its own up to 128 TB per replica set. Pick a tier to watch a <strong>vertical resize without moving data</strong>, then unleash an <strong>AI-agent traffic spike</strong> on the auto-scaler.</div>
       <div class="banner bn-red" id="vs-bn-block"><div class="bt" data-i18n="vs.bn.block.t">✋ Max storage limit reached — writes blocked, reads still served</div><div data-i18n="vs.bn.block.d">The logical data size approached the max storage limit you set. Atlas <strong>blocks writes but keeps serving reads</strong>. Raise the limit (or delete data) to resume writes — no tier change needed.</div></div>
       <div class="two-col">
         <div>
@@ -440,8 +479,8 @@ svg text{font-family:'Lexend Deca',sans-serif}
             <div class="card-title"><span data-i18n="vs.as">Compute auto-scaling — demand vs provisioned capacity</span> <span class="hl" id="vs-as-label"></span></div>
             <div class="leg" id="vs-chart-legend"></div>
             <div class="chart-wrap" id="vs-chart-wrap"><div id="vs-chart"></div><div class="chart-tip" id="vs-chart-tip"></div></div>
-            <div class="desc" id="vs-why" style="margin-top:8px;line-height:1.7"></div>
-            <div class="desc warn" style="margin-top:8px" data-i18n="vs.as.note">The rules follow the documented criteria (CPU as a proxy for CPU + memory): <strong>scale up</strong> one tier after &gt;90% for 10 min (20 min on M10/M20) or a 1-hour average &gt;75%; <strong>scale down</strong> only after 4 h below 45%, a 24-hour average below 50%, and at most once per 24 h. <strong>Predictive</strong> (M30+, after 2 weeks of history) scales up to 2 tiers ahead of cyclical peaks and never scales down. Scaling is rolling with no downtime and stays within your min/max tiers and tier class. Atlas may not auto-scale fast enough for sudden bursts such as bulk inserts — scale up ahead of planned spikes. Capacity units and the demand curves are illustrative.<a class="src" data-src="D5"></a></div>
+            <div class="desc only-detailed" id="vs-why" style="margin-top:8px;line-height:1.7"></div>
+            <div class="desc warn only-detailed" style="margin-top:8px" data-i18n="vs.as.note">The rules follow the documented criteria (CPU as a proxy for CPU + memory): <strong>scale up</strong> one tier after &gt;90% for 10 min (20 min on M10/M20) or a 1-hour average &gt;75%; <strong>scale down</strong> only after 4 h below 45%, a 24-hour average below 50%, and at most once per 24 h. <strong>Predictive</strong> (M30+, after 2 weeks of history) scales up to 2 tiers ahead of cyclical peaks and never scales down. Scaling is rolling with no downtime and stays within your min/max tiers and tier class. Atlas may not auto-scale fast enough for sudden bursts such as bulk inserts — scale up ahead of planned spikes. Capacity units and the demand curves are illustrative.<a class="src" data-src="D5"></a></div>
           </div>
         </div>
         <div>
@@ -456,11 +495,13 @@ svg text{font-family:'Lexend Deca',sans-serif}
           </div>
           <div class="card">
             <div class="card-title" data-i18n="vs.asset">Auto-scaling settings</div>
+            <div class="only-detailed">
             <label class="chk"><input type="checkbox" id="vs-as-on" checked onchange="vsSetAS()"> <span data-i18n="vs.as.on">Compute auto-scaling (recommended)</span></label>
             <label class="chk"><input type="checkbox" id="vs-pred-on" checked onchange="vsSetAS()"> <span data-i18n="vs.as.pred">Predictive scale-up</span></label>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
               <label class="fld"><span class="lbl" data-i18n="vs.min">Min tier</span><select id="vs-min" onchange="vsSetAS()"></select></label>
               <label class="fld"><span class="lbl" data-i18n="vs.max">Max tier</span><select id="vs-max" onchange="vsSetAS()"></select></label>
+            </div>
             </div>
             <div class="lbl" style="margin:4px 0 6px" data-i18n="vs.pattern">Traffic pattern</div>
             <div class="btn-row" style="margin-top:0">
@@ -490,7 +531,7 @@ svg text{font-family:'Lexend Deca',sans-serif}
               <button class="btn btn-p btn-sm" onclick="vsIngest(1)" data-i18n="vs.ingest">＋ Ingest data</button>
               <button class="btn btn-g btn-sm" onclick="vsIngest(-1)" data-i18n="vs.delete">− Delete data</button>
             </div>
-            <div class="desc" id="vs-storage-desc" style="margin-top:10px"></div>
+            <div class="desc only-detailed" id="vs-storage-desc" style="margin-top:10px"></div>
           </div>
         </div>
       </div>
@@ -498,7 +539,8 @@ svg text{font-family:'Lexend Deca',sans-serif}
 
     <!-- ═══════════════ TAB 4: HORIZONTAL READ SCALING ═══════════════ -->
     <div id="tab-hs" class="tc">
-      <div class="tip" data-i18n="hs.tip"><strong>Scale reads out in minutes.</strong> Add up to <strong>5 read-only or analytics nodes</strong> (7 nodes max). New nodes read straight from the shared storage layer — <strong>no initial sync, no data copy</strong>. Then change the <strong>read preference</strong> and <strong>tags</strong> to see where every read lands.</div>
+      <div class="value only-basic"><span class="vk" data-i18n="val.k">Why it matters</span><div><span data-i18n="val.hs">Need more read capacity? <strong>Add a node and it serves reads in minutes</strong> — it attaches to the shared storage, with no data copy. MongoDB: <strong>&gt;96% less time</strong> to scale reads than Atlas Core.</span><span class="vh" data-i18n="valh.hs">Add <b>read-only nodes</b> and switch readPreference to <b>secondaryPreferred</b>.</span></div></div>
+      <div class="tip only-detailed" data-i18n="hs.tip"><strong>Scale reads out in minutes.</strong> Add up to <strong>5 read-only or analytics nodes</strong> (7 nodes max). New nodes read straight from the shared storage layer — <strong>no initial sync, no data copy</strong>. Then change the <strong>read preference</strong> and <strong>tags</strong> to see where every read lands.</div>
       <div class="two-col">
         <div>
           <div class="card">
@@ -506,7 +548,7 @@ svg text{font-family:'Lexend Deca',sans-serif}
             <div class="leg" id="hs-legend"></div>
             <div id="hs-svg"></div>
           </div>
-          <div class="card dark">
+          <div class="card dark only-detailed">
             <div class="card-title"><span data-i18n="hs.chart">Reads served per node</span> <span class="hl" id="hs-chart-label"></span></div>
             <div class="leg" id="hs-chart-legend"></div>
             <div class="chart-wrap"><div id="hs-chart"></div><div class="chart-tip" id="hs-chart-tip"></div></div>
@@ -526,7 +568,7 @@ svg text{font-family:'Lexend Deca',sans-serif}
             <div class="btn-row">
               <button class="btn btn-g btn-sm" id="hs-rm" onclick="hsRemove()" data-i18n="hs.rm">− Remove last</button>
             </div>
-            <div class="desc" id="hs-count-desc" style="margin-top:10px"></div>
+            <div class="desc only-detailed" id="hs-count-desc" style="margin-top:10px"></div>
           </div>
           <div class="card">
             <div class="card-title" data-i18n="hs.ops">Operational app</div>
@@ -539,6 +581,7 @@ svg text{font-family:'Lexend Deca',sans-serif}
                 <option value="nearest">nearest</option>
               </select>
             </label>
+            <div class="only-detailed">
             <label class="fld"><span class="lbl">readPreferenceTags</span>
               <select id="hs-tags" onchange="S.hs.tags=this.value;hsUpdate()">
                 <option value="none" selected data-i18n="hs.tag.none">(none — any eligible node)</option>
@@ -549,9 +592,10 @@ svg text{font-family:'Lexend Deca',sans-serif}
             <label class="fld"><span class="lbl" data-i18n="hs.rps">Read traffic</span>
               <input type="range" id="hs-rps" min="1" max="10" value="5" oninput="S.hs.rps=+this.value;hsUpdate()">
             </label>
+            </div>
             <div class="desc" id="hs-route-desc"></div>
           </div>
-          <div class="card">
+          <div class="card only-detailed">
             <div class="card-title" data-i18n="hs.bi">Analytics / BI app</div>
             <label class="chk"><input type="checkbox" id="hs-bi-on" checked onchange="S.hs.bi=this.checked;hsUpdate()"> <span data-i18n="hs.bi.on">Run analytics queries — readPreference: secondary, tags { nodeType: "ANALYTICS" }</span></label>
             <div class="desc" id="hs-bi-desc"></div>
@@ -562,7 +606,8 @@ svg text{font-family:'Lexend Deca',sans-serif}
 
     <!-- ═══════════════ TAB 5: BACKUP & RESTORE ═══════════════ -->
     <div id="tab-bk" class="tc">
-      <div class="tip" data-i18n="bk.tip"><strong>Backups run in the storage layer</strong> — independent of compute, so they don't compete with your queries. Atlas Infinite includes a <strong>24-hour continuous cloud backup window</strong> for point-in-time restore, plus <strong>Additional Backup Retention</strong> (on by default) to keep snapshots for up to 3 years. Drag the restore point and pick a target.</div>
+      <div class="value only-basic"><span class="vk" data-i18n="val.k">Why it matters</span><div><span data-i18n="val.bk">Backups <strong>never compete with your workload</strong>: they run in the storage layer, with <strong>point-in-time restore over the last 24 h</strong> and snapshots kept for up to <strong>3 years</strong>.</span><span class="vh" data-i18n="valh.bk">Drag the restore point along the timeline.</span></div></div>
+      <div class="tip only-detailed" data-i18n="bk.tip"><strong>Backups run in the storage layer</strong> — independent of compute, so they don't compete with your queries. Atlas Infinite includes a <strong>24-hour continuous cloud backup window</strong> for point-in-time restore, plus <strong>Additional Backup Retention</strong> (on by default) to keep snapshots for up to 3 years. Drag the restore point and pick a target.</div>
       <div class="two-col">
         <div>
           <div class="card">
@@ -573,11 +618,11 @@ svg text{font-family:'Lexend Deca',sans-serif}
             <div class="card-title"><span data-i18n="bk.timeline">Recovery timeline</span> <span class="hl" id="bk-label"></span></div>
             <div id="bk-timeline"></div>
             <input type="range" id="bk-slider" min="0" max="1000" value="985" oninput="bkSetPoint(+this.value)">
-            <div class="expl" id="bk-expl" style="margin-top:8px"></div>
+            <div class="expl only-detailed" id="bk-expl" style="margin-top:8px"></div>
           </div>
         </div>
         <div>
-          <div class="card">
+          <div class="card only-detailed">
             <div class="card-title" data-i18n="bk.target">Restore target</div>
             <label class="fld"><span class="lbl" data-i18n="bk.target.l">Restore into…</span>
               <select id="bk-target" onchange="S.bk.target=this.value;bkUpdate()">
@@ -604,10 +649,12 @@ svg text{font-family:'Lexend Deca',sans-serif}
 
     <!-- ═══════════════ TAB 6: PREVIEW LIMITS & SOURCES ═══════════════ -->
     <div id="tab-lim" class="tc">
-      <div class="tip" data-i18n="lim.tip"><strong>Atlas Infinite is in Public Preview</strong> (announced Sept 29–30, 2026 at MongoDB.local NYC). Capabilities and documentation may change before general availability. Below is what is <strong>not yet available</strong> or limited — check the linked official pages before making decisions.</div>
+      <div class="value only-basic"><span class="vk" data-i18n="val.k">Why it matters</span><div><span data-i18n="val.lim">Public preview: <strong>AWS only (10 regions)</strong>, single-region clusters, M10–M60. Not yet: <strong>multi-region, multi-cloud, sharding, Atlas Search and Vector Search</strong> — use Atlas Core where you need them.</span><span class="vh" data-i18n="valh.lim">Switch to <b>Deep dive</b> for the full official list and sources.</span></div></div>
+      <div class="tip only-detailed" data-i18n="lim.tip"><strong>Atlas Infinite is in Public Preview</strong> (announced Sept 29–30, 2026 at MongoDB.local NYC). Capabilities and documentation may change before general availability. Below is what is <strong>not yet available</strong> or limited — check the linked official pages before making decisions.</div>
       <div class="lim-hero" id="lim-hero"></div>
-      <div class="lim-grid" id="lim-grid"></div>
-      <div class="card" style="margin-top:12px">
+      <div class="card only-basic" id="lim-basic"></div>
+      <div class="lim-grid only-detailed" id="lim-grid"></div>
+      <div class="card only-detailed" style="margin-top:12px">
         <div class="card-title" data-i18n="lim.sources">Official sources used in this visualizer</div>
         <ul class="src-list" id="src-list"></ul>
         <div class="desc warn" style="margin-top:10px" data-i18n="lim.legend">Chips like <a class="src">D2</a> point to MongoDB documentation; <a class="src blog">B4</a> point to MongoDB blog posts, press releases or product pages (vendor claims). Everything else in this tool is a simplified illustration.</div>
@@ -620,7 +667,7 @@ svg text{font-family:'Lexend Deca',sans-serif}
   <!-- ═══════════════ CAP PANEL ═══════════════ -->
   <div id="cap">
     <div class="panel-title" data-i18n="cap.title">CAP Theorem Position</div>
-    <div class="note-y" data-i18n="cap.note"><strong style="display:block;margin-bottom:2px">📌 Simplified model — for illustration only</strong>A directional compass, not a formal proof. It reacts to your writeConcern, readConcern, readPreference and to the failures you simulate. Use it as a conversation anchor, not as a specification.</div>
+    <div class="note-y only-detailed" data-i18n="cap.note"><strong style="display:block;margin-bottom:2px">📌 Simplified model — for illustration only</strong>A directional compass, not a formal proof. It reacts to your writeConcern, readConcern, readPreference and to the failures you simulate. Use it as a conversation anchor, not as a specification.</div>
     <svg id="cap-svg" viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <linearGradient id="triGrad" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -655,11 +702,11 @@ svg text{font-family:'Lexend Deca',sans-serif}
         <span data-i18n="cap.l">← Availability</span><span data-i18n="cap.r">Consistency →</span>
       </div>
     </div>
-    <div>
+    <div class="only-detailed">
       <div class="panel-title" style="margin-bottom:6px" data-i18n="cap.metrics">Impact metrics</div>
       <div id="cap-metrics"></div>
     </div>
-    <div>
+    <div class="only-detailed">
       <div class="panel-title" style="margin-bottom:6px" data-i18n="cap.p.title">Partition tolerance in Atlas Infinite</div>
       <div class="cap-desc" id="cap-p-text"></div>
     </div>
@@ -667,7 +714,7 @@ svg text{font-family:'Lexend Deca',sans-serif}
       <div class="panel-title" style="margin-bottom:6px" data-i18n="cap.expl">Explanation</div>
       <div class="cap-desc" id="cap-desc-text"></div>
     </div>
-    <div>
+    <div class="only-detailed">
       <div class="panel-title" style="margin-bottom:6px" data-i18n="cap.active">Active settings</div>
       <div id="cap-config-tbl"></div>
     </div>
@@ -682,6 +729,7 @@ svg text{font-family:'Lexend Deca',sans-serif}
 
 const S = {
   lang: 'en',
+  view: 'basic',       // basic (Essentials) | detailed (Deep dive)
   tab: 'arch',
   // Settings shared by every tab (and by the CAP panel)
   wc: 'wmaj',          // w0 | w1 | wmaj | wnum
@@ -769,6 +817,21 @@ const SOURCES = {
 const PT = {
   'hdr.sub': 'HA · Failover · Escala Vertical e Horizontal · CAP · Backup — material educativo, não é documentação oficial da MongoDB',
   'hdr.badge': 'Public Preview',
+  'view.basic': 'Essencial',
+  'view.detailed': 'Detalhado',
+  'val.k': 'Por que importa',
+  'val.arch': 'Compute e storage são <strong>camadas separadas</strong>: cada uma escala sozinha, em minutos, <strong>sem mover dados</strong> — mesmo MongoDB, mesmos drivers e APIs, sem mudar código.',
+  'valh.arch': 'Experimente <b>Atlas Core ↔ Atlas Infinite</b> e <b>▶ Simular Escrita</b>.',
+  'val.ha': 'Failover <strong>sem eleição e sem rollback</strong>: o standby assume já aquecido, e toda escrita confirmada está segura numa camada de storage distribuída em <strong>3 Availability Zones</strong>.',
+  'valh.ha': 'Clique num nó ou numa <b>Availability Zone</b> para simular a falha.',
+  'val.vs': 'Pague pelo <strong>compute que você precisa agora</strong> e pelo <strong>storage que realmente usa</strong>: trocar de tier leva menos de um minuto e não move dados; o storage cresce sozinho até <strong>128 TB</strong>.',
+  'valh.vs': 'Escolha um tier e dispare um <b>pico de agentes de IA</b> no auto-scaler.',
+  'val.hs': 'Precisa de mais leitura? <strong>Adicione um nó e ele atende leituras em minutos</strong> — conecta no storage compartilhado, sem copiar dados. MongoDB: <strong>&gt;96% menos tempo</strong> para escalar leituras do que no Atlas Core.',
+  'valh.hs': 'Adicione <b>nós read-only</b> e mude o readPreference para <b>secondaryPreferred</b>.',
+  'val.bk': 'Backups <strong>nunca competem com o seu workload</strong>: rodam na camada de storage, com <strong>restore point-in-time nas últimas 24 h</strong> e snapshots guardados por até <strong>3 anos</strong>.',
+  'valh.bk': 'Arraste o ponto de restore na linha do tempo.',
+  'val.lim': 'Public preview: <strong>somente AWS (10 regiões)</strong>, clusters single-region, M10–M60. Ainda não: <strong>multi-region, multi-cloud, sharding, Atlas Search e Vector Search</strong> — use o Atlas Core onde precisar deles.',
+  'valh.lim': 'Mude para <b>Detalhado</b> para ver a lista oficial completa e as fontes.',
   'hdr.limits': '⚠ Limitações do preview',
   'tab.arch': '① Arquitetura e Caminho da Escrita',
   'tab.ha': '② Alta Disponibilidade e Failover',
@@ -782,6 +845,7 @@ const PT = {
   'arch.ideas': 'Ideias-chave',
   'arch.cmp': 'Atlas Core vs Atlas Infinite — lado a lado',
   'arch.edition': 'Edição do banco de dados',
+  'cc.try': 'Experimente',
   'cc.title': 'Configurações de escrita e leitura',
   'opt.w0': 'w: 0 — sem confirmação',
   'opt.w1': 'w: 1 — somente o primário',
@@ -910,6 +974,30 @@ function setLang(lang) {
   if (typeof rerenderAll === 'function') rerenderAll();
 }
 
+function applyView() {
+  document.body.classList.toggle('view-basic', S.view === 'basic');
+  document.body.classList.toggle('view-detailed', S.view === 'detailed');
+  document.querySelectorAll('.view-toggle button').forEach(b => b.classList.toggle('on', b.dataset.view === S.view));
+}
+
+function setView(view) {
+  S.view = view === 'detailed' ? 'detailed' : 'basic';
+  try { localStorage.setItem('aiv-view', S.view); } catch (e) { /* storage unavailable */ }
+  const u = new URL(location.href);
+  u.searchParams.set('view', S.view);
+  try { history.replaceState(null, '', u); } catch (e) { /* file:// may refuse */ }
+  applyView();
+  if (typeof rerenderAll === 'function') rerenderAll();
+}
+
+function initView() {
+  let view = null;
+  try { view = new URL(location.href).searchParams.get('view'); } catch (e) { /* ignore */ }
+  if (!view) { try { view = localStorage.getItem('aiv-view'); } catch (e) { /* ignore */ } }
+  S.view = view === 'detailed' ? 'detailed' : 'basic';
+  applyView();
+}
+
 function initLang() {
   let lang = null;
   try { lang = new URL(location.href).searchParams.get('lang'); } catch (e) { /* ignore */ }
@@ -955,8 +1043,12 @@ function log(level, comp, msg) {
 }
 
 // Render a list of steps into an <ol class="steps">; states: '', active, done, skip
+function stepHTML(h) {
+  const k = h.indexOf('</b>');
+  return k < 0 ? h : h.slice(0, k + 4) + `<span class="sd">${h.slice(k + 4)}</span>`;
+}
 function renderSteps(olId, items, states) {
-  $(olId).innerHTML = items.map((h, i) => `<li class="${(states && states[i]) || ''}">${h}</li>`).join('');
+  $(olId).innerHTML = items.map((h, i) => `<li class="${(states && states[i]) || ''}">${stepHTML(h)}</li>`).join('');
 }
 function setStep(olId, i, state) {
   const li = $(olId).children[i];
@@ -1244,10 +1336,10 @@ function archRender() {
   // Bands
   s += `<rect x="20" y="64" width="760" height="156" rx="12" fill="#E3FCF7" stroke="rgba(0,104,74,.35)" stroke-width="1.5"/>
     <text x="34" y="83" font-size="10" font-weight="800" fill="#00684A" letter-spacing="1">${tx('COMPUTE LAYER', 'CAMADA DE COMPUTE')}</text>
-    <text x="766" y="83" text-anchor="end" font-size="9" fill="rgba(0,30,43,.72)">${tx('queries & transactions · scales by tier and by node count', 'queries e transações · escala por tier e por número de nós')}</text>
+    <text class="dt" x="766" y="83" text-anchor="end" font-size="9" fill="rgba(0,30,43,.72)">${tx('queries & transactions · scales by tier and by node count', 'queries e transações · escala por tier e por número de nós')}</text>
     <rect x="20" y="238" width="760" height="274" rx="12" fill="#F9EBFF" stroke="rgba(0,30,43,.16)" stroke-width="1.5"/>
     <text x="34" y="257" font-size="10" font-weight="800" fill="#001E2B" letter-spacing="1">${tx('STORAGE LAYER', 'CAMADA DE STORAGE')}</text>
-    <text x="766" y="257" text-anchor="end" font-size="9" fill="rgba(0,30,43,.72)">${tx('durability · replication · failover coordination · backup', 'durabilidade · replicação · coordenação de failover · backup')}</text>`;
+    <text class="dt" x="766" y="257" text-anchor="end" font-size="9" fill="rgba(0,30,43,.72)">${tx('durability · replication · failover coordination · backup', 'durabilidade · replicação · coordenação de failover · backup')}</text>`;
 
   // AZ columns
   AP.log = []; AP.page = []; AP.s3 = [];
@@ -1261,16 +1353,16 @@ function archRender() {
     s += `<line x1="${px}" y1="${y + 50}" x2="${px}" y2="438" stroke="rgba(0,30,43,.35)" stroke-width="1.5" class="repl-slow"/>`;
     s += logIcon(lx, y, down) + pageIcon(px, y, down);
     s += `<text x="${lx}" y="${y + 33}" text-anchor="middle" font-size="9" font-weight="700" fill="#001E2B">Log Service</text>
-      <text x="${lx}" y="${y + 44}" text-anchor="middle" font-size="8" fill="rgba(0,30,43,.5)">${tx('consensus replica', 'réplica de consenso')}</text>
+      <text class="dt" x="${lx}" y="${y + 44}" text-anchor="middle" font-size="8" fill="rgba(0,30,43,.5)">${tx('consensus replica', 'réplica de consenso')}</text>
       <text x="${px}" y="${y + 33}" text-anchor="middle" font-size="9" font-weight="700" fill="#00684A">Page Service</text>
-      <text x="${px}" y="${y + 44}" text-anchor="middle" font-size="8" fill="rgba(0,30,43,.5)">${tx('warm materialized pages', 'páginas materializadas')}</text>`;
+      <text class="dt" x="${px}" y="${y + 44}" text-anchor="middle" font-size="8" fill="rgba(0,30,43,.5)">${tx('warm materialized pages', 'páginas materializadas')}</text>`;
   }
   // Object storage
   s += `<rect x="40" y="438" width="720" height="62" rx="10" fill="#FFFFFF" stroke="rgba(0,30,43,.28)" stroke-width="1.5"/>
     ${bucketIcon(72, 449)}
     <text x="122" y="462" font-size="11" font-weight="700" fill="#001E2B">Object Index Service → Amazon S3</text>
-    <text x="122" y="478" font-size="9" fill="#001E2B">${tx('durability floor — designed for eleven nines of durability', 'piso de durabilidade — projetado para onze noves de durabilidade')} (blog)</text>
-    <text x="122" y="491" font-size="8.5" fill="#00684A">${tx('backups, restores and point-in-time recovery also run here, independent of compute', 'backups, restores e point-in-time recovery também rodam aqui, independentes do compute')}</text>`;
+    <text class="dt" x="122" y="478" font-size="9" fill="#001E2B">${tx('durability floor — designed for eleven nines of durability', 'piso de durabilidade — projetado para onze noves de durabilidade')} (blog)</text>
+    <text class="dt" x="122" y="491" font-size="8.5" fill="#00684A">${tx('backups, restores and point-in-time recovery also run here, independent of compute', 'backups, restores e point-in-time recovery também rodam aqui, independentes do compute')}</text>`;
 
   // Compute nodes
   AP.client = [400, 46];
@@ -1294,7 +1386,7 @@ function archRender() {
     if (li !== undefined) {
       const [lx, ly] = AP.log[li];
       s += `<path d="M${lx + 8},${ly - 20} C${lx + 8},${ly - 70} ${sx + 40},${sy + 90} ${sx + 40},${sy + 20}" fill="none" stroke="#00684A" stroke-width="1.3" stroke-dasharray="2 4" opacity=".8"/>
-        <text x="${sx + 46}" y="${sy + 34}" font-size="8" fill="#00684A" font-weight="600">${tx('tails the oplog', 'acompanha o oplog')}</text>`;
+        <text class="dt" x="${sx + 46}" y="${sy + 34}" font-size="8" fill="#00684A" font-weight="600">${tx('tails the oplog', 'acompanha o oplog')}</text>`;
     }
   }
   nodes.forEach(n => {
@@ -1309,7 +1401,7 @@ function archRender() {
   if (!extra.length) {
     s += `<rect x="400" y="108" width="362" height="66" rx="10" fill="none" stroke="rgba(0,30,43,.4)" stroke-dasharray="5 4"/>
       <text x="581" y="136" text-anchor="middle" font-size="10" font-weight="600" fill="rgba(0,30,43,.5)">${tx('+ up to 5 read-only / analytics nodes', '+ até 5 nós read-only / analytics')}</text>
-      <text x="581" y="152" text-anchor="middle" font-size="8.5" fill="rgba(0,30,43,.4)">${tx('add them in tab ④ — they attach to storage, no initial sync', 'adicione na aba ④ — conectam no storage, sem initial sync')}</text>`;
+      <text class="dt" x="581" y="152" text-anchor="middle" font-size="8.5" fill="rgba(0,30,43,.4)">${tx('add them in tab ④ — they attach to storage, no initial sync', 'adicione na aba ④ — conectam no storage, sem initial sync')}</text>`;
   } else {
     extra.forEach((n, i) => {
       const x = 440 + i * 72, y = 140;
@@ -1319,7 +1411,7 @@ function archRender() {
         <text x="${x}" y="${y + 31}" text-anchor="middle" font-size="8" fill="rgba(0,30,43,.72)">${n.id}</text>
         ${roleBadge(x, y + 36, n.type, n.state, lbl)}`;
     });
-    s += `<text x="${440 + (extra.length - 1) * 36}" y="${206}" text-anchor="middle" font-size="8" fill="#00684A">${tx('↓ read pages straight from the Page Service', '↓ leem páginas direto do Page Service')}</text>`;
+    s += `<text class="dt" x="${440 + (extra.length - 1) * 36}" y="${206}" text-anchor="middle" font-size="8" fill="#00684A">${tx('↓ read pages straight from the Page Service', '↓ leem páginas direto do Page Service')}</text>`;
   }
   s += `</svg>`;
   $('arch-svg').innerHTML = s;
@@ -1346,13 +1438,13 @@ function archRenderCore() {
     s += roleBadge(x, 208, i === 0 ? 'PRIMARY' : 'SECONDARY', 'UP', i === 0 ? tx('PRIMARY', 'PRIMÁRIO') : tx('SECONDARY', 'SECUNDÁRIO'));
     s += `<line x1="${x}" y1="226" x2="${x}" y2="270" stroke="#001E2B" stroke-width="1.3"/>`;
     s += diskIcon(x, 300, 110, 46, tx('full data copy', 'cópia completa'));
-    s += `<text x="${x}" y="356" text-anchor="middle" font-size="8.5" fill="rgba(0,30,43,.5)">${tx('local volume — sized by tier', 'volume local — dimensionado pelo tier')}</text>`;
+    s += `<text class="dt" x="${x}" y="356" text-anchor="middle" font-size="8.5" fill="rgba(0,30,43,.5)">${tx('local volume — sized by tier', 'volume local — dimensionado pelo tier')}</text>`;
   });
   s += `<rect x="40" y="396" width="720" height="36" rx="8" fill="rgba(0,30,43,.05)"/>
     <text x="400" y="411" text-anchor="middle" font-size="9.5" fill="#001E2B" font-weight="600">${tx('Each node stores and replicates a full copy of the data', 'Cada nó armazena e replica uma cópia completa dos dados')}</text>
     <text x="400" y="425" text-anchor="middle" font-size="8.5" fill="rgba(0,30,43,.72)">${tx('Adding or replacing a node means copying data (initial sync) · failover = election by majority vote', 'Adicionar ou substituir um nó implica copiar dados (initial sync) · failover = eleição por voto majoritário')}</text>`;
-  s += `<text x="400" y="472" text-anchor="middle" font-size="10" fill="rgba(0,30,43,.72)">${tx('Atlas Core runs on AWS, Azure and Google Cloud with the full Atlas feature set —', 'O Atlas Core roda em AWS, Azure e Google Cloud com o conjunto completo de recursos do Atlas —')}</text>
-    <text x="400" y="487" text-anchor="middle" font-size="10" fill="rgba(0,30,43,.72)">${tx('multi-region, multi-cloud, sharding, Atlas Search and Vector Search.', 'multi-region, multi-cloud, sharding, Atlas Search e Vector Search.')}</text>`;
+  s += `<text class="dt" x="400" y="472" text-anchor="middle" font-size="10" fill="rgba(0,30,43,.72)">${tx('Atlas Core runs on AWS, Azure and Google Cloud with the full Atlas feature set —', 'O Atlas Core roda em AWS, Azure e Google Cloud com o conjunto completo de recursos do Atlas —')}</text>
+    <text class="dt" x="400" y="487" text-anchor="middle" font-size="10" fill="rgba(0,30,43,.72)">${tx('multi-region, multi-cloud, sharding, Atlas Search and Vector Search.', 'multi-region, multi-cloud, sharding, Atlas Search e Vector Search.')}</text>`;
   s += `</svg>`;
   $('arch-svg').innerHTML = s;
   $('arch-mode-label').textContent = tx('Atlas Core · coupled', 'Atlas Core · acoplado');
@@ -1449,18 +1541,18 @@ function archRenderIdeas() {
 function archRenderCmp() {
   const rows = [
     [tx('Architecture', 'Arquitetura'), tx('Compute + storage on each node (full copy per node)', 'Compute + storage em cada nó (cópia completa por nó)'), tx(`Compute and storage as independent layers${src('D2')}`, `Compute e storage como camadas independentes${src('D2')}`)],
-    [tx('High availability', 'Alta disponibilidade'), tx('Replica set of 3+ electable, data-bearing nodes', 'Replica set com 3+ nós elegíveis que guardam dados'), tx(`An "HA shard" of 2 electable compute nodes (primary + standby) in separate AZs + storage layer replicated across 3 AZs${src('D1', 'D2', 'B4')}`, `Um "HA shard" com 2 nós de compute elegíveis (primário + standby) em AZs separadas + camada de storage replicada em 3 AZs${src('D1', 'D2', 'B4')}`)],
+    ['xr', tx('High availability', 'Alta disponibilidade'), tx('Replica set of 3+ electable, data-bearing nodes', 'Replica set com 3+ nós elegíveis que guardam dados'), tx(`An "HA shard" of 2 electable compute nodes (primary + standby) in separate AZs + storage layer replicated across 3 AZs${src('D1', 'D2', 'B4')}`, `Um "HA shard" com 2 nós de compute elegíveis (primário + standby) em AZs separadas + camada de storage replicada em 3 AZs${src('D1', 'D2', 'B4')}`)],
     [tx('Failover', 'Failover'), tx('Election — nodes vote, majority wins', 'Eleição — nós votam, a maioria vence'), tx(`Coordinated by the storage layer — no vote among compute nodes${src('D2')}`, `Coordenado pela camada de storage — sem votação entre nós de compute${src('D2')}`)],
-    [tx('"majority" means', '"majority" significa'), tx('Majority of voting nodes', 'Maioria dos nós votantes'), tx(`Majority within the storage layer${src('D2')}`, `Maioria dentro da camada de storage${src('D2')}`)],
-    [tx('Rollbacks', 'Rollbacks'), tx('Possible for writes not majority-committed', 'Possíveis para escritas não confirmadas pela maioria'), tx(`Don't occur — the storage layer commits writes${src('D8', 'D17')}`, `Não ocorrem — a camada de storage faz o commit das escritas${src('D8', 'D17')}`)],
+    ['xr', tx('"majority" means', '"majority" significa'), tx('Majority of voting nodes', 'Maioria dos nós votantes'), tx(`Majority within the storage layer${src('D2')}`, `Maioria dentro da camada de storage${src('D2')}`)],
+    ['xr', tx('Rollbacks', 'Rollbacks'), tx('Possible for writes not majority-committed', 'Possíveis para escritas não confirmadas pela maioria'), tx(`Don't occur — the storage layer commits writes${src('D8', 'D17')}`, `Não ocorrem — a camada de storage faz o commit das escritas${src('D8', 'D17')}`)],
     [tx('Storage', 'Storage'), tx(`Tied to the cluster tier; shard when nearing the tier limit${src('B7')}`, `Atrelado ao tier; shard quando se aproxima do limite do tier${src('B7')}`), tx(`Grows automatically up to 128 TB (logical) per replica set, independent of tier${src('D4', 'B7')}`, `Cresce automaticamente até 128 TB (lógico) por replica set, independente do tier${src('D4', 'B7')}`)],
     [tx('Adding read capacity', 'Adicionar capacidade de leitura'), tx('New node needs an initial sync (data copy)', 'Novo nó precisa de initial sync (cópia de dados)'), tx(`Read-only nodes attach to storage and serve reads in minutes — no initial sync${src('D6', 'B3')}`, `Nós read-only se conectam ao storage e atendem leituras em minutos — sem initial sync${src('D6', 'B3')}`)],
-    [tx('Write scale-out', 'Escala horizontal de escrita'), tx(`Sharding & Global Clusters${src('B7')}`, `Sharding e Global Clusters${src('B7')}`), tx(`Not available in public preview${src('D1')}`, `Não disponível no public preview${src('D1')}`)],
+    ['xr', tx('Write scale-out', 'Escala horizontal de escrita'), tx(`Sharding & Global Clusters${src('B7')}`, `Sharding e Global Clusters${src('B7')}`), tx(`Not available in public preview${src('D1')}`, `Não disponível no public preview${src('D1')}`)],
     [tx('Pricing model', 'Modelo de preço'), tx(`Provision-based${src('B7')}`, `Baseado em provisionamento${src('B7')}`), tx(`Compute on a reserved instance tier (billed for the running HA shard, not query volume); storage metered by data stored; backup billed separately${src('B6', 'D3')}`, `Compute num tier de instância reservada (cobrado pelo HA shard em execução, não por volume de queries); storage medido pelos dados armazenados; backup cobrado à parte${src('B6', 'D3')}`)],
     [tx('Clouds & regions', 'Clouds e regiões'), tx(`AWS, Azure, Google Cloud · multi-region · multi-cloud${src('B7')}`, `AWS, Azure, Google Cloud · multi-region · multi-cloud${src('B7')}`), tx(`AWS only, single region, select regions (public preview)${src('D1', 'B1')}`, `Somente AWS, single-region, regiões selecionadas (public preview)${src('D1', 'B1')}`)],
   ];
   $('arch-cmp').innerHTML = `<table class="cmp"><thead><tr><th></th><th>Atlas Core</th><th class="inf">Atlas Infinite</th></tr></thead><tbody>
-    ${rows.map(r => `<tr><td>${r[0]}</td><td>${r[1]}</td><td class="inf">${r[2]}</td></tr>`).join('')}</tbody></table>`;
+    ${rows.map(r => { const xr = r[0] === 'xr', c = xr ? r.slice(1) : r; return `<tr class="${xr ? 'xr' : ''}"><td>${c[0]}</td><td>${c[1]}</td><td class="inf">${c[2]}</td></tr>`; }).join('')}</tbody></table>`;
 }
 
 // ── Animations ───────────────────────────────────────────────────────────────
@@ -1526,7 +1618,7 @@ async function archSimWrite() {
   if (upAZ.length < 2) {
     flash('arch-svg', 400, 236, tx('no storage majority', 'sem maioria no storage'), '#C0392B');
     setStep('arch-steps', 3, 'active');
-    $('arch-steps').children[3].innerHTML = tx('<b>Waiting… no storage-layer majority.</b> Only 1 of 3 AZs is reachable, so a majority write can\'t be acknowledged. Without <b>wtimeout</b> the write waits indefinitely.', '<b>Esperando… sem maioria na camada de storage.</b> Só 1 de 3 AZs está acessível, então uma escrita majority não pode ser confirmada. Sem <b>wtimeout</b>, a escrita espera indefinidamente.');
+    $('arch-steps').children[3].innerHTML = stepHTML(tx('<b>Waiting… no storage-layer majority.</b> Only 1 of 3 AZs is reachable, so a majority write can\'t be acknowledged. Without <b>wtimeout</b> the write waits indefinitely.', '<b>Esperando… sem maioria na camada de storage.</b> Só 1 de 3 AZs está acessível, então uma escrita majority não pode ser confirmada. Sem <b>wtimeout</b>, a escrita espera indefinidamente.'));
     log('ERROR', 'STORAGE', tx('Log Service has 1/3 replicas — majority (2) unavailable; majority writes cannot be acknowledged', 'Log Service com 1/3 réplicas — maioria (2) indisponível; escritas majority não podem ser confirmadas'));
     await Promise.all(flights);
     await ackP;
@@ -1733,13 +1825,13 @@ function haRender() {
     s += logIcon(lx, y, down) + pageIcon(px, y, down);
     s += `<text x="${lx}" y="${y + 33}" text-anchor="middle" font-size="9" font-weight="700" fill="${C.slate}">Log Service</text>
       <text x="${px}" y="${y + 33}" text-anchor="middle" font-size="9" font-weight="700" fill="${C.slate}">Page Service</text>
-      <text x="${(lx + px) / 2}" y="${y + 50}" text-anchor="middle" font-size="8" fill="${down ? C.bad : C.t3}">${down ? tx('replicas unreachable', 'réplicas inacessíveis') : tx('replica in this zone', 'réplica nesta zona')}</text>`;
+      <text class="dt" x="${(lx + px) / 2}" y="${y + 50}" text-anchor="middle" font-size="8" fill="${down ? C.bad : C.t3}">${down ? tx('replicas unreachable', 'réplicas inacessíveis') : tx('replica in this zone', 'réplica nesta zona')}</text>`;
   }
   // S3
   s += `<rect x="24" y="408" width="752" height="54" rx="10" fill="${C.white}" stroke="${C.line}" stroke-width="1.3"/>
     ${bucketIcon(44, 414)}
     <text x="92" y="431" font-size="10.5" font-weight="700" fill="${C.slate}">Object Index Service → Amazon S3</text>
-    <text x="92" y="447" font-size="8.8" fill="${C.t2}">${tx('regional object storage — the durability floor beneath the log and page replicas', 'object storage regional — o piso de durabilidade abaixo das réplicas de log e de páginas')} ${tx('(engineering blog)', '(blog de engenharia)')}</text>`;
+    <text class="dt" x="92" y="447" font-size="8.8" fill="${C.t2}">${tx('regional object storage — the durability floor beneath the log and page replicas', 'object storage regional — o piso de durabilidade abaixo das réplicas de log e de páginas')} ${tx('(engineering blog)', '(blog de engenharia)')}</text>`;
   // status strip
   const prim = haPrimary();
   const wState = haWriteState();
@@ -1865,7 +1957,7 @@ function haUpdateInfo() {
     row(tx('Reads', 'Leituras') + ` (${S.rp})`, reads.length ? '✓ ' + reads.map(n => n.id).join(', ') : tx('✕ no eligible node', '✕ nenhum nó elegível'), reads.length > 0) +
     row(tx('Acknowledged writes', 'Escritas confirmadas'), wcRisk, S.wc === 'wmaj' || S.wc === 'wnum' ? true : (S.wc === 'w1' ? null : false)) +
     row(tx('Read-only nodes', 'Nós read-only'), S.extra.length ? tx('keep serving reads; never become primary', 'seguem atendendo leituras; nunca viram primário') : tx('none (add in tab ④)', 'nenhum (adicione na aba ④)'), true) +
-    `<div class="desc lav" style="margin-top:8px">${tx('Timings in this animation are illustrative. The public preview docs don\'t publish an Atlas Infinite failover duration.', 'Os tempos desta animação são ilustrativos. A documentação do public preview não publica uma duração de failover para o Atlas Infinite.')}</div>`;
+    `<div class="desc lav only-detailed" style="margin-top:8px">${tx('Timings in this animation are illustrative. The public preview docs don\'t publish an Atlas Infinite failover duration.', 'Os tempos desta animação são ilustrativos. A documentação do public preview não publica uma duração de failover para o Atlas Infinite.')}</div>`;
 
   haRenderCmp();
   updateCAP();
@@ -1995,7 +2087,7 @@ function haFailover(reason) {
   setStep('ha-steps', 0, 'done');
   if (!sb) {
     setStep('ha-steps', 1, 'fail');
-    $('ha-steps').children[1].innerHTML = tx('<b>No standby available.</b> There is no other electable compute node to promote right now. Data stays durable in the storage layer; service resumes when a compute node is back.', '<b>Nenhum standby disponível.</b> Não há outro nó de compute elegível para promover agora. Os dados seguem duráveis na camada de storage; o serviço volta quando um nó de compute retornar.');
+    $('ha-steps').children[1].innerHTML = stepHTML(tx('<b>No standby available.</b> There is no other electable compute node to promote right now. Data stays durable in the storage layer; service resumes when a compute node is back.', '<b>Nenhum standby disponível.</b> Não há outro nó de compute elegível para promover agora. Os dados seguem duráveis na camada de storage; o serviço volta quando um nó de compute retornar.'));
     log('ERROR', 'ATLAS', tx('Primary lost and no standby available', 'Primário perdido e nenhum standby disponível'));
     haRender(); syncAll();
     return;
@@ -2092,7 +2184,7 @@ function vsRender(extra) {
   let s = `<svg viewBox="0 0 760 296" width="100%" xmlns="http://www.w3.org/2000/svg">
     <rect x="10" y="8" width="740" height="186" rx="12" fill="${C.mist}" stroke="rgba(0,104,74,.35)" stroke-width="1.4"/>
     <text x="24" y="27" font-size="10" font-weight="800" fill="${C.forest}" letter-spacing="1">${tx('COMPUTE LAYER — SIZED BY THE CLUSTER TIER', 'CAMADA DE COMPUTE — DIMENSIONADA PELO TIER')}</text>
-    <text x="736" y="27" text-anchor="end" font-size="9" fill="${C.t2}">${tx('tier = compute + storage throughput & IOPS', 'tier = compute + throughput e IOPS de storage')}</text>
+    <text class="dt" x="736" y="27" text-anchor="end" font-size="9" fill="${C.t2}">${tx('tier = compute + storage throughput & IOPS', 'tier = compute + throughput e IOPS de storage')}</text>
     <rect x="10" y="206" width="740" height="84" rx="12" fill="${C.lavender}" stroke="${C.line}" stroke-width="1.4"/>
     <text x="24" y="225" font-size="10" font-weight="800" fill="${C.slate}" letter-spacing="1">${tx('STORAGE LAYER — INDEPENDENT OF THE TIER', 'CAMADA DE STORAGE — INDEPENDENTE DO TIER')}</text>`;
   VP.log = [190, 256]; VP.page = [250, 256];
@@ -2125,9 +2217,9 @@ function vsRenderLadder() {
 }
 
 function vsTierDesc() {
-  $('vs-tier-desc').innerHTML = tx(
-    `Public preview tiers: <strong>General M10–M60</strong> and <strong>Low-CPU M40–M60</strong>; M80+ not available yet.${src('D1', 'D3')} The tier sets compute plus storage throughput/IOPS — storage <em>capacity</em> is the same at every tier. M10/M20 have limited compute; for large datasets or many collections, pick a higher tier.${src('D4', 'D5')}<br>Resize mechanism (engineering blog): a new node launches, tails the committed oplog from the Log Service, reads pages from the already-warm Page Service, then takes over as primary while the old node steps aside — <strong>in under a minute</strong>.${src('B4')}`,
-    `Tiers do public preview: <strong>General M10–M60</strong> e <strong>Low-CPU M40–M60</strong>; M80+ ainda não disponível.${src('D1', 'D3')} O tier define o compute e o throughput/IOPS de storage — a <em>capacidade</em> de storage é a mesma em todos os tiers. M10/M20 têm compute limitado; para datasets grandes ou muitas coleções, use um tier maior.${src('D4', 'D5')}<br>Mecanismo de resize (blog de engenharia): um novo nó sobe, acompanha o oplog confirmado no Log Service, lê páginas do Page Service já aquecido e assume como primário enquanto o nó antigo sai — <strong>em menos de um minuto</strong>.${src('B4')}`);
+  $('vs-tier-desc').innerHTML = `<span class="only-basic">${tx('The tier sets compute only — your data stays where it is and storage capacity is the same at every tier. Resizes take under a minute.', 'O tier define só o compute — os dados ficam onde estão e a capacidade de storage é a mesma em todos os tiers. Resizes levam menos de um minuto.')}</span><span class="only-detailed">` + tx(
+    `Public preview tiers: <strong>General M10–M60</strong> and <strong>Low-CPU M40–M60</strong>; M80+ not available yet.${src('D1', 'D3')} The tier sets compute plus storage throughput/IOPS — storage <em>capacity</em> is the same at every tier. M10/M20 have limited compute; for large datasets or many collections, pick a higher tier.${src('D4', 'D5')}<br>Resize mechanism (engineering blog): a new node launches, tails the committed oplog from the Log Service, reads pages from the already-warm Page Service, then takes over as primary while the old node steps aside — <strong>in under a minute</strong>.${src('B4')}</span>`,
+    `Tiers do public preview: <strong>General M10–M60</strong> e <strong>Low-CPU M40–M60</strong>; M80+ ainda não disponível.${src('D1', 'D3')} O tier define o compute e o throughput/IOPS de storage — a <em>capacidade</em> de storage é a mesma em todos os tiers. M10/M20 têm compute limitado; para datasets grandes ou muitas coleções, use um tier maior.${src('D4', 'D5')}<br>Mecanismo de resize (blog de engenharia): um novo nó sobe, acompanha o oplog confirmado no Log Service, lê páginas do Page Service já aquecido e assume como primário enquanto o nó antigo sai — <strong>em menos de um minuto</strong>.${src('B4')}</span>`);
 }
 
 function vsSetClass(cls) {
@@ -2700,7 +2792,8 @@ function hsRenderTime() {
   $('hs-time').innerHTML =
     row('Atlas Core', tx('initial sync copies the full dataset — grows with data size', 'initial sync copia o dataset inteiro — cresce com o volume de dados'), 100, C.slate) +
     row('Atlas Infinite', tx('attach to storage → serving reads in minutes', 'conecta no storage → atendendo leituras em minutos'), 4, C.forest) +
-    `<div class="desc">${tx(`MongoDB: <strong>Atlas Infinite cuts read-scaling time by more than 96%</strong> compared to Atlas Core (vendor claim; bar lengths drawn to that ratio). New nodes start serving reads in minutes, without an initial sync.${src('B3', 'B1', 'D2')}<br>Horizontal <strong>write</strong> scaling (sharding) isn't available in the public preview — one replica set scales vertically for writes, up to 128 TB of data.${src('D1', 'D4')}`, `MongoDB: <strong>o Atlas Infinite reduz em mais de 96% o tempo para escalar leituras</strong> em relação ao Atlas Core (afirmação do fabricante; barras desenhadas nessa proporção). Novos nós passam a atender leituras em minutos, sem initial sync.${src('B3', 'B1', 'D2')}<br>A escala horizontal de <strong>escrita</strong> (sharding) não está disponível no public preview — um replica set escala verticalmente para escritas, até 128 TB de dados.${src('D1', 'D4')}`)}</div>`;
+    `<div class="only-basic" style="font-size:12px;color:var(--text2)">${tx('MongoDB: <strong>more than 96% less time</strong> to add read capacity than Atlas Core — bars drawn to that ratio.', 'MongoDB: <strong>mais de 96% menos tempo</strong> para adicionar capacidade de leitura do que no Atlas Core — barras nessa proporção.')}</div>
+    <div class="desc only-detailed">${tx(`MongoDB: <strong>Atlas Infinite cuts read-scaling time by more than 96%</strong> compared to Atlas Core (vendor claim; bar lengths drawn to that ratio). New nodes start serving reads in minutes, without an initial sync.${src('B3', 'B1', 'D2')}<br>Horizontal <strong>write</strong> scaling (sharding) isn't available in the public preview — one replica set scales vertically for writes, up to 128 TB of data.${src('D1', 'D4')}`, `MongoDB: <strong>o Atlas Infinite reduz em mais de 96% o tempo para escalar leituras</strong> em relação ao Atlas Core (afirmação do fabricante; barras desenhadas nessa proporção). Novos nós passam a atender leituras em minutos, sem initial sync.${src('B3', 'B1', 'D2')}<br>A escala horizontal de <strong>escrita</strong> (sharding) não está disponível no public preview — um replica set escala verticalmente para escritas, até 128 TB de dados.${src('D1', 'D4')}`)}</div>`;
 }
 
 // Continuous traffic pulses while the tab is visible
@@ -2744,9 +2837,9 @@ function bkRender() {
     <text x="80" y="210" text-anchor="middle" font-size="8.5" font-weight="700" fill="${C.slate}">Log Service</text>
     <text x="150" y="210" text-anchor="middle" font-size="8.5" font-weight="700" fill="${C.slate}">Page Service</text>
     <text x="222" y="210" text-anchor="middle" font-size="8.5" font-weight="700" fill="${C.slate}">S3</text>
-    <text x="262" y="168" font-size="9.5" fill="${C.t2}">${tx('backup, restore and point-in-time', 'backup, restore e point-in-time')}</text>
-    <text x="262" y="182" font-size="9.5" fill="${C.t2}">${tx('recovery run here, independently', 'recovery rodam aqui, de forma')}</text>
-    <text x="262" y="196" font-size="9.5" fill="${C.t2}">${tx('of the compute layer', 'independente do compute')}</text>
+    <text class="dt" x="262" y="168" font-size="9.5" fill="${C.t2}">${tx('backup, restore and point-in-time', 'backup, restore e point-in-time')}</text>
+    <text class="dt" x="262" y="182" font-size="9.5" fill="${C.t2}">${tx('recovery run here, independently', 'recovery rodam aqui, de forma')}</text>
+    <text class="dt" x="262" y="196" font-size="9.5" fill="${C.t2}">${tx('of the compute layer', 'independente do compute')}</text>
     <path d="M480,170 C520,170 520,120 556,120" fill="none" stroke="${C.forest}" stroke-width="2" class="repl"/>
     <rect x="556" y="20" width="194" height="208" rx="12" fill="${C.slate}"/>
     <text x="653" y="44" text-anchor="middle" font-size="11" font-weight="800" fill="${C.spring}">Cloud Backup</text>
@@ -2850,10 +2943,10 @@ function bkUpdate() {
     ['yes', tx(`Backup, restore and PITR run <b>at the storage layer</b>, independent of compute.`, `Backup, restore e PITR rodam <b>na camada de storage</b>, independentes do compute.`), src('D1', 'D9')],
     ['yes', tx(`<b>24-hour continuous cloud backup</b> window included at no additional cost.`, `Janela de <b>continuous cloud backup de 24 horas</b> incluída sem custo adicional.`), src('D3', 'D20')],
     ['yes', tx(`<b>Additional Backup Retention</b> on by default (extra cost per backup policy) — snapshots kept up to <b>3 years</b>.`, `<b>Additional Backup Retention</b> ativado por padrão (custo extra conforme a política de backup) — snapshots mantidos por até <b>3 anos</b>.`), src('D20', 'D1')],
-    ['yes', tx(`Snapshots, clones and restores are <b>forks of a log</b>: constant time, zero copy, at any database size (engineering blog).`, `Snapshots, clones e restores são <b>forks de um log</b>: tempo constante, zero cópia, em qualquer tamanho de banco (blog de engenharia).`), src('B4')],
+    ['yes', tx(`Snapshots, clones and restores are <b>forks of a log</b>: constant time, zero copy, at any database size (engineering blog).`, `Snapshots, clones e restores são <b>forks de um log</b>: tempo constante, zero cópia, em qualquer tamanho de banco (blog de engenharia).`), src('B4'), 1],
     ['yes', tx(`Both <b>snapshot</b> and <b>continuous (point-in-time)</b> restores.`, `Restores de <b>snapshot</b> e <b>contínuos (point-in-time)</b>.`), src('D9')],
-    ['no', tx(`Not in preview: collection-level restore, copying snapshots to other regions, snapshot download / local restore, importing archived snapshots, cross-organization restores, Core ↔ Infinite backup/restore.`, `Fora do preview: restore por coleção, cópia de snapshots para outras regiões, download de snapshot / restore local, importar snapshots arquivados, restore entre organizações, backup/restore Core ↔ Infinite.`), src('D1')],
-  ].map(([k, h, c]) => `<div class="lim-item"><span class="ico ${k}">${k === 'yes' ? '✓' : '✕'}</span><span>${h}${c}</span></div>`).join('');
+    ['no', tx(`Not in preview: collection-level restore, copying snapshots to other regions, snapshot download / local restore, importing archived snapshots, cross-organization restores, Core ↔ Infinite backup/restore.`, `Fora do preview: restore por coleção, cópia de snapshots para outras regiões, download de snapshot / restore local, importar snapshots arquivados, restore entre organizações, backup/restore Core ↔ Infinite.`), src('D1'), 1],
+  ].map(([k, h, c, d]) => `<div class="lim-item${d ? ' only-detailed' : ''}"><span class="ico ${k}">${k === 'yes' ? '✓' : '✕'}</span><span>${h}${c}</span></div>`).join('');
 }
 
 async function bkRestore() {
@@ -2941,6 +3034,22 @@ function limRender() {
     ]],
   ];
   const ico = { no: '✕', lim: '!', yes: '✓', plan: '→' };
+  // Essentials: the restrictions that matter most when positioning Atlas Infinite
+  const key = [
+    ['no', tx('Multi-region clusters', 'Clusters multi-region')],
+    ['no', tx('Multi-cloud (AWS only for now)', 'Multi-cloud (por enquanto só AWS)')],
+    ['no', tx('Atlas Search', 'Atlas Search')],
+    ['no', tx('Atlas Vector Search', 'Atlas Vector Search')],
+    ['no', tx('Sharded & Global Clusters', 'Clusters shardeados e Global Clusters')],
+    ['no', tx('Uptime SLA (during preview)', 'SLA de uptime (durante o preview)')],
+    ['lim', tx('Tiers M10–M60 (no M80+)', 'Tiers M10–M60 (sem M80+)')],
+    ['no', tx('Online Archive · Kubernetes Operator', 'Online Archive · Kubernetes Operator')],
+    ['no', tx('Live migration from Atlas Core', 'Live migration a partir do Atlas Core')],
+    ['plan', tx('Other clouds & Atlas for Government: planned', 'Outras clouds e Atlas for Government: planejados')],
+  ];
+  $('lim-basic').innerHTML = `<div class="card-title">${tx('Not available yet in the public preview', 'Ainda não disponível no public preview')}</div>
+    <div class="mini-list">${key.map(([k, t]) => `<div class="lim-item"><span class="ico ${k}">${ico[k]}</span><span><b>${t}</b></span></div>`).join('')}</div>`;
+
   $('lim-grid').innerHTML = groups.map(([i, t, items]) => `<div class="card lim-group" style="margin-bottom:0"><h3>${i} ${t}</h3>
     ${items.map(([k, h, ids]) => `<div class="lim-item"><span class="ico ${k}">${ico[k]}</span><span>${h}${src(...ids)}</span></div>`).join('')}</div>`).join('');
 
@@ -3027,6 +3136,7 @@ function rerenderAll() {
 }
 
 window.addEventListener('load', () => {
+  initView();
   initLang();
   haInitNodes();
   S.vs.spikeAt = 10;

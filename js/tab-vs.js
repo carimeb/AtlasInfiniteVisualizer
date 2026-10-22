@@ -26,7 +26,7 @@ function vsRender(extra) {
   let s = `<svg viewBox="0 0 760 296" width="100%" xmlns="http://www.w3.org/2000/svg">
     <rect x="10" y="8" width="740" height="186" rx="12" fill="${C.mist}" stroke="rgba(0,104,74,.35)" stroke-width="1.4"/>
     <text x="24" y="27" font-size="10" font-weight="800" fill="${C.forest}" letter-spacing="1">${tx('COMPUTE LAYER — SIZED BY THE CLUSTER TIER', 'CAMADA DE COMPUTE — DIMENSIONADA PELO TIER')}</text>
-    <text x="736" y="27" text-anchor="end" font-size="9" fill="${C.t2}">${tx('tier = compute + storage throughput & IOPS', 'tier = compute + throughput e IOPS de storage')}</text>
+    <text class="dt" x="736" y="27" text-anchor="end" font-size="9" fill="${C.t2}">${tx('tier = compute + storage throughput & IOPS', 'tier = compute + throughput e IOPS de storage')}</text>
     <rect x="10" y="206" width="740" height="84" rx="12" fill="${C.lavender}" stroke="${C.line}" stroke-width="1.4"/>
     <text x="24" y="225" font-size="10" font-weight="800" fill="${C.slate}" letter-spacing="1">${tx('STORAGE LAYER — INDEPENDENT OF THE TIER', 'CAMADA DE STORAGE — INDEPENDENTE DO TIER')}</text>`;
   VP.log = [190, 256]; VP.page = [250, 256];
@@ -59,9 +59,9 @@ function vsRenderLadder() {
 }
 
 function vsTierDesc() {
-  $('vs-tier-desc').innerHTML = tx(
-    `Public preview tiers: <strong>General M10–M60</strong> and <strong>Low-CPU M40–M60</strong>; M80+ not available yet.${src('D1', 'D3')} The tier sets compute plus storage throughput/IOPS — storage <em>capacity</em> is the same at every tier. M10/M20 have limited compute; for large datasets or many collections, pick a higher tier.${src('D4', 'D5')}<br>Resize mechanism (engineering blog): a new node launches, tails the committed oplog from the Log Service, reads pages from the already-warm Page Service, then takes over as primary while the old node steps aside — <strong>in under a minute</strong>.${src('B4')}`,
-    `Tiers do public preview: <strong>General M10–M60</strong> e <strong>Low-CPU M40–M60</strong>; M80+ ainda não disponível.${src('D1', 'D3')} O tier define o compute e o throughput/IOPS de storage — a <em>capacidade</em> de storage é a mesma em todos os tiers. M10/M20 têm compute limitado; para datasets grandes ou muitas coleções, use um tier maior.${src('D4', 'D5')}<br>Mecanismo de resize (blog de engenharia): um novo nó sobe, acompanha o oplog confirmado no Log Service, lê páginas do Page Service já aquecido e assume como primário enquanto o nó antigo sai — <strong>em menos de um minuto</strong>.${src('B4')}`);
+  $('vs-tier-desc').innerHTML = `<span class="only-basic">${tx('The tier sets compute only — your data stays where it is and storage capacity is the same at every tier. Resizes take under a minute.', 'O tier define só o compute — os dados ficam onde estão e a capacidade de storage é a mesma em todos os tiers. Resizes levam menos de um minuto.')}</span><span class="only-detailed">` + tx(
+    `Public preview tiers: <strong>General M10–M60</strong> and <strong>Low-CPU M40–M60</strong>; M80+ not available yet.${src('D1', 'D3')} The tier sets compute plus storage throughput/IOPS — storage <em>capacity</em> is the same at every tier. M10/M20 have limited compute; for large datasets or many collections, pick a higher tier.${src('D4', 'D5')}<br>Resize mechanism (engineering blog): a new node launches, tails the committed oplog from the Log Service, reads pages from the already-warm Page Service, then takes over as primary while the old node steps aside — <strong>in under a minute</strong>.${src('B4')}</span>`,
+    `Tiers do public preview: <strong>General M10–M60</strong> e <strong>Low-CPU M40–M60</strong>; M80+ ainda não disponível.${src('D1', 'D3')} O tier define o compute e o throughput/IOPS de storage — a <em>capacidade</em> de storage é a mesma em todos os tiers. M10/M20 têm compute limitado; para datasets grandes ou muitas coleções, use um tier maior.${src('D4', 'D5')}<br>Mecanismo de resize (blog de engenharia): um novo nó sobe, acompanha o oplog confirmado no Log Service, lê páginas do Page Service já aquecido e assume como primário enquanto o nó antigo sai — <strong>em menos de um minuto</strong>.${src('B4')}</span>`);
 }
 
 function vsSetClass(cls) {

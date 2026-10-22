@@ -40,6 +40,12 @@ js = "<script>\n" + "".join(
 
 # Strip the  <script src="js/..."></script>  tags of the dev version
 html = re.sub(r'\n?[ \t]*<script src="js/[^"]*"></script>', '', html)
+# Inline local images (the official logo) as data URIs so the file stays self-contained
+import base64
+def _inline(m):
+    data = open(m.group(1), 'rb').read()
+    return 'src="data:image/svg+xml;base64,' + base64.b64encode(data).decode() + '"'
+html = re.sub(r'src="(assets/[^"]+\.svg)"', _inline, html)
 # Inject the inlined block just before </body>
 html = html.replace("</body>", js + "\n</body>", 1)
 

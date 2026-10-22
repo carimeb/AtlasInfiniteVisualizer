@@ -32,8 +32,12 @@ function log(level, comp, msg) {
 }
 
 // Render a list of steps into an <ol class="steps">; states: '', active, done, skip
+function stepHTML(h) {
+  const k = h.indexOf('</b>');
+  return k < 0 ? h : h.slice(0, k + 4) + `<span class="sd">${h.slice(k + 4)}</span>`;
+}
 function renderSteps(olId, items, states) {
-  $(olId).innerHTML = items.map((h, i) => `<li class="${(states && states[i]) || ''}">${h}</li>`).join('');
+  $(olId).innerHTML = items.map((h, i) => `<li class="${(states && states[i]) || ''}">${stepHTML(h)}</li>`).join('');
 }
 function setStep(olId, i, state) {
   const li = $(olId).children[i];

@@ -2,6 +2,7 @@
 
 const S = {
   lang: 'en',
+  view: 'basic',       // basic (Essentials) | detailed (Deep dive)
   tab: 'arch',
   // Settings shared by every tab (and by the CAP panel)
   wc: 'wmaj',          // w0 | w1 | wmaj | wnum

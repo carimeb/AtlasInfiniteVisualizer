@@ -21,9 +21,9 @@ function bkRender() {
     <text x="80" y="210" text-anchor="middle" font-size="8.5" font-weight="700" fill="${C.slate}">Log Service</text>
     <text x="150" y="210" text-anchor="middle" font-size="8.5" font-weight="700" fill="${C.slate}">Page Service</text>
     <text x="222" y="210" text-anchor="middle" font-size="8.5" font-weight="700" fill="${C.slate}">S3</text>
-    <text x="262" y="168" font-size="9.5" fill="${C.t2}">${tx('backup, restore and point-in-time', 'backup, restore e point-in-time')}</text>
-    <text x="262" y="182" font-size="9.5" fill="${C.t2}">${tx('recovery run here, independently', 'recovery rodam aqui, de forma')}</text>
-    <text x="262" y="196" font-size="9.5" fill="${C.t2}">${tx('of the compute layer', 'independente do compute')}</text>
+    <text class="dt" x="262" y="168" font-size="9.5" fill="${C.t2}">${tx('backup, restore and point-in-time', 'backup, restore e point-in-time')}</text>
+    <text class="dt" x="262" y="182" font-size="9.5" fill="${C.t2}">${tx('recovery run here, independently', 'recovery rodam aqui, de forma')}</text>
+    <text class="dt" x="262" y="196" font-size="9.5" fill="${C.t2}">${tx('of the compute layer', 'independente do compute')}</text>
     <path d="M480,170 C520,170 520,120 556,120" fill="none" stroke="${C.forest}" stroke-width="2" class="repl"/>
     <rect x="556" y="20" width="194" height="208" rx="12" fill="${C.slate}"/>
     <text x="653" y="44" text-anchor="middle" font-size="11" font-weight="800" fill="${C.spring}">Cloud Backup</text>
@@ -127,10 +127,10 @@ function bkUpdate() {
     ['yes', tx(`Backup, restore and PITR run <b>at the storage layer</b>, independent of compute.`, `Backup, restore e PITR rodam <b>na camada de storage</b>, independentes do compute.`), src('D1', 'D9')],
     ['yes', tx(`<b>24-hour continuous cloud backup</b> window included at no additional cost.`, `Janela de <b>continuous cloud backup de 24 horas</b> incluída sem custo adicional.`), src('D3', 'D20')],
     ['yes', tx(`<b>Additional Backup Retention</b> on by default (extra cost per backup policy) — snapshots kept up to <b>3 years</b>.`, `<b>Additional Backup Retention</b> ativado por padrão (custo extra conforme a política de backup) — snapshots mantidos por até <b>3 anos</b>.`), src('D20', 'D1')],
-    ['yes', tx(`Snapshots, clones and restores are <b>forks of a log</b>: constant time, zero copy, at any database size (engineering blog).`, `Snapshots, clones e restores são <b>forks de um log</b>: tempo constante, zero cópia, em qualquer tamanho de banco (blog de engenharia).`), src('B4')],
+    ['yes', tx(`Snapshots, clones and restores are <b>forks of a log</b>: constant time, zero copy, at any database size (engineering blog).`, `Snapshots, clones e restores são <b>forks de um log</b>: tempo constante, zero cópia, em qualquer tamanho de banco (blog de engenharia).`), src('B4'), 1],
     ['yes', tx(`Both <b>snapshot</b> and <b>continuous (point-in-time)</b> restores.`, `Restores de <b>snapshot</b> e <b>contínuos (point-in-time)</b>.`), src('D9')],
-    ['no', tx(`Not in preview: collection-level restore, copying snapshots to other regions, snapshot download / local restore, importing archived snapshots, cross-organization restores, Core ↔ Infinite backup/restore.`, `Fora do preview: restore por coleção, cópia de snapshots para outras regiões, download de snapshot / restore local, importar snapshots arquivados, restore entre organizações, backup/restore Core ↔ Infinite.`), src('D1')],
-  ].map(([k, h, c]) => `<div class="lim-item"><span class="ico ${k}">${k === 'yes' ? '✓' : '✕'}</span><span>${h}${c}</span></div>`).join('');
+    ['no', tx(`Not in preview: collection-level restore, copying snapshots to other regions, snapshot download / local restore, importing archived snapshots, cross-organization restores, Core ↔ Infinite backup/restore.`, `Fora do preview: restore por coleção, cópia de snapshots para outras regiões, download de snapshot / restore local, importar snapshots arquivados, restore entre organizações, backup/restore Core ↔ Infinite.`), src('D1'), 1],
+  ].map(([k, h, c, d]) => `<div class="lim-item${d ? ' only-detailed' : ''}"><span class="ico ${k}">${k === 'yes' ? '✓' : '✕'}</span><span>${h}${c}</span></div>`).join('');
 }
 
 async function bkRestore() {

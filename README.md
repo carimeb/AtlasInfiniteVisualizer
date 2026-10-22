@@ -2,7 +2,12 @@
 
 An interactive, browser-based tool that explains **MongoDB Atlas Infinite** — the new deployment option announced at MongoDB.local NYC 2026 (public preview) — and how it handles **high availability, failover, vertical & horizontal scaling, the CAP theorem and backup**.
 
-**▶ Live:** https://carimeb.github.io/AtlasInfiniteVisualizer/ · Portuguese: add `?lang=pt` · deep-link a tab with `?tab=ha` (`arch`, `ha`, `vs`, `hs`, `bk`, `lim`)
+**▶ Live:** https://carimeb.github.io/AtlasInfiniteVisualizer/ · Portuguese: add `?lang=pt` · deep-link a tab with `?tab=ha` (`arch`, `ha`, `vs`, `hs`, `bk`, `lim`) · pick the view with `?view=basic` or `?view=detailed`
+
+### Two views
+
+* **Essentials** (default) — one "why it matters" message per tab with the technical/commercial value, the main diagram and interaction, and a compact Core vs Infinite comparison. No source chips, event log or advanced settings.
+* **Deep dive** — everything: write/read concerns, failover internals, the documented auto-scaling rules with a live "why did/didn't it scale" panel, restore rules, the full official preview-limitations list and every source.
 
 Companion to the [Data Resilience Visualizer](https://carimeb.github.io/DataResilienceVisualizer/) (replica sets, multi-region, multi-cloud on Atlas Core).
 
@@ -47,13 +52,17 @@ AtlasInfiniteVisualizer/
 │   ├── tab-bk.js         # ⑤ backup & restore
 │   ├── tab-lim.js        # ⑥ preview limits & sources
 │   └── main.js           # tabs, shared settings, init
-├── build.sh              # bundles js/ into dist/atlas-infinite-visualizer.html
+├── assets/               # official MongoDB logo (unaltered, Spring Green)
+├── build.sh              # bundles js/ + logo into dist/atlas-infinite-visualizer.html
 └── dist/
 ```
 
 Script order matters (globals): `state → i18n → utils → cap → tab-* → main`.
 
 ## Brand
+
+The header uses the **official MongoDB logo, unaltered**: the paths come from MongoDB's own design system package [`@leafygreen-ui/logo`](https://github.com/mongodb/leafygreen-ui/tree/main/packages/logo) (v11.1.1, `MongoDBLogo`), in its `green-base` color (`#00ED64`, Spring Green) as the brand guidelines recommend on dark backgrounds — see `assets/`.
+
 
 Colors follow the MongoDB 2026 brand refresh: Slate `#001E2B`, Spring Green `#00ED64`, Forest Green `#00684A`, Evergreen `#023430`, Off-white `#FAFBFC`; Lavender `#F9EBFF` and Mist `#E3FCF7` as accents; chart-only colors (Sky `#00D2FF`) used only in charts, on a Slate surface. Architecture icons use only Spring Green and Slate. Red/amber appear only as status (failure/warning), always with an icon and a label. The logo is not redrawn.
 
