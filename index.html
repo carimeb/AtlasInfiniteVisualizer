@@ -328,7 +328,7 @@ svg text{font-family:'Lexend Deca',sans-serif}
                 <option value="w0" data-i18n="opt.w0">w: 0 — unacknowledged</option>
                 <option value="w1" data-i18n="opt.w1">w: 1 — primary only</option>
                 <option value="wmaj" selected data-i18n="opt.wmaj">w: "majority" (default)</option>
-                <option value="wnum" data-i18n="opt.wnum">w: 3 (any number &gt; 2)</option>
+                <option value="wnum" data-i18n="opt.wnum">w: 3 (any number ≥ 2)</option>
               </select>
             </label>
             <div class="desc" id="arch-wc-desc"></div>
@@ -391,7 +391,10 @@ svg text{font-family:'Lexend Deca',sans-serif}
               <button class="btn btn-s btn-sm" onclick="haTestFailover()" data-i18n="ha.btn.test">⚡ Test Primary Failover</button>
               <button class="btn btn-g btn-sm" onclick="haReset()" data-i18n="btn.reset">↺ Restore all</button>
             </div>
-            <label class="chk" style="margin-top:10px"><input type="checkbox" id="ha-autoheal" checked onchange="S.ha.autoHeal=this.checked"> <span data-i18n="ha.autoheal">Atlas recovers failed compute nodes (no data copy)</span></label>
+            <label class="fld" style="margin-top:10px"><span class="lbl" data-i18n="ha.region">AWS region (Atlas Infinite–supported)</span>
+              <select id="ha-region" onchange="S.ha.region=this.value;haRender()"></select>
+            </label>
+            <label class="chk" style="margin-top:4px"><input type="checkbox" id="ha-autoheal" checked onchange="S.ha.autoHeal=this.checked"> <span data-i18n="ha.autoheal">Atlas recovers failed compute nodes (no data copy)</span></label>
             <div class="desc" id="ha-quorum-info"></div>
           </div>
           <div class="card">
@@ -405,7 +408,7 @@ svg text{font-family:'Lexend Deca',sans-serif}
                 <option value="w0" data-i18n="opt.w0">w: 0 — unacknowledged</option>
                 <option value="w1" data-i18n="opt.w1">w: 1 — primary only</option>
                 <option value="wmaj" selected data-i18n="opt.wmaj">w: "majority" (default)</option>
-                <option value="wnum" data-i18n="opt.wnum">w: 3 (any number &gt; 2)</option>
+                <option value="wnum" data-i18n="opt.wnum">w: 3 (any number ≥ 2)</option>
               </select>
             </label>
             <label class="fld"><span class="lbl">readPreference</span>
@@ -425,7 +428,7 @@ svg text{font-family:'Lexend Deca',sans-serif}
 
     <!-- ═══════════════ TAB 3: VERTICAL SCALING & STORAGE ═══════════════ -->
     <div id="tab-vs" class="tc">
-      <div class="tip" data-i18n="vs.tip"><strong>Compute and storage scale independently.</strong> The cluster tier only sets compute (vCPU, RAM, IOPS per node) — storage grows on its own up to 128 TB per replica set. Pick a tier to watch a <strong>vertical resize without moving data</strong>, then unleash an <strong>AI-agent traffic spike</strong> on the auto-scaler.</div>
+      <div class="tip" data-i18n="vs.tip"><strong>Compute and storage scale independently.</strong> The cluster tier sets compute (plus storage throughput and IOPS) — storage capacity grows on its own up to 128 TB per replica set. Pick a tier to watch a <strong>vertical resize without moving data</strong>, then unleash an <strong>AI-agent traffic spike</strong> on the auto-scaler.</div>
       <div class="banner bn-red" id="vs-bn-block"><div class="bt" data-i18n="vs.bn.block.t">✋ Max storage limit reached — writes blocked, reads still served</div><div data-i18n="vs.bn.block.d">The logical data size approached the max storage limit you set. Atlas <strong>blocks writes but keeps serving reads</strong>. Raise the limit (or delete data) to resume writes — no tier change needed.</div></div>
       <div class="two-col">
         <div>
@@ -437,7 +440,8 @@ svg text{font-family:'Lexend Deca',sans-serif}
             <div class="card-title"><span data-i18n="vs.as">Compute auto-scaling — demand vs provisioned capacity</span> <span class="hl" id="vs-as-label"></span></div>
             <div class="leg" id="vs-chart-legend"></div>
             <div class="chart-wrap" id="vs-chart-wrap"><div id="vs-chart"></div><div class="chart-tip" id="vs-chart-tip"></div></div>
-            <div class="desc warn" style="margin-top:8px" data-i18n="vs.as.note">Simplified model for illustration: capacity units and thresholds are not official numbers. What is official: reactive scaling reacts to <strong>sustained</strong> high/low utilization; predictive scaling uses ML on historical patterns to scale <strong>up</strong> before a forecasted spike; scaling stays within your min/max tiers and the same tier class.</div>
+            <div class="desc" id="vs-why" style="margin-top:8px;line-height:1.7"></div>
+            <div class="desc warn" style="margin-top:8px" data-i18n="vs.as.note">The rules follow the documented criteria (CPU as a proxy for CPU + memory): <strong>scale up</strong> one tier after &gt;90% for 10 min (20 min on M10/M20) or a 1-hour average &gt;75%; <strong>scale down</strong> only after 4 h below 45%, a 24-hour average below 50%, and at most once per 24 h. <strong>Predictive</strong> (M30+, after 2 weeks of history) scales up to 2 tiers ahead of cyclical peaks and never scales down. Scaling is rolling with no downtime and stays within your min/max tiers and tier class. Atlas may not auto-scale fast enough for sudden bursts such as bulk inserts — scale up ahead of planned spikes. Capacity units and the demand curves are illustrative.<a class="src" data-src="D5"></a></div>
           </div>
         </div>
         <div>
@@ -581,6 +585,7 @@ svg text{font-family:'Lexend Deca',sans-serif}
                 <option value="other" data-i18n="bk.t.other">Another Infinite cluster — same region &amp; org</option>
                 <option value="region" data-i18n="bk.t.region">Infinite cluster in a different region</option>
                 <option value="cloud" data-i18n="bk.t.cloud">Cluster on a different cloud provider</option>
+                <option value="project" data-i18n="bk.t.project">Another Infinite cluster — different project, same org</option>
                 <option value="org" data-i18n="bk.t.org">Infinite cluster in a different organization</option>
                 <option value="core" data-i18n="bk.t.core">An Atlas Core cluster</option>
                 <option value="older" data-i18n="bk.t.older">Infinite cluster on an older MongoDB version</option>

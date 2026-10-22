@@ -6,7 +6,7 @@ An interactive, browser-based tool that explains **MongoDB Atlas Infinite** — 
 
 Companion to the [Data Resilience Visualizer](https://carimeb.github.io/DataResilienceVisualizer/) (replica sets, multi-region, multi-cloud on Atlas Core).
 
-> Educational and unofficial. Every factual claim carries a chip (`D1`, `B4`…) that links to the official MongoDB page it comes from. Atlas Infinite is in **Public Preview** — capabilities and docs may change before GA. Anything that is a simplified illustration (timings, capacity units, thresholds) is labelled as such in the UI.
+> Educational and unofficial. Every factual claim carries a chip (`D1`, `B4`…) that links to the official MongoDB page it comes from; all sources were re-read in full on 2026-10-22. Atlas Infinite is in **Public Preview** — capabilities and docs may change before GA. Anything that is a simplified illustration (animation timings, capacity units, demand curves) is labelled as such in the UI.
 
 ---
 
@@ -15,11 +15,11 @@ Companion to the [Data Resilience Visualizer](https://carimeb.github.io/DataResi
 | Tab | What you can do |
 |---|---|
 | **① Architecture & Write Path** | Toggle **Atlas Core ↔ Atlas Infinite**. Animate a write: client → primary → **Log Service replicated across 3 AZs** → ACK on storage-layer majority → standby tails the log → pages materialized to the Page Service and S3. Animate reads per `readPreference`/`readConcern`. Side-by-side Core vs Infinite table. |
-| **② High Availability & Failover** | Click nodes or whole **Availability Zones** to fail them. Watch the **storage layer coordinate failover** (no election), the standby get promoted without log replay, drivers retry, **no rollback**, and a replacement node attach to storage without an initial sync. Lose 2 of 3 AZs to see the storage majority disappear (CP behaviour). *Test Primary Failover* button. |
-| **③ Vertical Scaling & Storage** | Pick a tier (M10–M60 General, M40–M60 Low-CPU) to watch a resize that **moves no data**. Run an **AI-agent traffic spike** or a **recurring daily peak** against reactive + predictive compute auto-scaling. Ingest data against the **max storage limit** (up to 128 TB; writes blocked near the limit, reads still served). |
+| **② High Availability & Failover** | Pick one of the 10 Infinite-supported AWS regions, then click nodes or whole **Availability Zones** to fail them. Watch the **storage layer coordinate failover** (no election), the standby get promoted without log replay, drivers retry, **no rollback**, and a replacement node attach to storage without an initial sync. Lose 2 of 3 AZs to see the storage majority disappear (CP behaviour). *Test Primary Failover* button. |
+| **③ Vertical Scaling & Storage** | Pick a tier (M10–M60 General, M40–M60 Low-CPU) to watch a resize that **moves no data**. Run an **AI-agent traffic spike** or a **recurring daily peak** against compute auto-scaling that follows the **documented criteria** (scale up after >90% for 10 min or a 1-h average >75%; scale down only after 4 h below 45%, at most once per 24 h; predictive scales up to 2 tiers ahead of cyclical peaks), with a live "why did/didn't it scale" panel. Ingest data against the **max storage limit** (up to 128 TB; writes blocked near the limit, reads still served). |
 | **④ Horizontal Read Scaling** | Add up to **5 read-only / analytics nodes** (7 nodes max) that serve reads in minutes. Change `readPreference` and `readPreferenceTags` (`nodeType`) and watch per-node load. |
-| **⑤ Backup & Restore** | Storage-layer backups, **24-hour continuous (point-in-time) window**, snapshots kept up to 3 years, and which restore targets are allowed. |
-| **⑥ Preview Limits & Sources** | What isn't available yet — **multi-region, multi-cloud, Atlas Search, Vector Search**, sharding, Global Clusters, Online Archive, live migration… — plus the full list of official sources. |
+| **⑤ Backup & Restore** | Storage-layer backups, **24-hour continuous (point-in-time) window**, snapshots kept up to 3 years, restores as **forks of the log** (zero copy), and which restore targets are allowed. |
+| **⑥ Preview Limits & Sources** | The full official list of what isn't available yet — **multi-region, multi-cloud, Atlas Search, Vector Search**, sharding, Global Clusters, Online Archive, live migration, Atlas Charts, MCP Server… — the 10 supported AWS regions, and every official source. |
 
 The **⬡ CAP Positioning** panel (header) follows every setting and simulated failure across all tabs.
 
@@ -81,6 +81,7 @@ Documentation (`D*`)
 * D18 [Build a Resilient Application with MongoDB Atlas](https://www.mongodb.com/docs/atlas/resilient-application/)
 * D19 [Technical and Organizational Security Measures](https://www.mongodb.com/legal/customer-service-agreement/technical-and-organizational-security-measures)
 * D20 [Configure Additional Settings (backup)](https://www.mongodb.com/docs/atlas/cluster-additional-settings/)
+* D21 [atlas backups restores start — Atlas CLI](https://www.mongodb.com/docs/atlas/cli/current/command/atlas-backups-restores-start/)
 
 Blog, press and product pages (`B*`, vendor claims)
 

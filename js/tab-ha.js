@@ -22,10 +22,10 @@ function haLater(fn, ms) { const t = setTimeout(fn, ms); S.ha.timers.push(t); re
 
 function haFoSteps() {
   return [
-    tx('<b>Primary lost.</b> The primary compute node fails or restarts.', '<b>Primário perdido.</b> O nó de compute primário falha ou reinicia.'),
+    tx(`<b>Primary lost.</b> The primary fails or restarts. The primary can also change during OS/VM maintenance, vertical scaling and version upgrades.${src('D8')}`, `<b>Primário perdido.</b> O primário falha ou reinicia. O primário também pode mudar durante manutenção de SO/VM, escala vertical e upgrades de versão.${src('D8')}`),
     tx(`<b>Storage layer coordinates the failover.</b> No election and no vote among compute nodes.${src('D2')}`, `<b>A camada de storage coordena o failover.</b> Sem eleição e sem votação entre nós de compute.${src('D2')}`),
-    tx(`<b>Standby promoted.</b> No log replay and no cold start — it was already tailing the log.${src('D19', 'B4')}`, `<b>Standby promovido.</b> Sem replay de log e sem cold start — ele já acompanhava o log.${src('D19', 'B4')}`),
-    tx(`<b>Drivers reconnect.</b> They discover the new primary and retry eligible operations (retryable reads/writes). Interrupted index builds resume automatically.${src('D18', 'D2')}`, `<b>Drivers reconectam.</b> Descobrem o novo primário e refazem as operações elegíveis (retryable reads/writes). Index builds interrompidos retomam automaticamente.${src('D18', 'D2')}`),
+    tx(`<b>Standby promoted.</b> No oplog replay and no cold start — it was already tailing the log.${src('D8', 'D19', 'B4')}`, `<b>Standby promovido.</b> Sem replay de oplog e sem cold start — ele já acompanhava o log.${src('D8', 'D19', 'B4')}`),
+    tx(`<b>Drivers reconnect.</b> They discover the new primary and retry eligible operations — the Atlas connection string already includes <code>retryWrites=true</code>. Interrupted index builds resume automatically.${src('D18', 'D2')}`, `<b>Drivers reconectam.</b> Descobrem o novo primário e refazem as operações elegíveis — a connection string do Atlas já inclui <code>retryWrites=true</code>. Index builds interrompidos retomam automaticamente.${src('D18', 'D2')}`),
     tx(`<b>No rollback.</b> The former primary has no unreplicated writes to revert — the storage layer committed them.${src('D8')}`, `<b>Sem rollback.</b> O antigo primário não tem escritas não replicadas para reverter — a camada de storage fez o commit.${src('D8')}`),
     tx(`<b>Capacity restored.</b> A compute node attaches to the storage layer as the new standby — recovery without moving or replicating data.${src('D2')}`, `<b>Capacidade restaurada.</b> Um nó de compute se conecta à camada de storage como novo standby — recuperação sem mover nem replicar dados.${src('D2')}`),
   ];
@@ -34,12 +34,15 @@ function haFoSteps() {
 // ── Render ───────────────────────────────────────────────────────────────────
 
 function haRender() {
+  const rs = $('ha-region');
+  if (rs && !rs.options.length) rs.innerHTML = INF_REGIONS.map(([r, n]) => `<option value="${r}">${r} — ${n}</option>`).join('');
+  if (rs) rs.value = S.ha.region;
   const q = haQuorum();
   let s = `<svg viewBox="0 0 800 500" width="100%" xmlns="http://www.w3.org/2000/svg">`;
   HP.client = [400, 42];
   s += clientBox(400, 4, 250, tx('CLIENT APP', 'APLICAÇÃO CLIENTE'), tx('driver: retryable reads & writes', 'driver: retryable reads e writes'));
   s += `<rect x="10" y="52" width="780" height="440" rx="14" fill="${C.offwhite}" stroke="${C.slate}" stroke-width="1.3"/>
-    <text x="24" y="70" font-size="10" font-weight="800" fill="${C.slate}" letter-spacing=".8">AWS · ${tx('SINGLE REGION (PUBLIC PREVIEW)', 'SINGLE-REGION (PUBLIC PREVIEW)')}</text>
+    <text x="24" y="70" font-size="10" font-weight="800" fill="${C.slate}" letter-spacing=".8">AWS ${S.ha.region} · ${tx('SINGLE REGION (PUBLIC PREVIEW)', 'SINGLE-REGION (PUBLIC PREVIEW)')}</text>
     <text x="776" y="70" text-anchor="end" font-size="9.5" font-weight="700" fill="${q ? C.forest : C.bad}">Log Service: ${haUpAZ()}/3 ${tx('replicas', 'réplicas')} · ${tx('majority', 'maioria')} = 2 ${q ? '✓' : '✕'}</text>`;
 
   HP.log = []; HP.page = []; HP.az = [];
@@ -205,8 +208,8 @@ function haRenderCmp() {
     [tx('Who decides', 'Quem decide'), tx('Election — electable nodes vote; majority wins', 'Eleição — nós elegíveis votam; a maioria vence'), tx(`The storage layer coordinates; compute nodes don't vote${src('D2')}`, `A camada de storage coordena; nós de compute não votam${src('D2')}`)],
     [tx('New primary', 'Novo primário'), tx('A secondary with its own full data copy', 'Um secundário com sua própria cópia completa dos dados'), tx(`Standby promoted without log replay or cold start${src('D19')}`, `Standby promovido sem replay de log nem cold start${src('D19')}`)],
     [tx('Former primary', 'Antigo primário'), tx('Unreplicated writes are rolled back', 'Escritas não replicadas sofrem rollback'), tx(`No rollback — nothing unreplicated to revert${src('D8', 'D17')}`, `Sem rollback — nada não replicado para reverter${src('D8', 'D17')}`)],
-    [tx('Replacing a node', 'Substituir um nó'), tx('Initial sync copies the full dataset', 'Initial sync copia o dataset inteiro'), tx(`Attaches to the storage layer — no data moved or replicated${src('D2')}`, `Conecta na camada de storage — nenhum dado movido ou replicado${src('D2')}`)],
-    [tx('Zone failure', 'Falha de zona'), tx('Survives if a majority of voting nodes remains', 'Sobrevive se restar a maioria dos nós votantes'), tx(`Log majority across 3 zones survives one zone outage${src('B4')}`, `A maioria do log em 3 zonas sobrevive à queda de uma zona${src('B4')}`)],
+    [tx('Replacing a node', 'Substituir um nó'), tx('Initial sync copies the full dataset', 'Initial sync copia o dataset inteiro'), tx(`Attaches to the storage layer — no data moved or replicated; it can't fall behind the oplog window${src('D1', 'D2')}`, `Conecta na camada de storage — nenhum dado movido ou replicado; não fica para trás da janela do oplog${src('D1', 'D2')}`)],
+    [tx('Zone failure', 'Falha de zona'), tx('Survives if a majority of voting nodes remains', 'Sobrevive se restar a maioria dos nós votantes'), tx(`Log majority across 3 zones survives one zone outage; each zone has its own page servers; object storage is zone-failure-proof${src('B4')}`, `A maioria do log em 3 zonas sobrevive à queda de uma zona; cada zona tem seus page servers; o object storage resiste à falha de zona${src('B4')}`)],
     [tx('Region failure', 'Falha de região'), tx('Multi-region clusters can fail over across regions', 'Clusters multi-region fazem failover entre regiões'), tx(`Not covered in public preview — single-region only${src('D1')}`, `Não coberto no public preview — apenas single-region${src('D1')}`)],
     [tx('Test it', 'Teste'), tx('Atlas "Test Primary Failover"', 'Atlas "Test Primary Failover"'), tx(`Same Atlas "Test Primary Failover" button${src('D8')}`, `Mesmo botão "Test Primary Failover" do Atlas${src('D8')}`)],
   ];

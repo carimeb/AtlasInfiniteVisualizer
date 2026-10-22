@@ -75,8 +75,8 @@ function updateCAP() {
     `Acknowledged writes are durable in a <strong>storage-layer majority</strong> and are never rolled back; reads ${S.rp === 'primary' ? 'come from the primary' : 'favour fresh data'}. Under failure, writes <strong>wait or retry</strong> instead of diverging.`,
     `Escritas confirmadas são duráveis numa <strong>maioria da camada de storage</strong> e nunca sofrem rollback; as leituras ${S.rp === 'primary' ? 'vêm do primário' : 'favorecem dados recentes'}. Sob falha, as escritas <strong>esperam ou são refeitas</strong> em vez de divergir.`);
   else if (lbl === 'AP') d = tx(
-    `You traded consistency for latency/availability: ${S.wc === 'w0' ? '<strong>w:0</strong> never confirms a write' : S.wc === 'w1' ? '<strong>w:1</strong> returns before the storage majority (can be rolled back in rare failures)' : 'writes are majority-durable'}${['secondary', 'secondaryPreferred', 'nearest'].includes(S.rp) ? ', and reads from the standby/read-only nodes may be slightly stale' : ''}.`,
-    `Você trocou consistência por latência/disponibilidade: ${S.wc === 'w0' ? '<strong>w:0</strong> nunca confirma uma escrita' : S.wc === 'w1' ? '<strong>w:1</strong> retorna antes da maioria do storage (pode sofrer rollback em falhas raras)' : 'as escritas são duráveis na maioria'}${['secondary', 'secondaryPreferred', 'nearest'].includes(S.rp) ? ', e leituras do standby/nós read-only podem estar levemente defasadas' : ''}.`);
+    `You traded consistency for latency/availability: ${S.wc === 'w0' ? '<strong>w:0</strong> never confirms a write' : S.wc === 'w1' ? '<strong>w:1</strong> returns sooner than majority (can be rolled back in rare failures)' : 'writes are majority-durable'}${['secondary', 'secondaryPreferred', 'nearest'].includes(S.rp) ? ', and reads from the standby/read-only nodes may be slightly stale' : ''}.`,
+    `Você trocou consistência por latência/disponibilidade: ${S.wc === 'w0' ? '<strong>w:0</strong> nunca confirma uma escrita' : S.wc === 'w1' ? '<strong>w:1</strong> retorna antes do majority (pode sofrer rollback em falhas raras)' : 'as escritas são duráveis na maioria'}${['secondary', 'secondaryPreferred', 'nearest'].includes(S.rp) ? ', e leituras do standby/nós read-only podem estar levemente defasadas' : ''}.`);
   else if (lbl === 'PA/EC') d = tx(
     `Writes stay majority-durable, while reads are spread to the standby and read-only nodes for availability — those reads can lag by milliseconds${src('B4')}. Use causally consistent sessions when a client must read its own writes.`,
     `As escritas seguem duráveis na maioria, enquanto as leituras são distribuídas para o standby e nós read-only para ganhar disponibilidade — essas leituras podem ter lag de milissegundos${src('B4')}. Use sessões com consistência causal quando um cliente precisar ler as próprias escritas.`);
@@ -89,7 +89,7 @@ function updateCAP() {
 
   const row = (kk, v) => `<div class="irow"><span class="ik">${kk}</span><span class="iv">${v}</span></div>`;
   $('cap-config-tbl').innerHTML =
-    row('writeConcern', { w0: 'w:0', w1: 'w:1', wmaj: 'w:"majority"', wnum: tx('w:3 → majority', 'w:3 → majority') }[S.wc]) +
+    row('writeConcern', { w0: 'w:0', w1: 'w:1', wmaj: 'w:"majority"', wnum: 'w:3 → majority' }[S.wc]) +
     row('readConcern', S.rc) + row('readPreference', S.rp) +
     row(tx('Edition', 'Edição'), 'Atlas Infinite') +
     row(tx('AZs up', 'AZs ativas'), `${k.upAZ}/3`) +

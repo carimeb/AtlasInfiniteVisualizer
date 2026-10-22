@@ -66,7 +66,7 @@ function bkRenderTimeline() {
     <text x="${clamp(x, 60, W - 60)}" y="${y0 - 36}" text-anchor="middle" font-size="9.5" font-weight="800" fill="${C.slate}">${bkPointLabel()}</text>
     <g transform="translate(${xL},${y0 + 44})">
       <circle cx="5" cy="0" r="5" fill="${C.white}" stroke="${C.slate}" stroke-width="2"/><text x="15" y="3.5" font-size="9" fill="${C.t2}">${tx('snapshot (frequency per your backup policy)', 'snapshot (frequência conforme sua política de backup)')}</text>
-      <rect x="250" y="-6" width="22" height="12" rx="6" fill="${C.mist}" stroke="${C.forest}"/><text x="278" y="3.5" font-size="9" fill="${C.t2}">${tx('continuous oplog capture → point-in-time window', 'captura contínua do oplog → janela point-in-time')}</text>
+      <rect x="352" y="-6" width="22" height="12" rx="6" fill="${C.mist}" stroke="${C.forest}"/><text x="380" y="3.5" font-size="9" fill="${C.t2}">${tx('continuous log history → point-in-time window', 'histórico contínuo do log → janela point-in-time')}</text>
     </g></svg>`;
   $('bk-timeline').innerHTML = s;
 }
@@ -95,13 +95,17 @@ function bkVerdict() {
   switch (t) {
     case 'region': return no('✕ Not supported — you can\'t restore to an Atlas Infinite cluster in a different region.', '✕ Não suportado — não é possível restaurar em um cluster Atlas Infinite de outra região.', 'D9');
     case 'cloud': return no('✕ Not supported — no restore across cloud providers (and Atlas Infinite runs on AWS only in preview).', '✕ Não suportado — sem restore entre cloud providers (e o Atlas Infinite roda só na AWS no preview).', 'D9', 'D1');
-    case 'org': return no('✕ Not supported — no restore into a different Atlas organization.', '✕ Não suportado — sem restore para outra organização do Atlas.', 'D9');
+    case 'org': return no('✕ Not supported — MongoDB manages a separate encryption key per Atlas organization, so you restore within the organization that created the snapshot.', '✕ Não suportado — a MongoDB gerencia uma chave de criptografia separada por organização do Atlas, então o restore é feito na organização que criou o snapshot.', 'D1', 'D9');
+    case 'project': return {
+      ok: true, html: tx(`✓ Supported with Atlas-managed (default) encryption. With customer-managed keys (AWS KMS) you can restore only within the same project. ⚠ Restores are <strong>destructive</strong>: Atlas removes all existing data on the target cluster first.${src('D9', 'D21')}`,
+        `✓ Suportado com criptografia padrão (gerenciada pelo Atlas). Com chaves do cliente (AWS KMS), o restore só pode ser no mesmo projeto. ⚠ Restores são <strong>destrutivos</strong>: o Atlas remove antes todos os dados do cluster de destino.${src('D9', 'D21')}`),
+    };
     case 'core': return no('✕ Not supported — backup/restore between Atlas Core and Atlas Infinite isn\'t available in public preview.', '✕ Não suportado — backup/restore entre Atlas Core e Atlas Infinite não está disponível no public preview.', 'D1', 'D9');
     case 'older': return no('✕ Not supported — the target must run the same or a greater MongoDB version than the snapshot.', '✕ Não suportado — o destino precisa rodar a mesma versão do MongoDB do snapshot ou uma maior.', 'D9');
   }
   return {
-    ok: true, html: tx(`✓ Supported. ⚠ Restores are <strong>destructive</strong>: Atlas removes all existing data on the target cluster before restoring.${src('D9')}`,
-      `✓ Suportado. ⚠ Restores são <strong>destrutivos</strong>: o Atlas remove todos os dados existentes no cluster de destino antes de restaurar.${src('D9')}`),
+    ok: true, html: tx(`✓ Supported. ⚠ Restores are <strong>destructive</strong>: Atlas removes all existing data on the target cluster before restoring.${src('D9', 'D21')}`,
+      `✓ Suportado. ⚠ Restores são <strong>destrutivos</strong>: o Atlas remove todos os dados existentes no cluster de destino antes de restaurar.${src('D9', 'D21')}`),
   };
 }
 
@@ -112,8 +116,8 @@ function bkUpdate() {
   $('bk-target').value = S.bk.target;
   $('bk-label').textContent = pit ? tx('point-in-time restore', 'restore point-in-time') : tx('snapshot restore', 'restore de snapshot');
   $('bk-expl').innerHTML = pit
-    ? tx(`<strong>Point-in-time restore to ${bkPointLabel()}.</strong> Atlas takes the nearest earlier snapshot and <strong>replays the oplog</strong> up to that exact moment. The target time must be within the <strong>last 24 hours</strong> — the continuous cloud backup window included with Atlas Infinite (Atlas CLI: <code>pointInTimeUTCSeconds</code>).${src('D9', 'D1')}`,
-         `<strong>Restore point-in-time para ${bkPointLabel()}.</strong> O Atlas pega o snapshot anterior mais próximo e <strong>reaplica o oplog</strong> até aquele momento exato. O horário alvo precisa estar nas <strong>últimas 24 horas</strong> — a janela de continuous cloud backup incluída no Atlas Infinite (Atlas CLI: <code>pointInTimeUTCSeconds</code>).${src('D9', 'D1')}`)
+    ? tx(`<strong>Point-in-time restore to ${bkPointLabel()}.</strong> Continuous cloud backup runs in the storage layer, which keeps the history as an append-only, versioned log. Per the engineering blog, a restore <strong>creates a new log that branches off at the chosen moment</strong> — constant time, zero copy, regardless of database size. The point must fall within the <strong>24-hour continuous window</strong> included at no extra cost (Atlas CLI: <code>pointInTimeUTCSeconds</code> within the last 24 h).${src('D3', 'D20', 'B4', 'D21')}`,
+         `<strong>Restore point-in-time para ${bkPointLabel()}.</strong> O continuous cloud backup roda na camada de storage, que guarda o histórico como um log versionado e só de acréscimos. Segundo o blog de engenharia, um restore <strong>cria um novo log que se ramifica no momento escolhido</strong> — tempo constante, zero cópia, independentemente do tamanho do banco. O ponto precisa estar na <strong>janela contínua de 24 horas</strong>, incluída sem custo adicional (Atlas CLI: <code>pointInTimeUTCSeconds</code> nas últimas 24 h).${src('D3', 'D20', 'B4', 'D21')}`)
     : tx(`<strong>Older than 24 hours → snapshot restore</strong> (${bkPointLabel()}). Point-in-time precision isn't available outside the 24-hour continuous window; you restore a retained snapshot. <strong>Additional Backup Retention</strong> — enabled by default — keeps snapshots beyond that window, for up to 3 years.${src('D20', 'D1')}`,
          `<strong>Mais de 24 horas atrás → restore de snapshot</strong> (${bkPointLabel()}). A precisão point-in-time não existe fora da janela contínua de 24 horas; você restaura um snapshot retido. O <strong>Additional Backup Retention</strong> — ativado por padrão — mantém snapshots além dessa janela, por até 3 anos.${src('D20', 'D1')}`);
   const v = bkVerdict();
@@ -121,10 +125,11 @@ function bkUpdate() {
   $('bk-run').disabled = !v.ok || S.bk.busy;
   $('bk-facts').innerHTML = [
     ['yes', tx(`Backup, restore and PITR run <b>at the storage layer</b>, independent of compute.`, `Backup, restore e PITR rodam <b>na camada de storage</b>, independentes do compute.`), src('D1', 'D9')],
-    ['yes', tx(`<b>24-hour continuous cloud backup</b> window included.`, `Janela de <b>continuous cloud backup de 24 horas</b> incluída.`), src('D20')],
-    ['yes', tx(`<b>Additional Backup Retention</b> on by default — snapshots kept up to <b>3 years</b>.`, `<b>Additional Backup Retention</b> ativado por padrão — snapshots mantidos por até <b>3 anos</b>.`), src('D20', 'D1')],
+    ['yes', tx(`<b>24-hour continuous cloud backup</b> window included at no additional cost.`, `Janela de <b>continuous cloud backup de 24 horas</b> incluída sem custo adicional.`), src('D3', 'D20')],
+    ['yes', tx(`<b>Additional Backup Retention</b> on by default (extra cost per backup policy) — snapshots kept up to <b>3 years</b>.`, `<b>Additional Backup Retention</b> ativado por padrão (custo extra conforme a política de backup) — snapshots mantidos por até <b>3 anos</b>.`), src('D20', 'D1')],
+    ['yes', tx(`Snapshots, clones and restores are <b>forks of a log</b>: constant time, zero copy, at any database size (engineering blog).`, `Snapshots, clones e restores são <b>forks de um log</b>: tempo constante, zero cópia, em qualquer tamanho de banco (blog de engenharia).`), src('B4')],
     ['yes', tx(`Both <b>snapshot</b> and <b>continuous (point-in-time)</b> restores.`, `Restores de <b>snapshot</b> e <b>contínuos (point-in-time)</b>.`), src('D9')],
-    ['no', tx(`Not in preview: collection-level restore, copying snapshots to other regions, snapshot download / local restore, importing archived snapshots, immutable snapshots, Core ↔ Infinite backup/restore.`, `Fora do preview: restore por coleção, cópia de snapshots para outras regiões, download de snapshot / restore local, importar snapshots arquivados, snapshots imutáveis, backup/restore Core ↔ Infinite.`), src('D1')],
+    ['no', tx(`Not in preview: collection-level restore, copying snapshots to other regions, snapshot download / local restore, importing archived snapshots, cross-organization restores, Core ↔ Infinite backup/restore.`, `Fora do preview: restore por coleção, cópia de snapshots para outras regiões, download de snapshot / restore local, importar snapshots arquivados, restore entre organizações, backup/restore Core ↔ Infinite.`), src('D1')],
   ].map(([k, h, c]) => `<div class="lim-item"><span class="ico ${k}">${k === 'yes' ? '✓' : '✕'}</span><span>${h}${c}</span></div>`).join('');
 }
 
@@ -134,11 +139,10 @@ async function bkRestore() {
   const pit = S.bk.point >= BK_SPLIT, when = bkPointLabel();
   log('WARN', 'RESTORE', tx('Restore job created — Atlas first removes all existing data on the target cluster', 'Job de restore criado — o Atlas primeiro remove todos os dados existentes no cluster de destino'));
   await fly('bk-svg', [[600, 175], [520, 170], [480, 170], [222, 176]], 1100, C.spring, 6);
-  log('INFO', 'RESTORE', tx(`Snapshot restored at the storage layer${pit ? '' : ' (' + when + ')'}`, `Snapshot restaurado na camada de storage${pit ? '' : ' (' + when + ')'}`));
   if (pit) {
     await fly('bk-svg', [[600, 90], [520, 120], [480, 170], [80, 176]], 1100, C.forest, 6);
-    log('INFO', 'RESTORE', tx(`Oplog replayed up to ${when}`, `Oplog reaplicado até ${when}`));
-  }
+    log('INFO', 'RESTORE', tx(`New log branched off the source history at ${when} — no data copied (engineering blog)`, `Novo log ramificado do histórico de origem em ${when} — nenhum dado copiado (blog de engenharia)`));
+  } else log('INFO', 'RESTORE', tx(`Snapshot (${when}) restored at the storage layer`, `Snapshot (${when}) restaurado na camada de storage`));
   flash('bk-svg', 240, 140, tx('restored ✓', 'restaurado ✓'), C.forest);
   log('SUCCESS', 'RESTORE', tx(`Restore complete (${pit ? 'point-in-time ' + when : 'snapshot'}) — compute layer was never involved`, `Restore concluído (${pit ? 'point-in-time ' + when : 'snapshot'}) — a camada de compute não participou`));
   S.bk.busy = false; bkUpdate();

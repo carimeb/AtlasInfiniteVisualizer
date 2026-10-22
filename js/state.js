@@ -16,11 +16,12 @@ const S = {
     failingOver: false,
     foPhase: -1,
     autoHeal: true,
+    region: 'us-east-1',
     timers: [],
   },
   vs: {
     cls: 'general', tier: 'M30', resizing: false,
-    asOn: true, predOn: true, minTier: 'M10', maxTier: 'M60',
+    asOn: true, predOn: true, minTier: 'M30', maxTier: 'M60',
     pattern: 'spike', running: true, t: 0, series: [],
     limitTB: 128, dataTB: 18,
   },
@@ -38,6 +39,12 @@ const TIERS = {
 const TIER_CAP = { M10: 1, M20: 2, M30: 4, M40: 8, M50: 16, M60: 32 };
 
 const AZ_NAMES = ['AZ-a', 'AZ-b', 'AZ-c'];
+// AWS regions with Atlas Infinite support in public preview (“Atlas Infinite Support” column) [D12]
+const INF_REGIONS = [
+  ['us-east-1', 'N. Virginia'], ['us-east-2', 'Ohio'], ['us-west-2', 'Oregon'], ['sa-east-1', 'São Paulo'],
+  ['eu-west-1', 'Ireland'], ['eu-west-2', 'London'], ['eu-central-1', 'Frankfurt'],
+  ['ap-south-1', 'Mumbai'], ['ap-southeast-1', 'Singapore'], ['ap-southeast-2', 'Sydney'],
+];
 const MAX_EXTRA = 5;   // read-only + analytics nodes combined, on top of 2 electable [D6]
 
 // ─── OFFICIAL SOURCES ────────────────────────────────────────────────────────
@@ -63,6 +70,7 @@ const SOURCES = {
   D18: { url: 'https://www.mongodb.com/docs/atlas/resilient-application/', t: 'Build a Resilient Application with MongoDB Atlas (Atlas docs)' },
   D19: { url: 'https://www.mongodb.com/legal/customer-service-agreement/technical-and-organizational-security-measures', t: 'Technical and Organizational Security Measures (MongoDB legal)' },
   D20: { url: 'https://www.mongodb.com/docs/atlas/cluster-additional-settings/', t: 'Configure Additional Settings — backup options (Atlas docs)' },
+  D21: { url: 'https://www.mongodb.com/docs/atlas/cli/current/command/atlas-backups-restores-start/', t: 'atlas backups restores start — Atlas CLI (docs)' },
   B1:  { url: 'https://www.mongodb.com/company/newsroom/press-releases/mongodb-launches-mongodb-9-0-the-best-version-ever-built-and-atlas-infinite-for-ai-scale-demand', t: 'Press release — MongoDB Launches MongoDB 9.0 … and Atlas Infinite for AI-Scale Demand' },
   B2:  { url: 'https://www.mongodb.com/company/blog/product-release-announcements/everything-announced-mongodb-local-nyc-2026', t: 'Blog — Everything Announced at MongoDB.local NYC 2026' },
   B3:  { url: 'https://www.mongodb.com/company/blog/product-release-announcements/ai-demand-constant-unpredictable-extreme-mongodb-is-built-for-it', t: 'Blog — AI Demand is Constant, Unpredictable, and Extreme. MongoDB is Built for It.' },

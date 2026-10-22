@@ -22,7 +22,7 @@ const PT = {
   'opt.w0': 'w: 0 — sem confirmação',
   'opt.w1': 'w: 1 — somente o primário',
   'opt.wmaj': 'w: "majority" (padrão)',
-  'opt.wnum': 'w: 3 (qualquer número &gt; 2)',
+  'opt.wnum': 'w: 3 (qualquer número ≥ 2)',
   'opt.rclocal': 'local (padrão)',
   'opt.rcsnap': 'snapshot (transações)',
   'btn.simw': '▶ Simular Escrita',
@@ -42,16 +42,17 @@ const PT = {
   'ha.sim': 'Simular falhas',
   'ha.btn.test': '⚡ Test Primary Failover',
   'btn.reset': '↺ Restaurar tudo',
+  'ha.region': 'Região AWS (com suporte ao Atlas Infinite)',
   'ha.autoheal': 'O Atlas recupera nós de compute com falha (sem cópia de dados)',
   'ha.timeline': 'Linha do tempo do failover',
   'ha.client': 'O que a aplicação enxerga',
 
-  'vs.tip': '<strong>Compute e storage escalam de forma independente.</strong> O tier do cluster define apenas o compute (vCPU, RAM, IOPS por nó) — o storage cresce sozinho até 128 TB por replica set. Escolha um tier para ver um <strong>resize vertical sem mover dados</strong> e depois dispare um <strong>pico de tráfego de agentes de IA</strong> no auto-scaler.',
+  'vs.tip': '<strong>Compute e storage escalam de forma independente.</strong> O tier do cluster define o compute (e o throughput/IOPS de storage) — a capacidade de storage cresce sozinha até 128 TB por replica set. Escolha um tier para ver um <strong>resize vertical sem mover dados</strong> e depois dispare um <strong>pico de tráfego de agentes de IA</strong> no auto-scaler.',
   'vs.bn.block.t': '✋ Limite máximo de storage atingido — escritas bloqueadas, leituras continuam',
   'vs.bn.block.d': 'O tamanho lógico dos dados se aproximou do limite máximo de storage configurado. O Atlas <strong>bloqueia as escritas, mas continua atendendo leituras</strong>. Aumente o limite (ou apague dados) para retomar as escritas — sem mudar de tier.',
   'vs.compute': 'Tier de compute — escala vertical',
   'vs.as': 'Auto-scaling de compute — demanda vs capacidade provisionada',
-  'vs.as.note': 'Modelo simplificado para ilustração: unidades de capacidade e thresholds não são números oficiais. O que é oficial: o scaling reativo responde a utilização alta/baixa <strong>sustentada</strong>; o scaling preditivo usa ML sobre padrões históricos para escalar <strong>para cima</strong> antes de um pico previsto; o scaling respeita os tiers mínimo/máximo configurados e a mesma classe de tier.',
+  'vs.as.note': 'As regras seguem os critérios documentados (CPU como proxy de CPU + memória): <strong>scale up</strong> de um tier após &gt;90% por 10 min (20 min no M10/M20) ou média de 1 hora &gt;75%; <strong>scale down</strong> só após 4 h abaixo de 45%, média de 24 horas abaixo de 50% e no máximo uma vez a cada 24 h. O <strong>preditivo</strong> (M30+, após 2 semanas de histórico) escala até 2 tiers antes de picos cíclicos e nunca reduz. O scaling é rolling, sem downtime, e respeita os tiers mín./máx. e a classe de tier. O Atlas pode não escalar a tempo em rajadas repentinas como bulk inserts — escale antes de picos planejados. Unidades de capacidade e curvas de demanda são ilustrativas.<a class="src" data-src="D5"></a>',
   'vs.tier': 'Tier do cluster',
   'vs.asset': 'Configuração de auto-scaling',
   'vs.as.on': 'Auto-scaling de compute (recomendado)',
@@ -92,6 +93,7 @@ const PT = {
   'bk.t.other': 'Outro cluster Infinite — mesma região e org',
   'bk.t.region': 'Cluster Infinite em outra região',
   'bk.t.cloud': 'Cluster em outro cloud provider',
+  'bk.t.project': 'Outro cluster Infinite — outro projeto, mesma org',
   'bk.t.org': 'Cluster Infinite em outra organização',
   'bk.t.core': 'Um cluster Atlas Core',
   'bk.t.older': 'Cluster Infinite com versão mais antiga do MongoDB',
@@ -122,6 +124,13 @@ function applyStaticLang() {
     if (el.dataset.en === undefined) el.dataset.en = el.innerHTML;
     const k = el.getAttribute('data-i18n');
     el.innerHTML = (S.lang === 'pt' && PT[k] !== undefined) ? PT[k] : el.dataset.en;
+  });
+  // Source chips written in static HTML: <a class="src" data-src="D5"></a>
+  document.querySelectorAll('a.src[data-src]').forEach(a => {
+    const id = a.dataset.src, s = SOURCES[id];
+    if (!s) return;
+    a.href = s.url; a.target = '_blank'; a.rel = 'noopener'; a.title = s.t; a.textContent = id;
+    if (id[0] === 'B') a.classList.add('blog');
   });
   document.documentElement.lang = S.lang === 'pt' ? 'pt-BR' : 'en';
   document.querySelectorAll('.lang button').forEach(b => b.classList.toggle('on', b.dataset.lang === S.lang));
