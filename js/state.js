@@ -10,7 +10,7 @@ const S = {
   rp: 'primary',       // primary | primaryPreferred | secondary | secondaryPreferred | nearest
   // Extra compute nodes (read-only / analytics), shared by tabs ①, ② and ④
   extra: [],           // [{ id, type:'READ_ONLY'|'ANALYTICS', az, state:'PROVISIONING'|'UP'|'DOWN' }]
-  arch: { mode: 'infinite', busy: false },
+  arch: { mode: 'infinite', busy: false, readCache: 'miss' },
   ha: {
     azDown: [false, false, false],
     nodes: [],         // electable compute nodes, built by haInitNodes()

@@ -10,7 +10,7 @@ const PT = {
   'val.k': 'Por que importa',
   'val.arch': 'Compute e storage são <strong>camadas separadas</strong>: cada uma escala sozinha, em minutos, <strong>sem mover dados</strong> — mesmo MongoDB, mesmos drivers e APIs, sem mudar código.',
   'valh.arch': 'Experimente <b>Atlas Core ↔ Atlas Infinite</b> e <b>▶ Simular Escrita</b>.',
-  'val.ha': 'Failover <strong>sem eleição e sem rollback</strong>: o standby assume já aquecido, e toda escrita confirmada está segura numa camada de storage distribuída em <strong>3 Availability Zones</strong>.',
+  'val.ha': 'A camada de storage coordena o failover <strong>sem votação entre os nós de compute</strong>. O standby assume já aquecido, e escritas confirmadas com <strong>w:"majority" nunca sofrem rollback</strong>. Escritas com w:1 podem sofrer rollback em falhas raras.',
   'valh.ha': 'Clique num nó ou numa <b>Availability Zone</b> para simular a falha.',
   'val.vs': 'Pague pelo <strong>compute que você precisa agora</strong> e pelo <strong>storage que realmente usa</strong>: trocar de tier leva menos de um minuto e não move dados; o storage cresce sozinho até <strong>128 TB</strong>.',
   'valh.vs': 'Escolha um tier e dispare um <b>pico de agentes de IA</b> no auto-scaler.',
@@ -44,6 +44,9 @@ const PT = {
   'btn.simw': '▶ Simular Escrita',
   'btn.simr': '▶ Simular Leitura',
   'arch.steps': 'Passo a passo',
+  'arch.cache': 'Cenário de leitura',
+  'arch.cache.miss': 'Cache miss — buscar no storage',
+  'arch.cache.hit': 'Cache hit — ler da memória',
 
   'ha.tip': '<strong>Clique em qualquer nó de compute</strong> para simular uma falha, ou <strong>clique no cabeçalho de uma Availability Zone</strong> para derrubar a zona inteira (compute + réplicas de storage). Veja como a <strong>camada de storage coordena o failover</strong> — sem eleição entre os nós de compute — e como a <strong>maioria do Log Service (2 de 3 AZs)</strong> mantém as escritas duráveis.',
   'ha.bn.fo.t': '⏳ Failover em andamento — a camada de storage está promovendo o standby',

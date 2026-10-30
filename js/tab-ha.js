@@ -23,10 +23,10 @@ function haLater(fn, ms) { const t = setTimeout(fn, ms); S.ha.timers.push(t); re
 function haFoSteps() {
   return [
     tx(`<b>Primary lost.</b> The primary fails or restarts. The primary can also change during OS/VM maintenance, vertical scaling and version upgrades.${src('D8')}`, `<b>Primário perdido.</b> O primário falha ou reinicia. O primário também pode mudar durante manutenção de SO/VM, escala vertical e upgrades de versão.${src('D8')}`),
-    tx(`<b>Storage layer coordinates the failover.</b> No election and no vote among compute nodes.${src('D2')}`, `<b>A camada de storage coordena o failover.</b> Sem eleição e sem votação entre nós de compute.${src('D2')}`),
+    tx(`<b>Storage layer coordinates the failover.</b> Compute nodes do not vote to elect the new primary.${src('D2')}`, `<b>A camada de storage coordena o failover.</b> Os nós de compute não votam para eleger o novo primário.${src('D2')}`),
     tx(`<b>Standby promoted.</b> No oplog replay and no cold start — it was already tailing the log.${src('D8', 'D19', 'B4')}`, `<b>Standby promovido.</b> Sem replay de oplog e sem cold start — ele já acompanhava o log.${src('D8', 'D19', 'B4')}`),
     tx(`<b>Drivers reconnect.</b> They discover the new primary and retry eligible operations — the Atlas connection string already includes <code>retryWrites=true</code>. Interrupted index builds resume automatically.${src('D18', 'D2')}`, `<b>Drivers reconectam.</b> Descobrem o novo primário e refazem as operações elegíveis — a connection string do Atlas já inclui <code>retryWrites=true</code>. Index builds interrompidos retomam automaticamente.${src('D18', 'D2')}`),
-    tx(`<b>No rollback.</b> The former primary has no unreplicated writes to revert — the storage layer committed them.${src('D8')}`, `<b>Sem rollback.</b> O antigo primário não tem escritas não replicadas para reverter — a camada de storage fez o commit.${src('D8')}`),
+    tx(`<b>No rollback of majority writes.</b> Writes acknowledged with <code>w:"majority"</code> remain committed in the storage layer. A <code>w:1</code> write can still roll back in rare failures.${src('D2', 'D8')}`, `<b>Sem rollback de escritas majority.</b> Escritas confirmadas com <code>w:"majority"</code> permanecem confirmadas na camada de storage. Uma escrita <code>w:1</code> ainda pode sofrer rollback em falhas raras.${src('D2', 'D8')}`),
     tx(`<b>Capacity restored.</b> A compute node attaches to the storage layer as the new standby — recovery without moving or replicating data.${src('D2')}`, `<b>Capacidade restaurada.</b> Um nó de compute se conecta à camada de storage como novo standby — recuperação sem mover nem replicar dados.${src('D2')}`),
   ];
 }
@@ -190,7 +190,7 @@ function haUpdateInfo() {
   const reads = haReadTargets();
   const wcRisk = S.wc === 'w1' ? tx('w:1 — can be rolled back in rare failures', 'w:1 — pode sofrer rollback em falhas raras')
     : S.wc === 'w0' ? tx('w:0 — no acknowledgment at all', 'w:0 — nenhuma confirmação')
-    : tx('never rolled back', 'nunca sofre rollback');
+    : tx('majority — never rolled back', 'majority — nunca sofre rollback');
   const row = (k, v, ok) => `<div class="irow"><span class="ik">${k}</span><span class="iv" style="color:${ok === true ? C.forest : ok === false ? C.bad : C.warn}">${v}</span></div>`;
   $('ha-app-view').innerHTML =
     row(tx('Writes', 'Escritas'), w.ok ? '✓ OK' : (w.pause ? tx('⏳ retrying', '⏳ refazendo') : tx('✕ blocked', '✕ bloqueadas')), w.ok ? true : (w.pause ? null : false)) +
@@ -207,7 +207,7 @@ function haRenderCmp() {
   const rows = [
     [tx('Who decides', 'Quem decide'), tx('Election — electable nodes vote; majority wins', 'Eleição — nós elegíveis votam; a maioria vence'), tx(`The storage layer coordinates; compute nodes don't vote${src('D2')}`, `A camada de storage coordena; nós de compute não votam${src('D2')}`)],
     [tx('New primary', 'Novo primário'), tx('A secondary with its own full data copy', 'Um secundário com sua própria cópia completa dos dados'), tx(`Standby promoted without log replay or cold start${src('D19')}`, `Standby promovido sem replay de log nem cold start${src('D19')}`)],
-    [tx('Former primary', 'Antigo primário'), tx('Unreplicated writes are rolled back', 'Escritas não replicadas sofrem rollback'), tx(`No rollback — nothing unreplicated to revert${src('D8', 'D17')}`, `Sem rollback — nada não replicado para reverter${src('D8', 'D17')}`)],
+    [tx('Former primary', 'Antigo primário'), tx('Unreplicated writes are rolled back', 'Escritas não replicadas sofrem rollback'), tx(`Acknowledged majority writes never roll back; w:1 can roll back in rare failures${src('D2', 'D8', 'D17')}`, `Escritas confirmadas com majority nunca sofrem rollback; w:1 pode sofrer rollback em falhas raras${src('D2', 'D8', 'D17')}`)],
     [tx('Replacing a node', 'Substituir um nó'), tx('Initial sync copies the full dataset', 'Initial sync copia o dataset inteiro'), tx(`Attaches to the storage layer — no data moved or replicated; it can't fall behind the oplog window${src('D1', 'D2')}`, `Conecta na camada de storage — nenhum dado movido ou replicado; não fica para trás da janela do oplog${src('D1', 'D2')}`)],
     [tx('Zone failure', 'Falha de zona'), tx('Survives if a majority of voting nodes remains', 'Sobrevive se restar a maioria dos nós votantes'), tx(`Log majority across 3 zones survives one zone outage; each zone has its own page servers; object storage is zone-failure-proof${src('B4')}`, `A maioria do log em 3 zonas sobrevive à queda de uma zona; cada zona tem seus page servers; o object storage resiste à falha de zona${src('B4')}`)],
     [tx('Region failure', 'Falha de região'), tx('Multi-region clusters can fail over across regions', 'Clusters multi-region fazem failover entre regiões'), tx(`Not covered in public preview — single-region only${src('D1')}`, `Não coberto no public preview — apenas single-region${src('D1')}`)],
@@ -355,7 +355,7 @@ function haFailover(reason) {
     log('INFO', 'DRIVER', tx(`Driver discovered new primary ${sb.id}; retryable writes resumed`, `Driver descobriu o novo primário ${sb.id}; retryable writes retomados`));
     haRender(); syncAll();
   }, 2100);
-  haLater(() => { setStep('ha-steps', 3, 'done'); setStep('ha-steps', 4, 'active'); log('INFO', 'ATLAS', tx('No rollback needed — acknowledged majority writes were already in the storage layer', 'Nenhum rollback necessário — escritas majority confirmadas já estavam na camada de storage')); }, 2900);
+  haLater(() => { setStep('ha-steps', 3, 'done'); setStep('ha-steps', 4, 'active'); log('INFO', 'ATLAS', tx('Acknowledged majority writes remain committed after failover; w:1 can roll back in rare failures', 'Escritas confirmadas com majority permanecem confirmadas após o failover; w:1 pode sofrer rollback em falhas raras')); }, 2900);
   haLater(() => {
     setStep('ha-steps', 4, 'done'); setStep('ha-steps', 5, 'active');
     if (!old) { setStep('ha-steps', 5, 'done'); return; }

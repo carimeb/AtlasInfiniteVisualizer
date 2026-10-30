@@ -19,42 +19,57 @@ function archSetMode(mode) {
 function archElectable() { return S.ha.nodes; }
 function archUpAZ(i) { return !S.ha.azDown[i]; }
 
+function archSetReadCache(value) {
+  if (S.arch.busy || !['hit', 'miss'].includes(value)) return;
+  S.arch.readCache = value;
+  renderSteps('arch-steps', []);
+  $('arch-steps-label').textContent = '';
+}
+
 function archRender() {
   if (S.arch.mode === 'core') return archRenderCore();
   const nodes = archElectable();
   const extra = S.extra;
-  let s = `<svg viewBox="0 0 800 520" width="100%" xmlns="http://www.w3.org/2000/svg">`;
+  let s = `<svg viewBox="0 0 800 580" width="100%" xmlns="http://www.w3.org/2000/svg">
+    <defs><marker id="arch-async-arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#00684A"/></marker></defs>`;
 
   // Bands
   s += `<rect x="20" y="64" width="760" height="156" rx="12" fill="#E3FCF7" stroke="rgba(0,104,74,.35)" stroke-width="1.5"/>
     <text x="34" y="83" font-size="10" font-weight="800" fill="#00684A" letter-spacing="1">${tx('COMPUTE LAYER', 'CAMADA DE COMPUTE')}</text>
     <text class="dt" x="766" y="83" text-anchor="end" font-size="9" fill="rgba(0,30,43,.72)">${tx('queries & transactions · scales by tier and by node count', 'queries e transações · escala por tier e por número de nós')}</text>
-    <rect x="20" y="238" width="760" height="274" rx="12" fill="#F9EBFF" stroke="rgba(0,30,43,.16)" stroke-width="1.5"/>
+    <rect x="20" y="238" width="760" height="332" rx="12" fill="#F9EBFF" stroke="rgba(0,30,43,.16)" stroke-width="1.5"/>
     <text x="34" y="257" font-size="10" font-weight="800" fill="#001E2B" letter-spacing="1">${tx('STORAGE LAYER', 'CAMADA DE STORAGE')}</text>
     <text class="dt" x="766" y="257" text-anchor="end" font-size="9" fill="rgba(0,30,43,.72)">${tx('durability · replication · failover coordination · backup', 'durabilidade · replicação · coordenação de failover · backup')}</text>`;
 
   // AZ columns
-  AP.log = []; AP.page = []; AP.s3 = [];
+  AP.log = []; AP.materializer = []; AP.page = []; AP.s3 = [];
   for (let i = 0; i < 3; i++) {
     const x0 = 40 + i * 250, down = !archUpAZ(i);
-    s += `<rect x="${x0}" y="266" width="220" height="150" rx="9" fill="${down ? '#FDF0EE' : '#fff'}" stroke="${down ? 'rgba(192,57,43,.5)' : 'rgba(0,30,43,.28)'}" stroke-dasharray="5 4" stroke-width="1.3"/>
+    s += `<rect x="${x0}" y="266" width="220" height="210" rx="9" fill="${down ? '#FDF0EE' : '#fff'}" stroke="${down ? 'rgba(192,57,43,.5)' : 'rgba(0,30,43,.28)'}" stroke-dasharray="5 4" stroke-width="1.3"/>
       <text x="${x0 + 110}" y="283" text-anchor="middle" font-size="9.5" font-weight="700" fill="${down ? '#C0392B' : '#001E2B'}">${AZ_NAMES[i]}${down ? ' — ' + tx('DOWN', 'FORA') : ''}</text>`;
-    const lx = x0 + 56, px = x0 + 164, y = 330;
-    AP.log.push([lx, y]); AP.page.push([px, y]); AP.s3.push([px, 456]);
-    s += `<line x1="${lx + 22}" y1="${y}" x2="${px - 20}" y2="${y}" stroke="rgba(0,104,74,.6)" stroke-width="1.5" class="repl-slow"/>`;
-    s += `<line x1="${px}" y1="${y + 50}" x2="${px}" y2="438" stroke="rgba(0,30,43,.35)" stroke-width="1.5" class="repl-slow"/>`;
-    s += logIcon(lx, y, down) + pageIcon(px, y, down);
-    s += `<text x="${lx}" y="${y + 33}" text-anchor="middle" font-size="9" font-weight="700" fill="#001E2B">Log Service</text>
-      <text class="dt" x="${lx}" y="${y + 44}" text-anchor="middle" font-size="8" fill="rgba(0,30,43,.5)">${tx('consensus replica', 'réplica de consenso')}</text>
-      <text x="${px}" y="${y + 33}" text-anchor="middle" font-size="9" font-weight="700" fill="#00684A">Page Service</text>
-      <text class="dt" x="${px}" y="${y + 44}" text-anchor="middle" font-size="8" fill="rgba(0,30,43,.5)">${tx('warm materialized pages', 'páginas materializadas')}</text>`;
+    const lx = x0 + 56, px = x0 + 164, ly = 327, my = 405;
+    AP.log.push([lx, ly]); AP.materializer.push([lx, my]); AP.page.push([px, my]); AP.s3.push([lx, 501]);
+    s += `<line data-flow="log-materializer" x1="${lx}" y1="${ly + 22}" x2="${lx}" y2="${my - 17}" stroke="#00684A" stroke-width="1.5" class="repl-slow" marker-end="url(#arch-async-arrow)"/>
+      <line data-flow="materializer-page" x1="${lx + 50}" y1="${my}" x2="${px - 22}" y2="${my}" stroke="#00684A" stroke-width="1.5" class="repl-slow" marker-end="url(#arch-async-arrow)"/>
+      <line data-flow="materializer-object" x1="${lx}" y1="${my + 16}" x2="${lx}" y2="491" stroke="#00684A" stroke-width="1.5" class="repl-slow" marker-end="url(#arch-async-arrow)"/>
+      <rect x="${lx - 50}" y="${my - 16}" width="100" height="32" rx="6" fill="${down ? '#FDF0EE' : '#E3FCF7'}" stroke="#00684A"/>
+      <text x="${lx}" y="${my - 2}" text-anchor="middle" font-size="9" font-weight="700" fill="#001E2B">Page</text>
+      <text x="${lx}" y="${my + 10}" text-anchor="middle" font-size="9" font-weight="700" fill="#001E2B">Materializer</text>`;
+    s += logIcon(lx, ly, down) + pageIcon(px, my, down);
+    s += `<text x="${lx + 29}" y="323" font-size="9" font-weight="700" fill="#001E2B">Log Service</text>
+      <text class="dt" x="${lx + 29}" y="337" font-size="8" fill="rgba(0,30,43,.5)">${tx('consensus replica', 'réplica de consenso')}</text>
+      <text class="dt" x="${lx + 8}" y="373" font-size="8" fill="#00684A">${tx('tails log', 'lê o log')}</text>
+      <text class="dt" x="${lx + 69}" y="394" text-anchor="middle" font-size="8" fill="#00684A">phylog</text>
+      <text x="${px}" y="438" text-anchor="middle" font-size="9" font-weight="700" fill="#00684A">Page Service</text>
+      <text class="dt" x="${px}" y="450" text-anchor="middle" font-size="8" fill="rgba(0,30,43,.5)">${tx('materialized pages', 'páginas materializadas')}</text>
+      <text class="dt" x="${lx + 8}" y="469" font-size="8" fill="#00684A">oplog + phylog</text>`;
   }
   // Object storage
-  s += `<rect x="40" y="438" width="720" height="62" rx="10" fill="#FFFFFF" stroke="rgba(0,30,43,.28)" stroke-width="1.5"/>
-    ${bucketIcon(72, 449)}
-    <text x="122" y="462" font-size="11" font-weight="700" fill="#001E2B">Object Index Service → Amazon S3</text>
-    <text class="dt" x="122" y="478" font-size="9" fill="#001E2B">${tx('durability floor — designed for eleven nines of durability', 'piso de durabilidade — projetado para onze noves de durabilidade')} (blog)</text>
-    <text class="dt" x="122" y="491" font-size="8.5" fill="#00684A">${tx('backups, restores and point-in-time recovery also run here, independent of compute', 'backups, restores e point-in-time recovery também rodam aqui, independentes do compute')}</text>`;
+  s += `<rect x="40" y="492" width="720" height="66" rx="10" fill="#FFFFFF" stroke="rgba(0,30,43,.28)" stroke-width="1.5"/>
+    ${bucketIcon(72, 509)}
+    <text x="122" y="516" font-size="11" font-weight="700" fill="#001E2B">Object Index Service → Amazon S3</text>
+    <text class="dt" x="122" y="532" font-size="9" fill="#001E2B">${tx('durability floor — designed for eleven nines of durability', 'piso de durabilidade — projetado para onze noves de durabilidade')} (blog)</text>
+    <text class="dt" x="122" y="546" font-size="8.5" fill="#00684A">${tx('backups, restores and point-in-time recovery also run here, independent of compute', 'backups, restores e point-in-time recovery também rodam aqui, independentes do compute')}</text>`;
 
   // Compute nodes
   AP.client = [400, 46];
@@ -161,6 +176,7 @@ function archLegend() {
 
 function archUpdateInfo() {
   const core = S.arch.mode === 'core';
+  $('arch-cache').value = S.arch.readCache;
   $('arch-mode-desc').innerHTML = core
     ? tx(`<strong>Atlas Core</strong> (the existing Atlas offering, now renamed) keeps compute and storage together on each node of a replica set. Best for steady, predictable workloads; full Atlas feature set.${src('B2', 'B7')}`,
          `<strong>Atlas Core</strong> (a oferta atual do Atlas, agora renomeada) mantém compute e storage juntos em cada nó do replica set. Ideal para workloads estáveis e previsíveis; conjunto completo de recursos do Atlas.${src('B2', 'B7')}`)
@@ -209,8 +225,8 @@ function archRenderIdeas() {
      tx(`On Atlas Infinite, <em>majority</em> means a majority <strong>within the storage layer</strong> — not of your cluster's nodes. The Log Service commits on a majority spread across 3 AZs.${src('D2', 'B4')}`,
         `No Atlas Infinite, <em>majority</em> significa maioria <strong>dentro da camada de storage</strong> — não dos nós do cluster. O Log Service faz commit numa maioria distribuída em 3 AZs.${src('D2', 'B4')}`)],
     ['↩', tx('No rollbacks for majority writes', 'Sem rollback de escritas majority'),
-     tx(`Atlas never rolls back a w:"majority" write; on failover the former primary has no unreplicated writes to revert, because the storage layer commits writes.${src('D2', 'D8')}`,
-        `O Atlas nunca faz rollback de uma escrita w:"majority"; no failover, o antigo primário não tem escritas não replicadas para reverter, pois quem faz o commit é a camada de storage.${src('D2', 'D8')}`)],
+     tx(`Writes acknowledged with w:"majority" are durable in the storage layer and never roll back. Writes acknowledged with w:1 can roll back in rare failures.${src('D2', 'D8')}`,
+        `Escritas confirmadas com w:"majority" estão duráveis na camada de storage e nunca sofrem rollback. Escritas confirmadas com w:1 podem sofrer rollback em falhas raras.${src('D2', 'D8')}`)],
     ['🧩', tx('Three storage services', 'Três serviços de storage'),
      tx(`<strong>Log Service</strong> (consensus on every write), <strong>Page Service</strong> (warm materialized pages in each AZ) and <strong>Object Index Service</strong> over object storage — each scales, fails and recovers independently. Data is held in three forms at once: replicated log, materialized pages and object store.${src('B4')}`,
         `<strong>Log Service</strong> (consenso em cada escrita), <strong>Page Service</strong> (páginas materializadas e aquecidas em cada AZ) e <strong>Object Index Service</strong> sobre object storage — cada um escala, falha e se recupera de forma independente. Os dados existem em três formas ao mesmo tempo: log replicado, páginas materializadas e object store.${src('B4')}`)],
@@ -236,7 +252,7 @@ function archRenderCmp() {
     ['xr', tx('High availability', 'Alta disponibilidade'), tx('Replica set of 3+ electable, data-bearing nodes', 'Replica set com 3+ nós elegíveis que guardam dados'), tx(`An "HA shard" of 2 electable compute nodes (primary + standby) in separate AZs + storage layer replicated across 3 AZs${src('D1', 'D2', 'B4')}`, `Um "HA shard" com 2 nós de compute elegíveis (primário + standby) em AZs separadas + camada de storage replicada em 3 AZs${src('D1', 'D2', 'B4')}`)],
     [tx('Failover', 'Failover'), tx('Election — nodes vote, majority wins', 'Eleição — nós votam, a maioria vence'), tx(`Coordinated by the storage layer — no vote among compute nodes${src('D2')}`, `Coordenado pela camada de storage — sem votação entre nós de compute${src('D2')}`)],
     ['xr', tx('"majority" means', '"majority" significa'), tx('Majority of voting nodes', 'Maioria dos nós votantes'), tx(`Majority within the storage layer${src('D2')}`, `Maioria dentro da camada de storage${src('D2')}`)],
-    ['xr', tx('Rollbacks', 'Rollbacks'), tx('Possible for writes not majority-committed', 'Possíveis para escritas não confirmadas pela maioria'), tx(`Don't occur — the storage layer commits writes${src('D8', 'D17')}`, `Não ocorrem — a camada de storage faz o commit das escritas${src('D8', 'D17')}`)],
+    ['xr', tx('Rollbacks', 'Rollbacks'), tx('Possible for writes not majority-committed', 'Possíveis para escritas não confirmadas pela maioria'), tx(`No rollback for writes acknowledged with w:"majority"; w:1 can roll back in rare failures${src('D2')}`, `Sem rollback para escritas confirmadas com w:"majority"; w:1 pode sofrer rollback em falhas raras${src('D2')}`)],
     [tx('Storage', 'Storage'), tx(`Tied to the cluster tier; shard when nearing the tier limit${src('B7')}`, `Atrelado ao tier; shard quando se aproxima do limite do tier${src('B7')}`), tx(`Grows automatically up to 128 TB (logical) per replica set, independent of tier${src('D4', 'B7')}`, `Cresce automaticamente até 128 TB (lógico) por replica set, independente do tier${src('D4', 'B7')}`)],
     [tx('Adding read capacity', 'Adicionar capacidade de leitura'), tx('New node needs an initial sync (data copy)', 'Novo nó precisa de initial sync (cópia de dados)'), tx(`Read-only nodes attach to storage and serve reads in minutes — no initial sync${src('D6', 'B3')}`, `Nós read-only se conectam ao storage e atendem leituras em minutos — sem initial sync${src('D6', 'B3')}`)],
     ['xr', tx('Write scale-out', 'Escala horizontal de escrita'), tx(`Sharding & Global Clusters${src('B7')}`, `Sharding e Global Clusters${src('B7')}`), tx(`Not available in public preview${src('D1')}`, `Não disponível no public preview${src('D1')}`)],
@@ -252,6 +268,7 @@ function archRenderCmp() {
 function archLock(on) {
   S.arch.busy = on;
   $('arch-btn-w').disabled = on; $('arch-btn-r').disabled = on;
+  $('arch-cache').disabled = on;
 }
 
 async function archSimWrite() {
@@ -266,8 +283,8 @@ async function archSimWrite() {
     ackOnMajority ? tx('<b>Majority durable → ACK.</b> 2 of 3 log replicas hold the entry → the write is acknowledged. It will never be rolled back.', '<b>Maioria durável → ACK.</b> 2 de 3 réplicas do log têm a entrada → a escrita é confirmada. Nunca sofrerá rollback.')
       : wc === 'w1' ? tx('<b>ACK already sent (w:1).</b> w:1 returns sooner than a majority write — but Atlas can roll it back in rare failures. (The exact acknowledgment point is drawn here for illustration.)', '<b>ACK já enviado (w:1).</b> O w:1 retorna antes de uma escrita majority — mas o Atlas pode fazer rollback em falhas raras. (O ponto exato do ACK é desenhado aqui apenas como ilustração.)')
       : tx('<b>No ACK (w:0).</b> The client never waits for — or learns about — the outcome.', '<b>Sem ACK (w:0).</b> O cliente nunca espera — nem fica sabendo — o resultado.'),
-    tx('<b>Standby tails the log.</b> It applies the oplog into an in-memory ingest table on top of the stable table — standby lag measured in milliseconds.', '<b>Standby acompanha o log.</b> Aplica o oplog numa ingest table em memória sobre a stable table — lag do standby medido em milissegundos.'),
-    tx('<b>Pages materialized asynchronously.</b> At checkpoint the engine emits a physical log (phylog). A Page Materializer in each zone tails the log, spreads page images/deltas across the Page Service, and uploads oplog + phylog to object storage (S3) — the durability floor.', '<b>Páginas materializadas de forma assíncrona.</b> No checkpoint o engine emite um log físico (phylog). Um Page Materializer em cada zona acompanha o log, distribui imagens/deltas de páginas pelo Page Service e envia oplog + phylog ao object storage (S3) — o piso de durabilidade.'),
+    tx('<b>Standby follows the log asynchronously.</b> It applies the oplog into an in-memory ingest table on top of the stable table. This runs independently of page materialization and does not gate the client ACK.', '<b>Standby acompanha o log de forma assíncrona.</b> Aplica o oplog numa ingest table em memória sobre a stable table. Isso ocorre independentemente da materialização de páginas e não condiciona o ACK ao cliente.'),
+    tx('<b>Materializer → Page Service and S3 in parallel.</b> At checkpoint the engine emits the physical log (phylog). Each zone\'s Page Materializer tails the log, distributes phylog to page servers and, in parallel, uploads oplog + phylog to object storage. This background work is shown after the ACK for clarity; it is not a prerequisite for the ACK.', '<b>Materializer → Page Service e S3 em paralelo.</b> No checkpoint o engine emite o log físico (phylog). O Page Materializer de cada zona acompanha o log, distribui phylog aos page servers e, em paralelo, envia oplog + phylog ao object storage. Esse trabalho de fundo é mostrado após o ACK para facilitar a leitura; ele não é um pré-requisito do ACK.'),
   ];
   renderSteps('arch-steps', steps);
   $('arch-steps-label').textContent = tx('write · ', 'escrita · ') + { w0: 'w:0', w1: 'w:1', wmaj: 'w:"majority"', wnum: 'w:3 → majority' }[wc];
@@ -328,21 +345,36 @@ async function archSimWrite() {
     await ackP;
     if (wc === 'w0') log('INFO', 'CLIENT', tx('w:0 — no ACK requested', 'w:0 — nenhum ACK solicitado'));
   }
-  setStep('arch-steps', 3, 'done'); setStep('arch-steps', 4, 'active');
+  setStep('arch-steps', 3, 'done'); setStep('arch-steps', 4, 'active'); setStep('arch-steps', 5, 'active');
   const stby = S.ha.nodes.find(n => n.role === 'STANDBY' && n.state === 'UP');
-  if (stby) {
-    const li = archUpAZ(stby.az) ? stby.az : upAZ[0];
-    const [lx, ly] = AP.log[li]; const [sx, sy] = AP.nodes[stby.id];
-    await fly('arch-svg', [[lx + 8, ly - 20], [sx + 40, sy + 90], [sx + 40, sy + 20]], 650, '#00684A', 5);
-    flash('arch-svg', sx, sy - 34, tx('applied (ms lag)', 'aplicado (lag em ms)'), '#00684A');
-  } else setStep('arch-steps', 4, 'skip');
-  setStep('arch-steps', 4, stby ? 'done' : 'skip'); setStep('arch-steps', 5, 'active');
-  await Promise.all(flights);
-  await Promise.all(upAZ.map(i => fly('arch-svg', [[AP.log[i][0] + 22, AP.log[i][1]], [AP.page[i][0] - 20, AP.page[i][1]]], 700, '#00684A', 5)
-    .then(() => fly('arch-svg', [[AP.page[i][0], AP.page[i][1] + 50], [AP.page[i][0], 450]], 600, '#001E2B', 5))));
-  flash('arch-svg', 400, 432, tx('persisted to object storage', 'persistido no object storage'), '#00684A');
-  setStep('arch-steps', 5, 'done');
-  log('INFO', 'PAGE-SVC', tx('Checkpoint: page changes materialized in each AZ and persisted to S3', 'Checkpoint: mudanças de página materializadas em cada AZ e persistidas no S3'));
+  // Standby ingestion and page materialization are independent background work.
+  const standbyWork = (async () => {
+    if (stby) {
+      const li = archUpAZ(stby.az) ? stby.az : upAZ[0];
+      const [lx, ly] = AP.log[li]; const [sx, sy] = AP.nodes[stby.id];
+      await fly('arch-svg', [[lx + 8, ly - 20], [sx + 40, sy + 90], [sx + 40, sy + 20]], 650, '#00684A', 5);
+      flash('arch-svg', sx, sy - 34, tx('oplog applied', 'oplog aplicado'), '#00684A');
+    }
+    setStep('arch-steps', 4, stby ? 'done' : 'skip');
+  })();
+  const materializationWork = (async () => {
+    flash('arch-svg', px, py - 34, 'checkpoint → phylog', '#00684A');
+    await Promise.all(upAZ.map(async i => {
+      const [lx, ly] = AP.log[i], [mx, my] = AP.materializer[i], [pgx, pgy] = AP.page[i];
+      await flights[i];
+      await fly('arch-svg', [[px, py + 62], [lx, ly - 20]], 550, '#00684A', 5);
+      await fly('arch-svg', [[lx, ly + 22], [mx, my - 16]], 450, '#00684A', 5);
+      // Both destinations are fed by the materializer, never Page Service → S3.
+      await Promise.all([
+        fly('arch-svg', [[mx + 50, my], [pgx - 22, pgy]], 650, '#00684A', 5),
+        fly('arch-svg', [[mx, my + 16], AP.s3[i]], 650, '#001E2B', 5),
+      ]);
+    }));
+    flash('arch-svg', 400, 486, tx('oplog + phylog stored', 'oplog + phylog persistidos'), '#00684A');
+    setStep('arch-steps', 5, 'done');
+    log('INFO', 'MATERIALIZER', tx('Parallel destinations: phylog to Page Service; oplog + phylog to object storage. Neither gates the ACK.', 'Destinos paralelos: phylog ao Page Service; oplog + phylog ao object storage. Nenhum condiciona o ACK.'));
+  })();
+  await Promise.all([standbyWork, materializationWork]);
   archLock(false);
 }
 
@@ -393,21 +425,26 @@ function archPickReadNode() {
 async function archSimRead() {
   if (S.arch.busy) return;
   const core = S.arch.mode === 'core';
+  const cacheMiss = S.arch.readCache === 'miss';
   if (S.rc === 'linearizable' && S.rp !== 'primary') {
     renderSteps('arch-steps', [tx('<b>Rejected.</b> readConcern "linearizable" only works with readPreference primary.', '<b>Rejeitada.</b> readConcern "linearizable" só funciona com readPreference primary.')], ['active']);
     log('ERROR', 'DRIVER', tx('linearizable read concern requires readPreference primary', 'read concern linearizable exige readPreference primary'));
     return;
   }
   if (core) {
-    renderSteps('arch-steps', [tx('<b>Server selection</b> by readPreference.', '<b>Seleção de servidor</b> pelo readPreference.'), tx('<b>Node reads from memory or its local disk.</b>', '<b>O nó lê da memória ou do seu disco local.</b>'), tx('<b>Result returned.</b>', '<b>Resultado retornado.</b>')]);
+    renderSteps('arch-steps', [tx('<b>Server selection</b> by readPreference.', '<b>Seleção de servidor</b> pelo readPreference.'), cacheMiss ? tx('<b>Cache miss: fetch from local storage.</b> The node reads its own attached volume.', '<b>Cache miss: busca no storage local.</b> O nó lê seu próprio volume anexado.') : tx('<b>Cache hit: read from memory.</b> The WiredTiger cache serves this read without a storage fetch.', '<b>Cache hit: leitura da memória.</b> O cache WiredTiger atende esta leitura sem buscar no storage.'), tx('<b>Result returned.</b>', '<b>Resultado retornado.</b>')]);
+    $('arch-steps-label').textContent = tx('read · Atlas Core · ', 'leitura · Atlas Core · ') + (cacheMiss ? 'cache miss' : 'cache hit');
     archLock(true);
     const idx = { primary: 0, primaryPreferred: 0, secondary: 1 + Math.floor(Math.random() * 2), secondaryPreferred: 1 + Math.floor(Math.random() * 2), nearest: Math.floor(Math.random() * 3) }[S.rp];
     const [x, y] = AP.core[idx];
     setStep('arch-steps', 0, 'active');
     await fly('arch-svg', [AP.client, [x, y - 26]], 600, '#001E2B');
     setStep('arch-steps', 0, 'done'); setStep('arch-steps', 1, 'active');
-    await fly('arch-svg', [[x, y + 50], [x, 285]], 350, '#001E2B', 5);
-    await fly('arch-svg', [[x, 285], [x, y + 50]], 350, '#001E2B', 5);
+    flash('arch-svg', x, y - 32, cacheMiss ? 'cache miss' : 'cache hit', '#00684A');
+    if (cacheMiss) {
+      await fly('arch-svg', [[x, y + 50], [x, 285]], 350, '#001E2B', 5);
+      await fly('arch-svg', [[x, 285], [x, y + 50]], 350, '#001E2B', 5);
+    }
     setStep('arch-steps', 1, 'done'); setStep('arch-steps', 2, 'active');
     await fly('arch-svg', [[x, y - 26], AP.client], 600, '#00684A');
     setStep('arch-steps', 2, 'done');
@@ -417,12 +454,12 @@ async function archSimRead() {
   const node = archPickReadNode();
   const steps = [
     tx(`<b>Server selection.</b> readPreference <b>${S.rp}</b> → ${node ? `<b>${node.id}</b> (${node.role || node.type})` : tx('<b>no eligible node</b>', '<b>nenhum nó elegível</b>')}.`, `<b>Seleção de servidor.</b> readPreference <b>${S.rp}</b> → ${node ? `<b>${node.id}</b> (${node.role || node.type})` : '<b>nenhum nó elegível</b>'}.`),
-    tx('<b>Served from memory</b> — on a cache miss the node fetches the page from the shared, warm <b>Page Service</b> instead of a local disk.', '<b>Atendida da memória</b> — num cache miss o nó busca a página no <b>Page Service</b> compartilhado e aquecido, em vez de um disco local.'),
+    cacheMiss ? tx('<b>Cache miss: fetch from Page Service.</b> The compute node fetches the page from the shared, warm storage layer.', '<b>Cache miss: busca no Page Service.</b> O nó de compute busca a página na camada de storage compartilhada e aquecida.') : tx('<b>Cache hit: read from memory.</b> The WiredTiger cache serves this read without a Page Service fetch.', '<b>Cache hit: leitura da memória.</b> O cache WiredTiger atende esta leitura sem buscar no Page Service.'),
     { local: tx('<b>readConcern local:</b> newest data on that node (may include not-yet-majority writes).', '<b>readConcern local:</b> dado mais novo naquele nó (pode incluir escritas ainda não majority).'), available: tx('<b>readConcern available:</b> lowest latency, no majority guarantee.', '<b>readConcern available:</b> menor latência, sem garantia de maioria.'), majority: tx('<b>readConcern majority:</b> only storage-majority-committed data.', '<b>readConcern majority:</b> apenas dados confirmados pela maioria do storage.'), linearizable: tx('<b>readConcern linearizable:</b> primary confirms it is still primary before returning.', '<b>readConcern linearizable:</b> o primário confirma que ainda é primário antes de retornar.'), snapshot: tx('<b>readConcern snapshot:</b> consistent majority-committed snapshot (transactions).', '<b>readConcern snapshot:</b> snapshot consistente confirmado pela maioria (transações).') }[S.rc],
     tx('<b>Result returned to the client.</b>', '<b>Resultado retornado ao cliente.</b>'),
   ];
   renderSteps('arch-steps', steps);
-  $('arch-steps-label').textContent = tx('read · ', 'leitura · ') + S.rp;
+  $('arch-steps-label').textContent = tx('read · ', 'leitura · ') + S.rp + ' · ' + (cacheMiss ? 'cache miss' : 'cache hit');
   if (!node) {
     setStep('arch-steps', 0, 'active');
     log('ERROR', 'DRIVER', tx(`No node matches readPreference ${S.rp} — server selection fails after timeout`, `Nenhum nó atende readPreference ${S.rp} — a seleção de servidor falha após o timeout`));
@@ -434,7 +471,13 @@ async function archSimRead() {
   await fly('arch-svg', [AP.client, [x, y - 24]], 600, '#001E2B');
   setStep('arch-steps', 0, 'done'); setStep('arch-steps', 1, 'active');
   const az = node.az !== undefined && archUpAZ(node.az) ? node.az : [0, 1, 2].find(archUpAZ);
-  if (az !== undefined && Math.random() < 0.6) {
+  if (cacheMiss && az === undefined) {
+    $('arch-steps').children[1].innerHTML = stepHTML(tx('<b>Cache miss: Page Service unavailable.</b> No storage zone is reachable in this simulation, so this fetch cannot complete.', '<b>Cache miss: Page Service indisponível.</b> Nenhuma zona de storage está acessível nesta simulação, então a busca não pode terminar.'));
+    log('ERROR', 'PAGE-SVC', tx('No Page Service available for this cache miss', 'Nenhum Page Service disponível para este cache miss'));
+    archLock(false);
+    return;
+  }
+  if (cacheMiss) {
     const [pgx, pgy] = AP.page[az];
     flash('arch-svg', x, y - 32, 'cache miss', '#00684A');
     await fly('arch-svg', [[x, y + 24], [pgx, pgy - 20]], 550, '#00684A', 5);

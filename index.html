@@ -384,6 +384,12 @@ body.view-basic .cmp tr.xr{display:none}
             </label>
             <div class="desc" id="arch-read-desc"></div>
             </div>
+            <label class="fld"><span class="lbl" data-i18n="arch.cache">Read scenario</span>
+              <select id="arch-cache" onchange="archSetReadCache(this.value)">
+                <option value="miss" selected data-i18n="arch.cache.miss">Cache miss — fetch from storage</option>
+                <option value="hit" data-i18n="arch.cache.hit">Cache hit — read from memory</option>
+              </select>
+            </label>
             <div class="btn-row">
               <button class="btn btn-p" id="arch-btn-w" onclick="archSimWrite()" data-i18n="btn.simw">▶ Simulate Write</button>
               <button class="btn btn-g" id="arch-btn-r" onclick="archSimRead()" data-i18n="btn.simr">▶ Simulate Read</button>
@@ -399,7 +405,7 @@ body.view-basic .cmp tr.xr{display:none}
 
     <!-- ═══════════════ TAB 2: HIGH AVAILABILITY & FAILOVER ═══════════════ -->
     <div id="tab-ha" class="tc">
-      <div class="value only-basic"><span class="vk" data-i18n="val.k">Why it matters</span><div><span data-i18n="val.ha">Failover <strong>without elections and without rollbacks</strong>: the standby takes over already warm, and every acknowledged write is safe in a storage layer spread across <strong>3 Availability Zones</strong>.</span><span class="vh" data-i18n="valh.ha">Click a node or an <b>Availability Zone</b> to make it fail.</span></div></div>
+      <div class="value only-basic"><span class="vk" data-i18n="val.k">Why it matters</span><div><span data-i18n="val.ha">The storage layer coordinates failover <strong>without votes among compute nodes</strong>. The warm standby takes over, and writes acknowledged with <strong>w:"majority" never roll back</strong>. Writes with w:1 can roll back in rare failures.</span><span class="vh" data-i18n="valh.ha">Click a node or an <b>Availability Zone</b> to make it fail.</span></div></div>
       <div class="tip only-detailed" data-i18n="ha.tip"><strong>Click any compute node</strong> to make it fail, or <strong>click an Availability Zone header</strong> to take the whole zone down (compute + its storage replicas). Watch how the <strong>storage layer coordinates failover</strong> — no election among compute nodes — and how the <strong>Log Service majority (2 of 3 AZs)</strong> keeps writes durable.</div>
       <div class="banner bn-amber" id="ha-bn-fo"><div class="bt"><span data-i18n="ha.bn.fo.t">⏳ Failover in progress — storage layer is promoting the standby</span><span class="timer" id="ha-fo-timer"></span></div><div data-i18n="ha.bn.fo.d">Drivers detect the primary change and <strong>retry eligible reads and writes</strong> (retryable reads/writes). Acknowledged majority writes are already in the storage layer, so nothing has to be replayed or rolled back.</div></div>
       <div class="banner bn-info" id="ha-bn-az"><div class="bt" data-i18n="ha.bn.az.t">🛡 One Availability Zone is down — the cluster keeps serving</div><div data-i18n="ha.bn.az.d">The Log Service still holds a <strong>majority (2 of 3 zones)</strong>, so writes keep being committed durably. If the primary lived in the failed zone, the standby in another zone took over.</div></div>
