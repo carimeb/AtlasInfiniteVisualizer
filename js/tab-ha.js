@@ -46,21 +46,29 @@ function haRender() {
     <text x="776" y="70" text-anchor="end" font-size="9.5" font-weight="700" fill="${q ? C.forest : C.bad}">Log Service: ${haUpAZ()}/3 ${tx('replicas', 'réplicas')} · ${tx('majority', 'maioria')} = 2 ${q ? '✓' : '✕'}</text>`;
 
   HP.log = []; HP.page = []; HP.az = [];
-  // AZ columns
+  // Compute remains zonal; the shared storage layer spans all three AZs below.
   for (let i = 0; i < 3; i++) {
     const x0 = 24 + i * 256, down = S.ha.azDown[i];
     HP.az.push(x0);
-    s += `<rect x="${x0}" y="80" width="240" height="318" rx="10" fill="${down ? C.badBg : C.white}" stroke="${down ? C.bad : C.line}" stroke-width="1.3" stroke-dasharray="${down ? '' : '5 4'}"/>
+    s += `<rect x="${x0}" y="80" width="240" height="174" rx="10" fill="${down ? C.badBg : C.white}" stroke="${down ? C.bad : C.line}" stroke-width="1.3" stroke-dasharray="${down ? '' : '5 4'}"/>
       <g class="clickable" onclick="haToggleAZ(${i})">
         <rect x="${x0}" y="80" width="240" height="24" rx="10" fill="${down ? C.bad : C.slate}"/>
         <rect x="${x0}" y="94" width="240" height="10" fill="${down ? C.bad : C.slate}"/>
         <text x="${x0 + 12}" y="96" font-size="10.5" font-weight="800" fill="${down ? C.white : C.spring}">${AZ_NAMES[i]}</text>
         <text x="${x0 + 228}" y="96" text-anchor="end" font-size="8.5" fill="${C.white}" opacity=".85">${down ? tx('DOWN — click to restore', 'FORA — clique para restaurar') : tx('click to fail this zone', 'clique para derrubar a zona')}</text>
       </g>
-      <text x="${x0 + 12}" y="122" font-size="8" font-weight="700" fill="${C.t3}" letter-spacing=".8">COMPUTE</text>
-      <line x1="${x0 + 10}" y1="262" x2="${x0 + 230}" y2="262" stroke="${C.faint}"/>
-      <text x="${x0 + 12}" y="278" font-size="8" font-weight="700" fill="${C.t3}" letter-spacing=".8">STORAGE</text>`;
-    const lx = x0 + 70, px = x0 + 170, y = 318;
+      <text x="${x0 + 12}" y="122" font-size="8" font-weight="700" fill="${C.t3}" letter-spacing=".8">COMPUTE</text>`;
+  }
+  const storageTop = 274;
+  s += `<rect data-layer="shared-storage" x="24" y="${storageTop}" width="752" height="196" rx="12" fill="${C.lavender}" stroke="${C.forest}" stroke-width="1.5"/>
+    <text x="40" y="295" font-size="10" font-weight="800" fill="${C.slate}" letter-spacing=".5">${tx('SHARED STORAGE LAYER', 'CAMADA DE STORAGE COMPARTILHADA')}</text>
+    <text x="760" y="295" text-anchor="end" font-size="9" fill="${C.t2}">${tx('Distributed across 3 AZs in the same region', 'Distribuída pelas 3 AZs da mesma região')}</text>`;
+  for (let i = 0; i < 3; i++) {
+    const x0 = HP.az[i], down = S.ha.azDown[i];
+    if (down) s += `<rect x="${x0 + 4}" y="307" width="232" height="102" rx="8" fill="${C.badBg}"/>`;
+    if (i) s += `<line x1="${x0 - 8}" y1="307" x2="${x0 - 8}" y2="409" stroke="${C.line}" stroke-dasharray="3 4"/>`;
+    s += `<text x="${x0 + 120}" y="323" text-anchor="middle" font-size="9" font-weight="700" fill="${down ? C.bad : C.t2}">${AZ_NAMES[i]}${down ? ' — ' + tx('DOWN', 'FORA') : ''}</text>`;
+    const lx = x0 + 70, px = x0 + 170, y = 355;
     HP.log.push([lx, y]); HP.page.push([px, y]);
     s += logIcon(lx, y, down) + pageIcon(px, y, down);
     s += `<text x="${lx}" y="${y + 33}" text-anchor="middle" font-size="9" font-weight="700" fill="${C.slate}">Log Service</text>
@@ -68,10 +76,10 @@ function haRender() {
       <text class="dt" x="${(lx + px) / 2}" y="${y + 50}" text-anchor="middle" font-size="8" fill="${down ? C.bad : C.t3}">${down ? tx('replicas unreachable', 'réplicas inacessíveis') : tx('replica in this zone', 'réplica nesta zona')}</text>`;
   }
   // S3
-  s += `<rect x="24" y="408" width="752" height="54" rx="10" fill="${C.white}" stroke="${C.line}" stroke-width="1.3"/>
-    ${bucketIcon(44, 414)}
-    <text x="92" y="431" font-size="10.5" font-weight="700" fill="${C.slate}">Object Index Service → Amazon S3</text>
-    <text class="dt" x="92" y="447" font-size="8.8" fill="${C.t2}">${tx('regional object storage — the durability floor beneath the log and page replicas', 'object storage regional — o piso de durabilidade abaixo das réplicas de log e de páginas')} ${tx('(engineering blog)', '(blog de engenharia)')}</text>`;
+  s += `<rect x="34" y="415" width="732" height="47" rx="8" fill="${C.white}" stroke="${C.line}" stroke-width="1.3"/>
+    ${bucketIcon(44, 419)}
+    <text x="92" y="434" font-size="10.5" font-weight="700" fill="${C.slate}">Object Index Service → Amazon S3</text>
+    <text class="dt" x="92" y="451" font-size="8.8" fill="${C.t2}">${tx('regional object storage — the durability floor beneath the log and page replicas', 'object storage regional — o piso de durabilidade abaixo das réplicas de log e de páginas')} ${tx('(engineering blog)', '(blog de engenharia)')}</text>`;
   // status strip
   const prim = haPrimary();
   const wState = haWriteState();
@@ -83,20 +91,17 @@ function haRender() {
   S.ha.nodes.forEach(n => { HP.nodes[n.id] = [HP.az[n.az] + 62, 180]; });
   S.extra.forEach(n => { HP.nodes[n.id] = [HP.az[n.az] + 140 + slots[n.az]++ * 62, 180]; });
 
-  // lines
+  // Topology overview: every available compute node attaches to the same layer.
+  // Start at the badge's bottom edge (15 px high), including after promotion.
+  [...S.ha.nodes, ...S.extra].forEach(n => {
+    if (n.state === 'DOWN') return;
+    const [x, y] = HP.nodes[n.id], badgeBottom = y + (n.role ? 44 : 37) + 15;
+    const dotted = n.role === 'STANDBY' || n.state === 'PROVISIONING';
+    s += `<line data-connection="compute-storage" data-node="${n.id}" x1="${x}" y1="${badgeBottom}" x2="${x}" y2="${storageTop}" stroke="${C.forest}" stroke-width="1.5" ${dotted ? 'stroke-dasharray="2 4" stroke-linecap="round"' : ''} opacity="${n.state === 'PROVISIONING' ? '.5' : '.85'}"/>`;
+  });
   if (prim) {
     const [x, y] = HP.nodes[prim.id];
     s += `<line x1="400" y1="42" x2="${x}" y2="${y - 26}" stroke="${C.forest}" stroke-width="1.5" stroke-dasharray="5 4" opacity=".6"/>`;
-    HP.log.forEach(([lx, ly], i) => {
-      if (S.ha.azDown[i]) return;
-      s += `<path d="M${x},${y + 62} C${x},${y + 95} ${lx},${ly - 60} ${lx},${ly - 20}" fill="none" stroke="${C.evergreen}" stroke-width="1.3" class="repl" opacity=".6"/>`;
-    });
-  }
-  const sb = haStandby();
-  if (sb) {
-    const [x, y] = HP.nodes[sb.id];
-    const [lx, ly] = HP.log[sb.az];
-    s += `<path d="M${lx - 6},${ly - 20} C${lx - 6},${ly - 45} ${x + 36},${y + 70} ${x + 36},${y + 30}" fill="none" stroke="${C.forest}" stroke-width="1.3" stroke-dasharray="2 4"/>`;
   }
   // empty electable slot hint
   [0, 1, 2].forEach(i => {

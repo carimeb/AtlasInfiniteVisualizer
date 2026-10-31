@@ -92,7 +92,7 @@ function archRender() {
     const li = archUpAZ(stby.az) ? stby.az : [0, 1, 2].find(archUpAZ);
     if (li !== undefined) {
       const [lx, ly] = AP.log[li];
-      s += `<path d="M${lx + 8},${ly - 20} C${lx + 8},${ly - 70} ${sx + 40},${sy + 90} ${sx + 40},${sy + 20}" fill="none" stroke="#00684A" stroke-width="1.3" stroke-dasharray="2 4" opacity=".8"/>
+      s += `<path data-connection="log-standby" d="M${lx + 8},${ly - 20} C${lx + 8},${ly - 70} ${sx},${sy + 90} ${sx},${sy + 59}" fill="none" stroke="#00684A" stroke-width="1.3" stroke-dasharray="2 4" stroke-linecap="round" opacity=".8"/>
         <text class="dt" x="${sx + 46}" y="${sy + 34}" font-size="8" fill="#00684A" font-weight="600">${tx('tails the oplog', 'acompanha o oplog')}</text>`;
     }
   }
@@ -352,7 +352,7 @@ async function archSimWrite() {
     if (stby) {
       const li = archUpAZ(stby.az) ? stby.az : upAZ[0];
       const [lx, ly] = AP.log[li]; const [sx, sy] = AP.nodes[stby.id];
-      await fly('arch-svg', [[lx + 8, ly - 20], [sx + 40, sy + 90], [sx + 40, sy + 20]], 650, '#00684A', 5);
+      await fly('arch-svg', [[lx + 8, ly - 20], [sx, sy + 90], [sx, sy + 59]], 650, '#00684A', 5);
       flash('arch-svg', sx, sy - 34, tx('oplog applied', 'oplog aplicado'), '#00684A');
     }
     setStep('arch-steps', 4, stby ? 'done' : 'skip');
