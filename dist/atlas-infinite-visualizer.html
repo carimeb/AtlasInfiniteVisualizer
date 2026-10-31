@@ -186,7 +186,7 @@ svg text{font-family:'Lexend Deca',sans-serif}
 .mval{color:var(--text);font-weight:600;min-width:58px;text-align:right;font-size:11px}
 
 /* CAP */
-#cap-svg{width:100%}
+#cap-svg{width:100%;flex-shrink:0}
 .cap-mode{padding:7px 10px;border-radius:8px;text-align:center;font-size:13px;font-weight:700}
 .cm-cp{background:var(--mist);color:var(--evergreen);border:1px solid rgba(0,104,74,.4)}
 .cm-ap{background:var(--lavender);color:var(--slate);border:1px solid rgba(0,30,43,.3)}
@@ -307,7 +307,7 @@ body.view-basic .cmp tr.xr{display:none}
     <button data-lang="pt" onclick="setLang('pt')">PT</button>
   </div>
   <button class="hdr-btn lav" onclick="switchTab('lim')" data-i18n="hdr.limits">⚠ Preview limits</button>
-  <button id="cap-toggle-btn" class="hdr-btn" onclick="toggleCAPPanel()">⬡ CAP Positioning</button>
+  <button id="cap-toggle-btn" class="hdr-btn only-detailed" onclick="toggleCAPPanel()">⬡ CAP Positioning</button>
 </div>
 
 <div id="tab-nav">
@@ -671,7 +671,7 @@ body.view-basic .cmp tr.xr{display:none}
   </div><!-- end #viz -->
 
   <!-- ═══════════════ CAP PANEL ═══════════════ -->
-  <div id="cap">
+  <div id="cap" class="only-detailed">
     <div class="panel-title" data-i18n="cap.title">CAP Theorem Position</div>
     <div class="note-y only-detailed" data-i18n="cap.note"><strong style="display:block;margin-bottom:2px">📌 Simplified model — for illustration only</strong>A directional compass, not a formal proof. It reacts to your writeConcern, readConcern, readPreference and to the failures you simulate. Use it as a conversation anchor, not as a specification.</div>
     <svg id="cap-svg" viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
@@ -984,6 +984,7 @@ function setLang(lang) {
 }
 
 function applyView() {
+  if (S.view === 'basic') setCAPPanel(false);
   document.body.classList.toggle('view-basic', S.view === 'basic');
   document.body.classList.toggle('view-detailed', S.view === 'detailed');
   document.querySelectorAll('.view-toggle button').forEach(b => b.classList.toggle('on', b.dataset.view === S.view));
@@ -3161,7 +3162,11 @@ function footRender() {
 const TABS = ['arch', 'ha', 'vs', 'hs', 'bk', 'lim'];
 
 function toggleCAPPanel() {
-  const open = $('main').classList.toggle('cap-visible');
+  setCAPPanel(!$('cap').classList.contains('cap-visible'));
+}
+function setCAPPanel(open) {
+  open = open && S.view === 'detailed';
+  $('main').classList.toggle('cap-visible', open);
   $('cap').classList.toggle('cap-visible', open);
   $('cap-toggle-btn').classList.toggle('active', open);
   capButtonLabel();

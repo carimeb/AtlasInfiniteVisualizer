@@ -166,6 +166,7 @@ function setLang(lang) {
 }
 
 function applyView() {
+  if (S.view === 'basic') setCAPPanel(false);
   document.body.classList.toggle('view-basic', S.view === 'basic');
   document.body.classList.toggle('view-detailed', S.view === 'detailed');
   document.querySelectorAll('.view-toggle button').forEach(b => b.classList.toggle('on', b.dataset.view === S.view));

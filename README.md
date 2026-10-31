@@ -26,7 +26,7 @@ Companion to the [Data Resilience Visualizer](https://carimeb.github.io/DataResi
 | **⑤ Backup & Restore** | Storage-layer backups, **24-hour continuous (point-in-time) window**, snapshots kept up to 3 years, and allowed restore targets. The animation illustrates the **storage step**: creating a log branch reuses existing data without copying it; the complete restore job includes other steps before the target is ready. General database cloning is identified as a future possibility built on this architecture. |
 | **⑥ Preview Limits & Sources** | The full official list of what isn't available yet — **multi-region, multi-cloud, Atlas Search, Vector Search**, sharding, Global Clusters, Online Archive, live migration, Atlas Charts, MCP Server… — the 10 supported AWS regions, and every official source. |
 
-The **⬡ CAP Positioning** panel (header) follows every setting and simulated failure across all tabs.
+The **⬡ CAP Positioning** panel (header, **Deep dive only**) follows every setting and simulated failure across all tabs. Switching to Essentials closes the panel.
 
 ## Run it
 

@@ -3,7 +3,11 @@
 const TABS = ['arch', 'ha', 'vs', 'hs', 'bk', 'lim'];
 
 function toggleCAPPanel() {
-  const open = $('main').classList.toggle('cap-visible');
+  setCAPPanel(!$('cap').classList.contains('cap-visible'));
+}
+function setCAPPanel(open) {
+  open = open && S.view === 'detailed';
+  $('main').classList.toggle('cap-visible', open);
   $('cap').classList.toggle('cap-visible', open);
   $('cap-toggle-btn').classList.toggle('active', open);
   capButtonLabel();
