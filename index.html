@@ -435,7 +435,7 @@ body.view-basic .cmp tr.xr{display:none}
             <label class="fld" style="margin-top:10px"><span class="lbl" data-i18n="ha.region">AWS region (Atlas Infinite–supported)</span>
               <select id="ha-region" onchange="S.ha.region=this.value;haRender()"></select>
             </label>
-            <label class="chk" style="margin-top:4px"><input type="checkbox" id="ha-autoheal" checked onchange="S.ha.autoHeal=this.checked"> <span data-i18n="ha.autoheal">Atlas recovers failed compute nodes (no data copy)</span></label>
+            <label class="chk" style="margin-top:4px"><input type="checkbox" id="ha-autoheal" checked onchange="haSetAutoHeal(this.checked)"> <span data-i18n="ha.autoheal">Atlas recovers failed compute nodes (no data copy)</span></label>
             <div class="desc" id="ha-quorum-info"></div>
             </div>
           </div>

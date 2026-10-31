@@ -59,6 +59,10 @@ AtlasInfiniteVisualizer/
 
 Script order matters (globals): `state → i18n → utils → cap → tab-* → main`.
 
+## Regression checks
+
+Run `node --test tests/ha-recovery.test.js` with Node.js 18 or newer. The tests use simulated timers to cover consecutive AZ failures, standby recovery in a restored AZ, recovery cancellation, and the capacity-restored indicator. No extra dependencies are required.
+
 ## Brand
 
 The header uses the **official MongoDB logo, unaltered**: the paths come from MongoDB's own design system package [`@leafygreen-ui/logo`](https://github.com/mongodb/leafygreen-ui/tree/main/packages/logo) (v11.1.1, `MongoDBLogo`), in its `green-base` color (`#00ED64`, Spring Green) as the brand guidelines recommend on dark backgrounds — see `assets/`.

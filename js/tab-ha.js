@@ -4,6 +4,7 @@
 
 const HP = {};          // coordinates from the last render
 let haNodeSeq = 2;      // node-N naming for replacements
+let haFailoverSeq = 0;  // invalidate callbacks from an earlier failover
 
 function haInitNodes() {
   haNodeSeq = 2;
@@ -15,8 +16,8 @@ function haInitNodes() {
 
 const haUpAZ = () => S.ha.azDown.filter(d => !d).length;
 const haQuorum = () => haUpAZ() >= 2;
-const haPrimary = () => S.ha.nodes.find(n => n.role === 'PRIMARY' && n.state === 'UP');
-const haStandby = () => S.ha.nodes.find(n => n.role === 'STANDBY' && n.state === 'UP');
+const haPrimary = () => S.ha.nodes.find(n => n.role === 'PRIMARY' && n.state === 'UP' && !S.ha.azDown[n.az]);
+const haStandby = () => S.ha.nodes.find(n => n.role === 'STANDBY' && n.state === 'UP' && !S.ha.azDown[n.az]);
 
 function haLater(fn, ms) { const t = setTimeout(fn, ms); S.ha.timers.push(t); return t; }
 
@@ -29,6 +30,21 @@ function haFoSteps() {
     tx(`<b>No rollback of majority writes.</b> Writes acknowledged with <code>w:"majority"</code> remain committed in the storage layer. A <code>w:1</code> write can still roll back in rare failures.${src('D2', 'D8')}`, `<b>Sem rollback de escritas majority.</b> Escritas confirmadas com <code>w:"majority"</code> permanecem confirmadas na camada de storage. Uma escrita <code>w:1</code> ainda pode sofrer rollback em falhas raras.${src('D2', 'D8')}`),
     tx(`<b>Capacity restored.</b> A compute node attaches to the storage layer as the new standby — recovery without moving or replicating data.${src('D2')}`, `<b>Capacidade restaurada.</b> Um nó de compute se conecta à camada de storage como novo standby — recuperação sem mover nem replicar dados.${src('D2')}`),
   ];
+}
+
+// Capacity is a topology condition, not an elapsed animation delay.
+function haUpdateCapacityStep() {
+  if (S.ha.foPhase !== 5 || !$('ha-steps').children[5]) return;
+  const prim = haPrimary(), standby = haStandby();
+  const ready = prim && standby && prim.az !== standby.az;
+  const attaching = S.ha.nodes.some(n => n.state === 'PROVISIONING' && !S.ha.azDown[n.az]);
+  const pending = S.ha.autoHeal || attaching;
+  setStep('ha-steps', 5, ready ? 'done' : pending ? 'active' : 'skip');
+  $('ha-steps').children[5].innerHTML = stepHTML(ready ? haFoSteps()[5] : !pending
+    ? tx('<b>Compute capacity incomplete.</b> Automatic recovery is off. Restore a compute node or enable automatic recovery to rebuild the primary + standby pair.', '<b>Capacidade de compute incompleta.</b> A recuperação automática está desativada. Restaure um nó de compute ou ative a recuperação automática para recompor o par primário + standby.')
+    : attaching
+      ? tx('<b>Restoring compute capacity.</b> A node is attaching to the shared storage layer. Capacity is restored only when primary and standby are available in separate AZs.', '<b>Recompondo a capacidade de compute.</b> Um nó está se conectando à camada de storage compartilhada. A capacidade só estará restaurada com primário e standby disponíveis em AZs distintas.')
+      : tx('<b>Waiting for a standby.</b> Another healthy AZ is needed to restore the primary + standby pair. Recovery resumes when a zone becomes available.', '<b>Aguardando um standby.</b> É necessária outra AZ saudável para recompor o par primário + standby. A recuperação será retomada quando uma zona estiver disponível.'));
 }
 
 // ── Render ───────────────────────────────────────────────────────────────────
@@ -178,6 +194,7 @@ function haUpdateInfo() {
   $('ha-status-label').textContent = S.ha.failingOver ? tx('failover in progress', 'failover em andamento')
     : !anyCompute ? tx('no compute available', 'sem compute disponível')
     : !q ? tx('storage majority lost', 'maioria do storage perdida')
+    : !prim || !haStandby() ? tx('degraded — incomplete compute pair', 'degradado — par de compute incompleto')
     : upAZ < 3 ? tx('degraded — still serving', 'degradado — ainda atendendo')
     : tx('healthy', 'saudável');
 
@@ -245,33 +262,38 @@ function haAfterLoss(n, reason) {
     if (n.type) log('INFO', 'DRIVER', tx(`Reads re-routed away from ${n.id} — read-only nodes never take part in failover`, `Leituras redirecionadas de ${n.id} — nós read-only nunca participam do failover`));
     haScheduleHeal(n);
   }
-  haRender(); syncAll();
+  haUpdateCapacityStep(); haRender(); syncAll();
 }
 
 function haScheduleHeal(n) {
   if (!S.ha.autoHeal || S.ha.azDown[n.az]) return;
-  haLater(() => { if (n.state === 'DOWN' && !S.ha.azDown[n.az]) haRecoverNode(n); }, 2600);
+  haLater(() => { if (S.ha.autoHeal && n.state === 'DOWN' && !S.ha.azDown[n.az]) haRecoverNode(n); }, 2600);
 }
 
 function haRecoverNode(n) {
+  const members = n.role ? S.ha.nodes : S.extra;
+  if (!members.includes(n) || n.state !== 'DOWN' || S.ha.azDown[n.az]) return;
   if (n.role) {
-    const others = S.ha.nodes.filter(x => x !== n && x.state !== 'DOWN');
-    if (others.length >= 2) { S.ha.nodes = S.ha.nodes.filter(x => x !== n); haRender(); return; }
+    const others = S.ha.nodes.filter(x => x !== n && x.state !== 'DOWN' && !S.ha.azDown[x.az]);
+    if (others.length >= 2 || others.some(x => x.az === n.az)) { S.ha.nodes = S.ha.nodes.filter(x => x !== n); haRender(); return; }
+    n.role = 'STANDBY';
   }
+  const recovery = n.recovery = (n.recovery || 0) + 1;
   n.state = 'PROVISIONING';
   log('INFO', 'ATLAS', tx(`Recovering ${n.id}: attaching to the storage layer — no initial sync, no data copy`, `Recuperando ${n.id}: conectando à camada de storage — sem initial sync, sem cópia de dados`));
-  haRender(); syncAll();
+  haUpdateCapacityStep(); haRender(); syncAll();
   haLater(() => {
+    if (!(n.role ? S.ha.nodes : S.extra).includes(n) || n.recovery !== recovery || n.state !== 'PROVISIONING' || S.ha.azDown[n.az]) return;
     n.state = 'UP';
     if (n.role && !haPrimary()) {
-      n.role = 'STANDBY';
       haRender();
       haFailover('recover');
       return;
     }
     if (n.role) n.role = 'STANDBY';
     log('SUCCESS', 'ATLAS', tx(`${n.id} is back (${n.role || n.type})`, `${n.id} voltou (${n.role || n.type})`));
-    haRender(); syncAll();
+    haReplaceStandby();
+    haUpdateCapacityStep(); haRender(); syncAll();
   }, 1600);
 }
 
@@ -297,35 +319,43 @@ function haToggleAZ(i) {
     log('SUCCESS', AZ_NAMES[i], tx(`${AZ_NAMES[i]} restored — storage replicas rejoin and catch up`, `${AZ_NAMES[i]} restaurada — réplicas de storage voltam e se atualizam`));
     S.extra.filter(n => n.az === i && n.state === 'DOWN').forEach(n => haRecoverNode(n));
     S.ha.nodes.filter(n => n.az === i && n.state === 'DOWN').forEach(n => haRecoverNode(n));
+    // The old node may have been replaced elsewhere. Reconcile even an empty AZ.
+    haReplaceStandby();
     haRender(); syncAll();
   }
+  haUpdateCapacityStep();
 }
 
-// When the standby is lost, Atlas brings a compute node back in a healthy zone other than the primary's
+// Reserve a slot synchronously so repeated recovery events cannot start a third node.
 function haReplaceStandby(old) {
-  if (!S.ha.autoHeal) return;
-  const prim = haPrimary();
-  const az = [old.az, 0, 1, 2].find(a => !S.ha.azDown[a] && (!prim || a !== prim.az));
+  if (!S.ha.autoHeal || S.ha.failingOver) return;
+  const active = S.ha.nodes.filter(n => n.state !== 'DOWN' && !S.ha.azDown[n.az]);
+  if (active.length >= 2) return;
+  const az = [old?.az, 0, 1, 2].find(a => a !== undefined && !S.ha.azDown[a] && !active.some(n => n.az === a));
   if (az === undefined) { log('WARN', 'ATLAS', tx('No healthy zone available for a new standby yet', 'Ainda não há zona saudável para um novo standby')); return; }
-  const nn = { id: 'node-' + (++haNodeSeq), role: 'STANDBY', az, state: 'PROVISIONING' };
-  haLater(() => {
-    if (S.ha.nodes.filter(n => n.state !== 'DOWN').length >= 2) return;
-    S.ha.nodes = S.ha.nodes.filter(n => n !== old);
-    S.ha.nodes.push(nn);
-    log('INFO', 'ATLAS', tx(`${nn.id} provisioned in ${AZ_NAMES[az]} — attaching to the storage layer (no initial sync)`, `${nn.id} provisionado em ${AZ_NAMES[az]} — conectando à camada de storage (sem initial sync)`));
-    haRender(); syncAll();
-    haLater(() => {
-      nn.state = 'UP';
-      if (!haPrimary() && !S.ha.failingOver) { haRender(); haFailover('recover'); return; }
-      log('SUCCESS', 'ATLAS', tx(`${nn.id} is the new standby`, `${nn.id} é o novo standby`));
-      haRender(); syncAll();
-    }, 1800);
-  }, 1400);
+  let node = S.ha.nodes.find(n => n.az === az && n.state === 'DOWN');
+  if (!node) {
+    const replaced = old?.state === 'DOWN' ? old : S.ha.nodes.find(n => n.state === 'DOWN');
+    S.ha.nodes = S.ha.nodes.filter(n => n !== replaced);
+    node = { id: 'node-' + (++haNodeSeq), role: 'STANDBY', az, state: 'DOWN' };
+    S.ha.nodes.push(node);
+  }
+  haRecoverNode(node);
+}
+
+function haSetAutoHeal(enabled) {
+  S.ha.autoHeal = enabled;
+  if (enabled) haReplaceStandby();
+  haUpdateCapacityStep(); haRender(); syncAll();
 }
 
 // ── Failover sequence ────────────────────────────────────────────────────────
 
 function haFailover(reason) {
+  if (S.ha.failingOver) return;
+  const sequence = ++haFailoverSeq;
+  const later = (fn, ms) => haLater(() => { if (sequence === haFailoverSeq) fn(); }, ms);
+  S.ha.foPhase = 0;
   const steps = haFoSteps();
   const sb = haStandby();
   renderSteps('ha-steps', steps);
@@ -334,6 +364,7 @@ function haFailover(reason) {
     setStep('ha-steps', 1, 'fail');
     $('ha-steps').children[1].innerHTML = stepHTML(tx('<b>No standby available.</b> There is no other electable compute node to promote right now. Data stays durable in the storage layer; service resumes when a compute node is back.', '<b>Nenhum standby disponível.</b> Não há outro nó de compute elegível para promover agora. Os dados seguem duráveis na camada de storage; o serviço volta quando um nó de compute retornar.'));
     log('ERROR', 'ATLAS', tx('Primary lost and no standby available', 'Primário perdido e nenhum standby disponível'));
+    haReplaceStandby();
     haRender(); syncAll();
     return;
   }
@@ -346,34 +377,34 @@ function haFailover(reason) {
   $('ha-fo-timer').textContent = '0.0s';
   const iv = setInterval(tick, 500); S.ha.timers.push(iv);
   setStep('ha-steps', 1, 'active');
-  haLater(() => {
+  later(() => {
+    if (!S.ha.nodes.includes(sb) || sb.state !== 'UP' || S.ha.azDown[sb.az]) {
+      ++haFailoverSeq;
+      S.ha.failingOver = false;
+      clearInterval(iv);
+      haReplaceStandby(); haRender(); syncAll();
+      return;
+    }
     setStep('ha-steps', 1, 'done'); setStep('ha-steps', 2, 'active');
     if (old) old.role = 'STANDBY';
     sb.role = 'PRIMARY';
     log('SUCCESS', 'STORAGE', tx(`${sb.id} promoted to primary in ${AZ_NAMES[sb.az]} — warm, no log replay`, `${sb.id} promovido a primário em ${AZ_NAMES[sb.az]} — aquecido, sem replay de log`));
     haRender();
   }, 1100);
-  haLater(() => {
+  later(() => {
     setStep('ha-steps', 2, 'done'); setStep('ha-steps', 3, 'active');
     S.ha.failingOver = false;
     clearInterval(iv);
     log('INFO', 'DRIVER', tx(`Driver discovered new primary ${sb.id}; retryable writes resumed`, `Driver descobriu o novo primário ${sb.id}; retryable writes retomados`));
     haRender(); syncAll();
   }, 2100);
-  haLater(() => { setStep('ha-steps', 3, 'done'); setStep('ha-steps', 4, 'active'); log('INFO', 'ATLAS', tx('Acknowledged majority writes remain committed after failover; w:1 can roll back in rare failures', 'Escritas confirmadas com majority permanecem confirmadas após o failover; w:1 pode sofrer rollback em falhas raras')); }, 2900);
-  haLater(() => {
-    setStep('ha-steps', 4, 'done'); setStep('ha-steps', 5, 'active');
-    if (!old) { setStep('ha-steps', 5, 'done'); return; }
-    if (reason === 'test') {
-      old.state = 'PROVISIONING';
-      haRender();
-      haLater(() => { old.state = 'UP'; old.role = 'STANDBY'; setStep('ha-steps', 5, 'done'); log('SUCCESS', 'ATLAS', tx(`${old.id} restarted and rejoined as standby`, `${old.id} reiniciou e voltou como standby`)); haRender(); syncAll(); }, 1500);
-    } else if (reason === 'recover') {
-      setStep('ha-steps', 5, 'done');
-    } else if (S.ha.autoHeal) {
-      haReplaceStandby(old);
-      haLater(() => setStep('ha-steps', 5, 'done'), 3400);
-    } else setStep('ha-steps', 5, 'skip');
+  later(() => { setStep('ha-steps', 3, 'done'); setStep('ha-steps', 4, 'active'); log('INFO', 'ATLAS', tx('Acknowledged majority writes remain committed after failover; w:1 can roll back in rare failures', 'Escritas confirmadas com majority permanecem confirmadas após o failover; w:1 pode sofrer rollback em falhas raras')); }, 2900);
+  later(() => {
+    setStep('ha-steps', 4, 'done');
+    S.ha.foPhase = 5;
+    if (reason === 'test' && old) haRecoverNode(old);
+    haReplaceStandby(old);
+    haUpdateCapacityStep(); haRender(); syncAll();
   }, 3700);
 }
 
@@ -388,9 +419,11 @@ function haTestFailover() {
 }
 
 function haReset() {
+  ++haFailoverSeq;
   S.ha.timers.forEach(t => { clearTimeout(t); clearInterval(t); });
   S.ha.timers = [];
   S.ha.failingOver = false;
+  S.ha.foPhase = -1;
   S.ha.azDown = [false, false, false];
   haInitNodes();
   S.extra.forEach(n => { n.state = 'UP'; });

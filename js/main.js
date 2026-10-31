@@ -61,7 +61,7 @@ function rerenderAll() {
   document.querySelectorAll('.tc').forEach(el => el.classList.toggle('active', el.id === 'tab-' + S.tab));
   renderSteps('arch-steps', []);
   $('arch-steps-label').textContent = '';
-  if (!S.ha.failingOver) renderSteps('ha-steps', haFoSteps());
+  if (!S.ha.failingOver) { renderSteps('ha-steps', haFoSteps()); haUpdateCapacityStep(); }
   vsSetTimer();
   footRender();
   capButtonLabel();
