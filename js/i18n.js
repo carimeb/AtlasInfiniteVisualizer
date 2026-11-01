@@ -6,7 +6,7 @@ const PT = {
   'arch.simulation': 'Simulação',
   'arch.cacheOnlyRead': 'Esta escolha vale somente para a simulação de leitura. Ela não altera o caminho da escrita.',
   'arch.timingNote': 'Uma etapa por vez, no seu ritmo. Os tempos da animação são ilustrativos.',
-  'hdr.sub': 'HA · Failover · Escala Vertical e Horizontal · Backup — material educativo, não é documentação oficial da MongoDB',
+  'hdr.sub': 'Material educativo, não é documentação oficial da MongoDB',
   'hdr.badge': 'Public Preview',
   'view.basic': 'Essencial',
   'view.detailed': 'Detalhado',
