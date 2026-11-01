@@ -2,7 +2,7 @@
 
 An interactive, browser-based tool that explains **MongoDB Atlas Infinite** — the new deployment option in public preview — and how it handles **high availability, failover, vertical & horizontal scaling and backup**.
 
-**▶ Live:** https://carimeb.github.io/AtlasInfiniteVisualizer/ · Portuguese: add `?lang=pt` · deep-link a tab with `?tab=ha` (`arch`, `ha`, `vs`, `hs`, `bk`, `lim`) · pick the view with `?view=basic` or `?view=detailed`
+**▶ Live:** https://carimeb.github.io/AtlasInfiniteVisualizer/ · The main link always opens tab ① in Portuguese and Essentials, regardless of browser language or earlier visits. Explicit URL parameters override these defaults: English `?lang=en`, another tab `?tab=ha` (`arch`, `ha`, `vs`, `hs`, `bk`, `lim`), or `?view=detailed` for Deep dive.
 
 ### Two views
 

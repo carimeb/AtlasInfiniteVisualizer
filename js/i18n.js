@@ -134,7 +134,6 @@ function applyStaticLang() {
 
 function setLang(lang) {
   S.lang = lang === 'pt' ? 'pt' : 'en';
-  try { localStorage.setItem('aiv-lang', S.lang); } catch (e) { /* storage unavailable */ }
   const u = new URL(location.href);
   u.searchParams.set('lang', S.lang);
   try { history.replaceState(null, '', u); } catch (e) { /* file:// may refuse */ }
@@ -150,7 +149,6 @@ function applyView() {
 
 function setView(view) {
   S.view = view === 'detailed' ? 'detailed' : 'basic';
-  try { localStorage.setItem('aiv-view', S.view); } catch (e) { /* storage unavailable */ }
   const u = new URL(location.href);
   u.searchParams.set('view', S.view);
   try { history.replaceState(null, '', u); } catch (e) { /* file:// may refuse */ }
@@ -161,7 +159,6 @@ function setView(view) {
 function initView() {
   let view = null;
   try { view = new URL(location.href).searchParams.get('view'); } catch (e) { /* ignore */ }
-  if (!view) { try { view = localStorage.getItem('aiv-view'); } catch (e) { /* ignore */ } }
   S.view = view === 'detailed' ? 'detailed' : 'basic';
   applyView();
 }
@@ -169,8 +166,6 @@ function initView() {
 function initLang() {
   let lang = null;
   try { lang = new URL(location.href).searchParams.get('lang'); } catch (e) { /* ignore */ }
-  if (!lang) { try { lang = localStorage.getItem('aiv-lang'); } catch (e) { /* ignore */ } }
-  if (!lang) lang = (navigator.language || 'en').toLowerCase().startsWith('pt') ? 'pt' : 'en';
-  S.lang = lang === 'pt' ? 'pt' : 'en';
+  S.lang = lang === 'en' ? 'en' : 'pt';
   applyStaticLang();
 }

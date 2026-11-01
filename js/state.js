@@ -1,7 +1,7 @@
 // ─── GLOBAL STATE ────────────────────────────────────────────────────────────
 
 const S = {
-  lang: 'en',
+  lang: 'pt',
   view: 'basic',       // basic (Essentials) | detailed (Deep dive)
   tab: 'arch',
   // Settings shared by every tab
