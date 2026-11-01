@@ -1,13 +1,13 @@
 # MongoDB Atlas Infinite Visualizer
 
-An interactive, browser-based tool that explains **MongoDB Atlas Infinite** — the new deployment option announced at MongoDB.local NYC 2026 (public preview) — and how it handles **high availability, failover, vertical & horizontal scaling, the CAP theorem and backup**.
+An interactive, browser-based tool that explains **MongoDB Atlas Infinite** — the new deployment option announced at MongoDB.local NYC 2026 (public preview) — and how it handles **high availability, failover, vertical & horizontal scaling and backup**.
 
 **▶ Live:** https://carimeb.github.io/AtlasInfiniteVisualizer/ · Portuguese: add `?lang=pt` · deep-link a tab with `?tab=ha` (`arch`, `ha`, `vs`, `hs`, `bk`, `lim`) · pick the view with `?view=basic` or `?view=detailed`
 
 ### Two views
 
-* **Essentials** (default) — one "why it matters" message per tab with the technical/commercial value, the main diagram and interaction, and a compact Core vs Infinite comparison. No source chips, event log or advanced settings.
-* **Deep dive** — everything: write/read concerns, failover internals, the documented auto-scaling rules with a live "why did/didn't it scale" panel, restore rules, the full official preview-limitations list and every source.
+* **Essentials** (default) — one "why it matters" message per tab with the technical/commercial value, the main diagram and interaction. No source chips, event log or advanced settings.
+* **Deep dive** — everything: the side-by-side Core vs Infinite comparison, write/read concerns, failover internals, the documented auto-scaling rules with a live "why did/didn't it scale" panel, restore rules, the full official preview-limitations list and every source.
 
 Companion to the [Data Resilience Visualizer](https://carimeb.github.io/DataResilienceVisualizer/) (replica sets, multi-region, multi-cloud on Atlas Core).
 
@@ -19,14 +19,12 @@ Companion to the [Data Resilience Visualizer](https://carimeb.github.io/DataResi
 
 | Tab | What you can do |
 |---|---|
-| **① Architecture & Write Path** | Toggle **Atlas Core ↔ Atlas Infinite**. Animate a write: client → primary → **Log Service replicated across 3 AZs** → ACK on storage-layer majority. Background work shows the standby following the log independently of the **Page Materializer**, which feeds phylog to Page Service and oplog + phylog to object storage **in parallel**. Choose **cache hit or cache miss** for repeatable read demonstrations in both views, with labels matching the selected path. Deep dive also exposes `readPreference`/`readConcern`. Side-by-side Core vs Infinite table. |
-| **② High Availability & Failover** | Pick one of the 10 Infinite-supported AWS regions, then click nodes or whole **Availability Zones** to fail them. Watch the **storage layer coordinate failover** (no votes among compute nodes), the warm standby get promoted, drivers retry, and a replacement node attach to storage without an initial sync. **Acknowledged majority writes never roll back; w:1 can roll back in rare failures.** Lose 2 of 3 AZs to see the storage majority disappear (CP behaviour). *Test Primary Failover* button. |
+| **① Architecture & Write Path** | Toggle **Atlas Core ↔ Atlas Infinite**. Animate a write: client → primary → **Log Service replicated across 3 AZs** → ACK on storage-layer majority. Background work shows the standby following the log independently of the **Page Materializer**, which feeds phylog to Page Service and oplog + phylog to object storage **in parallel**. Use **0.5× playback** by default, **0.25×** for a slower animation, **Pause/Resume**, or **Step by step** with a persistent current-stage explanation. Choose **cache hit or cache miss** for repeatable read demonstrations in both views, with labels matching the selected path. This selector affects reads only. Deep dive also exposes `readPreference`/`readConcern`. Side-by-side Core vs Infinite table in Deep dive only. |
+| **② High Availability & Failover** | Pick one of the 10 Infinite-supported AWS regions, then click nodes or whole **Availability Zones** to fail them. Watch the **storage layer coordinate failover** (no votes among compute nodes), the warm standby get promoted, drivers retry, and a replacement node attach to storage without an initial sync. **Acknowledged majority writes never roll back; w:1 can roll back in rare failures.** Lose 2 of 3 AZs to see majority writes wait for the storage quorum. *Test Primary Failover* button. |
 | **③ Vertical Scaling & Storage** | Pick a tier (M10–M60 General, M40–M60 Low-CPU) to watch a resize that **moves no data**. Run an **AI-agent traffic spike** or a **recurring daily peak** against compute auto-scaling that follows the **documented criteria** (scale up after >90% for 10 min or a 1-h average >75%; scale down only after 4 h below 45%, at most once per 24 h; predictive scales up to 2 tiers ahead of cyclical peaks), with a live "why did/didn't it scale" panel. Ingest data against the **max storage limit** (up to 128 TB; writes blocked near the limit, reads still served). |
 | **④ Horizontal Read Scaling** | Add up to **5 read-only / analytics nodes** (7 nodes max) that serve reads in minutes. Change `readPreference` and `readPreferenceTags` (`nodeType`) and watch per-node load. |
 | **⑤ Backup & Restore** | Storage-layer backups, **24-hour continuous (point-in-time) window**, snapshots kept up to 3 years, and allowed restore targets. The animation illustrates the **storage step**: creating a log branch reuses existing data without copying it; the complete restore job includes other steps before the target is ready. General database cloning is identified as a future possibility built on this architecture. |
 | **⑥ Preview Limits & Sources** | The full official list of what isn't available yet — **multi-region, multi-cloud, Atlas Search, Vector Search**, sharding, Global Clusters, Online Archive, live migration, Atlas Charts, MCP Server… — the 10 supported AWS regions, and every official source. |
-
-The **⬡ CAP Positioning** panel (header, **Deep dive only**) follows every setting and simulated failure across all tabs. Switching to Essentials closes the panel.
 
 ## Run it
 
@@ -44,8 +42,9 @@ AtlasInfiniteVisualizer/
 │   ├── state.js          # global state S, tiers, official SOURCES registry
 │   ├── i18n.js           # EN (in the HTML) + PT-BR dictionary, setLang()
 │   ├── utils.js          # helpers, brand colors, SVG icons, packet animation
-│   ├── cap.js            # CAP panel model
-│   ├── tab-arch.js       # ① architecture & write path
+│   ├── arch-playback.js  # pausable active-time clock and stage controller
+│   ├── tab-arch.js       # ① architecture diagrams and explanatory text
+│   ├── arch-simulation.js # guided write/read plans and playback controls
 │   ├── tab-ha.js         # ② high availability & failover
 │   ├── tab-vs.js         # ③ vertical scaling, auto-scaling, storage
 │   ├── tab-hs.js         # ④ horizontal read scaling
@@ -57,11 +56,11 @@ AtlasInfiniteVisualizer/
 └── dist/
 ```
 
-Script order matters (globals): `state → i18n → utils → cap → tab-* → main`.
+Script order matters (globals): `state → i18n → utils → arch-playback → tab-arch → arch-simulation → other tab-* → main`.
 
 ## Regression checks
 
-Run `node --test tests/ha-recovery.test.js` with Node.js 18 or newer. The tests use simulated timers to cover consecutive AZ failures, standby recovery in a restored AZ, recovery cancellation, and the capacity-restored indicator. No extra dependencies are required.
+Run `node --test tests/*.test.js` with Node.js 18 or newer. The tests use simulated timers to cover guided playback, pause/resume, speed changes, manual advancement, cancellation, acknowledgment thresholds, read cache paths, consecutive AZ failures and standby recovery. No extra dependencies are required.
 
 ## Brand
 

@@ -3,7 +3,7 @@
 const AP = {};   // coordinates of the last render, used by the animations
 
 function archSetMode(mode) {
-  if (S.arch.busy) return;
+  archResetPlayback();
   S.arch.mode = mode;
   document.querySelectorAll('#arch-seg button').forEach(b => b.classList.toggle('on', b.dataset.mode === mode));
   archRender();
@@ -13,7 +13,6 @@ function archSetMode(mode) {
   log('INFO', 'ARCH', mode === 'core'
     ? tx('Showing Atlas Core — compute and storage coupled on every node', 'Exibindo Atlas Core — compute e storage acoplados em cada nó')
     : tx('Showing Atlas Infinite — compute and storage as independent layers', 'Exibindo Atlas Infinite — compute e storage como camadas independentes'));
-  updateCAP();
 }
 
 function archElectable() { return S.ha.nodes; }
@@ -22,8 +21,7 @@ function archUpAZ(i) { return !S.ha.azDown[i]; }
 function archSetReadCache(value) {
   if (S.arch.busy || !['hit', 'miss'].includes(value)) return;
   S.arch.readCache = value;
-  renderSteps('arch-steps', []);
-  $('arch-steps-label').textContent = '';
+  archResetPlayback();
 }
 
 function archRender() {
@@ -127,7 +125,8 @@ function archRender() {
 }
 
 function archRenderCore() {
-  let s = `<svg viewBox="0 0 800 520" width="100%" xmlns="http://www.w3.org/2000/svg">`;
+  let s = `<svg viewBox="0 0 800 520" width="100%" xmlns="http://www.w3.org/2000/svg">
+    <defs><marker id="arch-core-repl-arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#001E2B"/></marker></defs>`;
   s += `<rect x="20" y="64" width="760" height="380" rx="12" fill="#FAFBFC" stroke="rgba(0,30,43,.14)" stroke-width="1.5"/>
     <text x="34" y="83" font-size="10" font-weight="800" fill="#001E2B" letter-spacing="1">${tx('REPLICA SET — EVERY NODE = COMPUTE + ITS OWN STORAGE', 'REPLICA SET — CADA NÓ = COMPUTE + SEU PRÓPRIO STORAGE')}</text>`;
   AP.client = [400, 46];
@@ -135,12 +134,15 @@ function archRenderCore() {
   const xs = [160, 400, 640];
   AP.core = xs.map(x => [x, 175]);
   AP.coreDisk = xs.map(x => [x, 300]);
+  // Keep a clear replication lane above the cards; draw routes over their backgrounds.
+  xs.forEach(x => {
+    s += `<rect x="${x - 95}" y="134" width="190" height="248" rx="12" fill="#fff" stroke="rgba(0,30,43,.22)" stroke-width="1.3"/>`;
+  });
   s += `<line x1="400" y1="46" x2="160" y2="146" stroke="#00684A" stroke-width="1.5" stroke-dasharray="5 4" opacity=".55"/>`;
-  s += `<path d="M190,170 C260,150 330,150 372,170" fill="none" stroke="rgba(0,30,43,.35)" stroke-width="1.8" class="repl"/>
-        <path d="M190,182 C330,232 500,232 612,182" fill="none" stroke="rgba(0,30,43,.35)" stroke-width="1.8" class="repl"/>
-        <text x="281" y="146" text-anchor="middle" font-size="8.5" fill="rgba(0,30,43,.72)">${tx('oplog replication', 'replicação do oplog')}</text>`;
+  s += `<path data-connection="core-oplog" d="M190,175 H278 V118 H640 V146" fill="none" stroke="#001E2B" stroke-width="1.5" stroke-linejoin="round" class="repl" marker-end="url(#arch-core-repl-arrow)"/>
+        <path data-connection="core-oplog" d="M400,118 V146" fill="none" stroke="#001E2B" stroke-width="1.5" class="repl" marker-end="url(#arch-core-repl-arrow)"/>
+        <text x="460" y="107" text-anchor="middle" font-size="9" font-weight="600" fill="#001E2B">${tx('oplog replication', 'replicação do oplog')}</text>`;
   xs.forEach((x, i) => {
-    s += `<rect x="${x - 95}" y="112" width="190" height="270" rx="12" fill="#fff" stroke="rgba(0,30,43,.22)" stroke-width="1.3"/>`;
     s += `<g class="${i === 0 ? 'gnod' : ''}">${mdbNodeIcon(x, 175, 50, 'UP', i === 0 ? 'PRIMARY' : 'SECONDARY')}</g>`;
     s += roleBadge(x, 208, i === 0 ? 'PRIMARY' : 'SECONDARY', 'UP', i === 0 ? tx('PRIMARY', 'PRIMÁRIO') : tx('SECONDARY', 'SECUNDÁRIO'));
     s += `<line x1="${x}" y1="226" x2="${x}" y2="270" stroke="#001E2B" stroke-width="1.3"/>`;
@@ -175,6 +177,7 @@ function archLegend() {
 // ── Side panel texts ─────────────────────────────────────────────────────────
 
 function archUpdateInfo() {
+  archPlaybackUI();
   const core = S.arch.mode === 'core';
   $('arch-cache').value = S.arch.readCache;
   $('arch-mode-desc').innerHTML = core
@@ -261,232 +264,4 @@ function archRenderCmp() {
   ];
   $('arch-cmp').innerHTML = `<table class="cmp"><thead><tr><th></th><th>Atlas Core</th><th class="inf">Atlas Infinite</th></tr></thead><tbody>
     ${rows.map(r => { const xr = r[0] === 'xr', c = xr ? r.slice(1) : r; return `<tr class="${xr ? 'xr' : ''}"><td>${c[0]}</td><td>${c[1]}</td><td class="inf">${c[2]}</td></tr>`; }).join('')}</tbody></table>`;
-}
-
-// ── Animations ───────────────────────────────────────────────────────────────
-
-function archLock(on) {
-  S.arch.busy = on;
-  $('arch-btn-w').disabled = on; $('arch-btn-r').disabled = on;
-  $('arch-cache').disabled = on;
-}
-
-async function archSimWrite() {
-  if (S.arch.busy) return;
-  if (S.arch.mode === 'core') return archSimWriteCore();
-  const prim = S.ha.nodes.find(n => n.role === 'PRIMARY' && n.state === 'UP');
-  const wc = S.wc, ackOnMajority = wc === 'wmaj' || wc === 'wnum';
-  const steps = [
-    tx('<b>Client → primary.</b> The driver routes the write to the primary compute node.', '<b>Cliente → primário.</b> O driver envia a escrita ao nó de compute primário.'),
-    tx('<b>Primary → Log Service.</b> The primary executes the write and appends the oplog entry to the storage layer.', '<b>Primário → Log Service.</b> O primário executa a escrita e anexa a entrada do oplog na camada de storage.'),
-    tx('<b>Replicated across 3 AZs.</b> The Log Service replicates the entry to its replicas in three Availability Zones.', '<b>Replicado em 3 AZs.</b> O Log Service replica a entrada para suas réplicas em três Availability Zones.'),
-    ackOnMajority ? tx('<b>Majority durable → ACK.</b> 2 of 3 log replicas hold the entry → the write is acknowledged. It will never be rolled back.', '<b>Maioria durável → ACK.</b> 2 de 3 réplicas do log têm a entrada → a escrita é confirmada. Nunca sofrerá rollback.')
-      : wc === 'w1' ? tx('<b>ACK already sent (w:1).</b> w:1 returns sooner than a majority write — but Atlas can roll it back in rare failures. (The exact acknowledgment point is drawn here for illustration.)', '<b>ACK já enviado (w:1).</b> O w:1 retorna antes de uma escrita majority — mas o Atlas pode fazer rollback em falhas raras. (O ponto exato do ACK é desenhado aqui apenas como ilustração.)')
-      : tx('<b>No ACK (w:0).</b> The client never waits for — or learns about — the outcome.', '<b>Sem ACK (w:0).</b> O cliente nunca espera — nem fica sabendo — o resultado.'),
-    tx('<b>Standby follows the log asynchronously.</b> It applies the oplog into an in-memory ingest table on top of the stable table. This runs independently of page materialization and does not gate the client ACK.', '<b>Standby acompanha o log de forma assíncrona.</b> Aplica o oplog numa ingest table em memória sobre a stable table. Isso ocorre independentemente da materialização de páginas e não condiciona o ACK ao cliente.'),
-    tx('<b>Materializer → Page Service and S3 in parallel.</b> At checkpoint the engine emits the physical log (phylog). Each zone\'s Page Materializer tails the log, distributes phylog to page servers and, in parallel, uploads oplog + phylog to object storage. This background work is shown after the ACK for clarity; it is not a prerequisite for the ACK.', '<b>Materializer → Page Service e S3 em paralelo.</b> No checkpoint o engine emite o log físico (phylog). O Page Materializer de cada zona acompanha o log, distribui phylog aos page servers e, em paralelo, envia oplog + phylog ao object storage. Esse trabalho de fundo é mostrado após o ACK para facilitar a leitura; ele não é um pré-requisito do ACK.'),
-  ];
-  renderSteps('arch-steps', steps);
-  $('arch-steps-label').textContent = tx('write · ', 'escrita · ') + { w0: 'w:0', w1: 'w:1', wmaj: 'w:"majority"', wnum: 'w:3 → majority' }[wc];
-  if (!prim) {
-    setStep('arch-steps', 0, 'active');
-    log('WARN', 'DRIVER', tx('No primary available right now — the driver waits for a new primary and retries the write (retryable writes)', 'Nenhum primário disponível agora — o driver espera um novo primário e refaz a escrita (retryable writes)'));
-    return;
-  }
-  archLock(true);
-  const [px, py] = AP.nodes[prim.id];
-  log('INFO', 'CLIENT', tx(`insertOne() with writeConcern ${$('arch-steps-label').textContent.split('· ')[1]}`, `insertOne() com writeConcern ${$('arch-steps-label').textContent.split('· ')[1]}`));
-  setStep('arch-steps', 0, 'active');
-  await fly('arch-svg', [AP.client, [px, py - 26]], 650, '#00ED64');
-  setStep('arch-steps', 0, 'done'); setStep('arch-steps', 1, 'active');
-  flash('arch-svg', px, py - 34, tx('apply', 'aplica'), '#00684A');
-  let ackP = Promise.resolve();
-  const ackW1 = () => { ackP = fly('arch-svg', [[px, py - 26], AP.client], 600, '#00684A').then(() => { flash('arch-svg', 400, 62, 'ACK (w:1)', '#B45309'); log('SUCCESS', 'CLIENT', tx('ACK received (w:1) — sooner than majority; can be rolled back in rare failures', 'ACK recebido (w:1) — antes do majority; pode sofrer rollback em falhas raras')); }); };
-  await sleep(250);
-  setStep('arch-steps', 1, 'done'); setStep('arch-steps', 2, 'active');
-  const upAZ = [0, 1, 2].filter(archUpAZ);
-  let arrived = 0, majorityAt = null;
-  const durs = [700, 900, 1250];
-  const flights = [0, 1, 2].map(i => {
-    if (!archUpAZ(i)) return Promise.resolve();
-    const [lx, ly] = AP.log[i];
-    return fly('arch-svg', [[px, py + 62], [px, py + 100], [lx, ly - 70], [lx, ly - 20]], durs[i], '#023430').then(() => {
-      arrived++;
-      flash('arch-svg', lx, ly - 26, `${arrived}/3`, '#001E2B');
-      if (arrived === 1 && wc === 'w1') ackW1();
-      if (arrived === 2) majorityAt = performance.now();
-    });
-  });
-  // wait for majority (or all flights)
-  await new Promise(res => {
-    const iv = setInterval(() => { if (arrived >= 2 || arrived >= upAZ.length) { clearInterval(iv); res(); } }, 40);
-    Promise.all(flights).then(() => { clearInterval(iv); res(); });
-  });
-  setStep('arch-steps', 2, 'done');
-  setStep('arch-steps', 3, 'active');
-  if (upAZ.length < 2) {
-    flash('arch-svg', 400, 236, tx('no storage majority', 'sem maioria no storage'), '#C0392B');
-    setStep('arch-steps', 3, 'active');
-    $('arch-steps').children[3].innerHTML = stepHTML(tx('<b>Waiting… no storage-layer majority.</b> Only 1 of 3 AZs is reachable, so a majority write can\'t be acknowledged. Without <b>wtimeout</b> the write waits indefinitely.', '<b>Esperando… sem maioria na camada de storage.</b> Só 1 de 3 AZs está acessível, então uma escrita majority não pode ser confirmada. Sem <b>wtimeout</b>, a escrita espera indefinidamente.'));
-    log('ERROR', 'STORAGE', tx('Log Service has 1/3 replicas — majority (2) unavailable; majority writes cannot be acknowledged', 'Log Service com 1/3 réplicas — maioria (2) indisponível; escritas majority não podem ser confirmadas'));
-    await Promise.all(flights);
-    await ackP;
-    archLock(false);
-    updateCAP();
-    return;
-  }
-  log('SUCCESS', 'LOG-SVC', tx('Entry durable on a majority of log replicas (2/3 AZs)', 'Entrada durável na maioria das réplicas do log (2/3 AZs)'));
-  if (ackOnMajority) {
-    flash('arch-svg', px + 40, py - 30, tx('majority ✓', 'maioria ✓'), '#001E2B');
-    await fly('arch-svg', [[px, py - 26], AP.client], 600, '#00684A');
-    flash('arch-svg', 400, 62, 'ACK ✓', '#00684A');
-    log('SUCCESS', 'CLIENT', tx('ACK received — write is majority-durable in the storage layer and will never be rolled back', 'ACK recebido — escrita durável na maioria da camada de storage; nunca sofrerá rollback'));
-  } else {
-    await ackP;
-    if (wc === 'w0') log('INFO', 'CLIENT', tx('w:0 — no ACK requested', 'w:0 — nenhum ACK solicitado'));
-  }
-  setStep('arch-steps', 3, 'done'); setStep('arch-steps', 4, 'active'); setStep('arch-steps', 5, 'active');
-  const stby = S.ha.nodes.find(n => n.role === 'STANDBY' && n.state === 'UP');
-  // Standby ingestion and page materialization are independent background work.
-  const standbyWork = (async () => {
-    if (stby) {
-      const li = archUpAZ(stby.az) ? stby.az : upAZ[0];
-      const [lx, ly] = AP.log[li]; const [sx, sy] = AP.nodes[stby.id];
-      await fly('arch-svg', [[lx + 8, ly - 20], [sx, sy + 90], [sx, sy + 59]], 650, '#00684A', 5);
-      flash('arch-svg', sx, sy - 34, tx('oplog applied', 'oplog aplicado'), '#00684A');
-    }
-    setStep('arch-steps', 4, stby ? 'done' : 'skip');
-  })();
-  const materializationWork = (async () => {
-    flash('arch-svg', px, py - 34, 'checkpoint → phylog', '#00684A');
-    await Promise.all(upAZ.map(async i => {
-      const [lx, ly] = AP.log[i], [mx, my] = AP.materializer[i], [pgx, pgy] = AP.page[i];
-      await flights[i];
-      await fly('arch-svg', [[px, py + 62], [lx, ly - 20]], 550, '#00684A', 5);
-      await fly('arch-svg', [[lx, ly + 22], [mx, my - 16]], 450, '#00684A', 5);
-      // Both destinations are fed by the materializer, never Page Service → S3.
-      await Promise.all([
-        fly('arch-svg', [[mx + 50, my], [pgx - 22, pgy]], 650, '#00684A', 5),
-        fly('arch-svg', [[mx, my + 16], AP.s3[i]], 650, '#001E2B', 5),
-      ]);
-    }));
-    flash('arch-svg', 400, 486, tx('oplog + phylog stored', 'oplog + phylog persistidos'), '#00684A');
-    setStep('arch-steps', 5, 'done');
-    log('INFO', 'MATERIALIZER', tx('Parallel destinations: phylog to Page Service; oplog + phylog to object storage. Neither gates the ACK.', 'Destinos paralelos: phylog ao Page Service; oplog + phylog ao object storage. Nenhum condiciona o ACK.'));
-  })();
-  await Promise.all([standbyWork, materializationWork]);
-  archLock(false);
-}
-
-async function archSimWriteCore() {
-  const wc = S.wc;
-  const steps = [
-    tx('<b>Client → primary.</b> The driver routes the write to the primary node.', '<b>Cliente → primário.</b> O driver envia a escrita ao nó primário.'),
-    tx('<b>Primary writes locally.</b> Applies the write and journals it to its own local volume.', '<b>Primário grava localmente.</b> Aplica a escrita e registra no journal do seu próprio volume local.'),
-    tx('<b>Secondaries replicate.</b> Each secondary pulls the oplog and applies it to its own full copy.', '<b>Secundários replicam.</b> Cada secundário puxa o oplog e aplica na sua própria cópia completa.'),
-    { w0: tx('<b>No ACK (w:0).</b>', '<b>Sem ACK (w:0).</b>'), w1: tx('<b>ACK after the primary (w:1).</b> Fast, but can be rolled back if the primary fails before replicating.', '<b>ACK após o primário (w:1).</b> Rápido, mas pode sofrer rollback se o primário falhar antes de replicar.'), wmaj: tx('<b>ACK at 2 of 3 nodes (majority).</b>', '<b>ACK em 2 de 3 nós (maioria).</b>'), wnum: tx('<b>ACK at 3 of 3 nodes (w:3).</b> Any node down = the write waits.', '<b>ACK em 3 de 3 nós (w:3).</b> Qualquer nó fora = a escrita espera.') }[wc],
-  ];
-  renderSteps('arch-steps', steps);
-  $('arch-steps-label').textContent = tx('write · Atlas Core', 'escrita · Atlas Core');
-  archLock(true);
-  const [px, py] = AP.core[0];
-  setStep('arch-steps', 0, 'active');
-  await fly('arch-svg', [AP.client, [px, py - 26]], 650, '#00ED64');
-  setStep('arch-steps', 0, 'done'); setStep('arch-steps', 1, 'active');
-  await fly('arch-svg', [[px, py + 50], [px, 280]], 400, '#001E2B', 5);
-  flash('arch-svg', px, 262, 'journal', '#001E2B');
-  if (wc === 'w1') fly('arch-svg', [[px, py - 26], AP.client], 600, '#00684A').then(() => flash('arch-svg', 400, 62, 'ACK (w:1)', '#B45309'));
-  setStep('arch-steps', 1, 'done'); setStep('arch-steps', 2, 'active');
-  let n = 1;
-  const f = AP.core.slice(1).map(([x, y], i) => fly('arch-svg', [[px + 30, py], [x - 30, y]], 800 + i * 500, 'rgba(0,30,43,.35)').then(() => fly('arch-svg', [[x, y + 50], [x, 280]], 350, '#001E2B', 5)).then(() => { n++; flash('arch-svg', x, y - 34, `${n}/3`, '#001E2B'); }));
-  await f[0];
-  setStep('arch-steps', 2, wc === 'wnum' ? 'active' : 'done');
-  if (wc === 'wmaj') { await fly('arch-svg', [[px, py - 26], AP.client], 600, '#00684A'); flash('arch-svg', 400, 62, 'ACK ✓', '#00684A'); }
-  await f[1];
-  if (wc === 'wnum') { setStep('arch-steps', 2, 'done'); await fly('arch-svg', [[px, py - 26], AP.client], 600, '#00684A'); flash('arch-svg', 400, 62, 'ACK ✓', '#00684A'); }
-  setStep('arch-steps', 3, 'done');
-  archLock(false);
-}
-
-function archPickReadNode() {
-  const up = [...S.ha.nodes, ...S.extra].filter(n => n.state === 'UP');
-  const prim = up.find(n => n.role === 'PRIMARY');
-  const secs = up.filter(n => n.role !== 'PRIMARY');
-  const pick = a => a[Math.floor(Math.random() * a.length)];
-  switch (S.rp) {
-    case 'primary': return prim;
-    case 'primaryPreferred': return prim || pick(secs);
-    case 'secondary': return secs.length ? pick(secs) : null;
-    case 'secondaryPreferred': return secs.length ? pick(secs) : prim;
-    case 'nearest': return pick(up);
-  }
-}
-
-async function archSimRead() {
-  if (S.arch.busy) return;
-  const core = S.arch.mode === 'core';
-  const cacheMiss = S.arch.readCache === 'miss';
-  if (S.rc === 'linearizable' && S.rp !== 'primary') {
-    renderSteps('arch-steps', [tx('<b>Rejected.</b> readConcern "linearizable" only works with readPreference primary.', '<b>Rejeitada.</b> readConcern "linearizable" só funciona com readPreference primary.')], ['active']);
-    log('ERROR', 'DRIVER', tx('linearizable read concern requires readPreference primary', 'read concern linearizable exige readPreference primary'));
-    return;
-  }
-  if (core) {
-    renderSteps('arch-steps', [tx('<b>Server selection</b> by readPreference.', '<b>Seleção de servidor</b> pelo readPreference.'), cacheMiss ? tx('<b>Cache miss: fetch from local storage.</b> The node reads its own attached volume.', '<b>Cache miss: busca no storage local.</b> O nó lê seu próprio volume anexado.') : tx('<b>Cache hit: read from memory.</b> The WiredTiger cache serves this read without a storage fetch.', '<b>Cache hit: leitura da memória.</b> O cache WiredTiger atende esta leitura sem buscar no storage.'), tx('<b>Result returned.</b>', '<b>Resultado retornado.</b>')]);
-    $('arch-steps-label').textContent = tx('read · Atlas Core · ', 'leitura · Atlas Core · ') + (cacheMiss ? 'cache miss' : 'cache hit');
-    archLock(true);
-    const idx = { primary: 0, primaryPreferred: 0, secondary: 1 + Math.floor(Math.random() * 2), secondaryPreferred: 1 + Math.floor(Math.random() * 2), nearest: Math.floor(Math.random() * 3) }[S.rp];
-    const [x, y] = AP.core[idx];
-    setStep('arch-steps', 0, 'active');
-    await fly('arch-svg', [AP.client, [x, y - 26]], 600, '#001E2B');
-    setStep('arch-steps', 0, 'done'); setStep('arch-steps', 1, 'active');
-    flash('arch-svg', x, y - 32, cacheMiss ? 'cache miss' : 'cache hit', '#00684A');
-    if (cacheMiss) {
-      await fly('arch-svg', [[x, y + 50], [x, 285]], 350, '#001E2B', 5);
-      await fly('arch-svg', [[x, 285], [x, y + 50]], 350, '#001E2B', 5);
-    }
-    setStep('arch-steps', 1, 'done'); setStep('arch-steps', 2, 'active');
-    await fly('arch-svg', [[x, y - 26], AP.client], 600, '#00684A');
-    setStep('arch-steps', 2, 'done');
-    archLock(false);
-    return;
-  }
-  const node = archPickReadNode();
-  const steps = [
-    tx(`<b>Server selection.</b> readPreference <b>${S.rp}</b> → ${node ? `<b>${node.id}</b> (${node.role || node.type})` : tx('<b>no eligible node</b>', '<b>nenhum nó elegível</b>')}.`, `<b>Seleção de servidor.</b> readPreference <b>${S.rp}</b> → ${node ? `<b>${node.id}</b> (${node.role || node.type})` : '<b>nenhum nó elegível</b>'}.`),
-    cacheMiss ? tx('<b>Cache miss: fetch from Page Service.</b> The compute node fetches the page from the shared, warm storage layer.', '<b>Cache miss: busca no Page Service.</b> O nó de compute busca a página na camada de storage compartilhada e aquecida.') : tx('<b>Cache hit: read from memory.</b> The WiredTiger cache serves this read without a Page Service fetch.', '<b>Cache hit: leitura da memória.</b> O cache WiredTiger atende esta leitura sem buscar no Page Service.'),
-    { local: tx('<b>readConcern local:</b> newest data on that node (may include not-yet-majority writes).', '<b>readConcern local:</b> dado mais novo naquele nó (pode incluir escritas ainda não majority).'), available: tx('<b>readConcern available:</b> lowest latency, no majority guarantee.', '<b>readConcern available:</b> menor latência, sem garantia de maioria.'), majority: tx('<b>readConcern majority:</b> only storage-majority-committed data.', '<b>readConcern majority:</b> apenas dados confirmados pela maioria do storage.'), linearizable: tx('<b>readConcern linearizable:</b> primary confirms it is still primary before returning.', '<b>readConcern linearizable:</b> o primário confirma que ainda é primário antes de retornar.'), snapshot: tx('<b>readConcern snapshot:</b> consistent majority-committed snapshot (transactions).', '<b>readConcern snapshot:</b> snapshot consistente confirmado pela maioria (transações).') }[S.rc],
-    tx('<b>Result returned to the client.</b>', '<b>Resultado retornado ao cliente.</b>'),
-  ];
-  renderSteps('arch-steps', steps);
-  $('arch-steps-label').textContent = tx('read · ', 'leitura · ') + S.rp + ' · ' + (cacheMiss ? 'cache miss' : 'cache hit');
-  if (!node) {
-    setStep('arch-steps', 0, 'active');
-    log('ERROR', 'DRIVER', tx(`No node matches readPreference ${S.rp} — server selection fails after timeout`, `Nenhum nó atende readPreference ${S.rp} — a seleção de servidor falha após o timeout`));
-    return;
-  }
-  archLock(true);
-  const [x, y] = AP.nodes[node.id];
-  setStep('arch-steps', 0, 'active');
-  await fly('arch-svg', [AP.client, [x, y - 24]], 600, '#001E2B');
-  setStep('arch-steps', 0, 'done'); setStep('arch-steps', 1, 'active');
-  const az = node.az !== undefined && archUpAZ(node.az) ? node.az : [0, 1, 2].find(archUpAZ);
-  if (cacheMiss && az === undefined) {
-    $('arch-steps').children[1].innerHTML = stepHTML(tx('<b>Cache miss: Page Service unavailable.</b> No storage zone is reachable in this simulation, so this fetch cannot complete.', '<b>Cache miss: Page Service indisponível.</b> Nenhuma zona de storage está acessível nesta simulação, então a busca não pode terminar.'));
-    log('ERROR', 'PAGE-SVC', tx('No Page Service available for this cache miss', 'Nenhum Page Service disponível para este cache miss'));
-    archLock(false);
-    return;
-  }
-  if (cacheMiss) {
-    const [pgx, pgy] = AP.page[az];
-    flash('arch-svg', x, y - 32, 'cache miss', '#00684A');
-    await fly('arch-svg', [[x, y + 24], [pgx, pgy - 20]], 550, '#00684A', 5);
-    await fly('arch-svg', [[pgx, pgy - 20], [x, y + 24]], 550, '#00684A', 5);
-    log('INFO', 'PAGE-SVC', tx(`Page fetched from Page Service (${AZ_NAMES[az]}) — no local disk involved`, `Página buscada do Page Service (${AZ_NAMES[az]}) — sem disco local`));
-  } else flash('arch-svg', x, y - 32, 'cache hit', '#00684A');
-  setStep('arch-steps', 1, 'done'); setStep('arch-steps', 2, 'done'); setStep('arch-steps', 3, 'active');
-  await fly('arch-svg', [[x, y - 24], AP.client], 600, '#00684A');
-  setStep('arch-steps', 3, 'done');
-  log('SUCCESS', 'CLIENT', tx(`Read served by ${node.id} (readPreference ${S.rp}, readConcern ${S.rc})`, `Leitura atendida por ${node.id} (readPreference ${S.rp}, readConcern ${S.rc})`));
-  archLock(false);
 }

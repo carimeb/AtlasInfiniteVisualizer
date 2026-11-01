@@ -14,8 +14,9 @@ JS_FILES=(
   js/state.js
   js/i18n.js
   js/utils.js
-  js/cap.js
+  js/arch-playback.js
   js/tab-arch.js
+  js/arch-simulation.js
   js/tab-ha.js
   js/tab-vs.js
   js/tab-hs.js

@@ -2,22 +2,6 @@
 
 const TABS = ['arch', 'ha', 'vs', 'hs', 'bk', 'lim'];
 
-function toggleCAPPanel() {
-  setCAPPanel(!$('cap').classList.contains('cap-visible'));
-}
-function setCAPPanel(open) {
-  open = open && S.view === 'detailed';
-  $('main').classList.toggle('cap-visible', open);
-  $('cap').classList.toggle('cap-visible', open);
-  $('cap-toggle-btn').classList.toggle('active', open);
-  capButtonLabel();
-  if (open) updateCAP();
-}
-function capButtonLabel() {
-  const open = $('cap').classList.contains('cap-visible');
-  $('cap-toggle-btn').textContent = open ? tx('✕ Hide CAP', '✕ Ocultar CAP') : tx('⬡ CAP Positioning', '⬡ Posição no CAP');
-}
-
 function renderTab(name) {
   if (name === 'arch') { archRender(); archUpdateInfo(); }
   if (name === 'ha') haRender();
@@ -28,6 +12,7 @@ function renderTab(name) {
 }
 
 function switchTab(name) {
+  archResetPlayback();
   if (!TABS.includes(name)) name = 'arch';
   S.tab = name;
   document.querySelectorAll('.tc').forEach(el => el.classList.toggle('active', el.id === 'tab-' + name));
@@ -39,13 +24,12 @@ function switchTab(name) {
   } catch (e) { /* file:// may refuse */ }
   renderTab(name);
   $('viz').scrollTop = 0;
-  updateCAP();
 }
 
-// Shared settings — every tab and the CAP panel read them
-function setWC(v) { S.wc = v; log('INFO', 'CONCERNS', `writeConcern → ${{ w0: 'w:0', w1: 'w:1', wmaj: 'w:"majority"', wnum: 'w:3' }[v]}${v === 'wnum' ? tx(' (mapped to "majority" on Atlas Infinite)', ' (mapeado para "majority" no Atlas Infinite)') : ''}`); syncAll(); }
-function setRC(v) { S.rc = v; log('INFO', 'CONCERNS', `readConcern → ${v}`); syncAll(); }
-function setRP(v) { S.rp = v; log('INFO', 'CONCERNS', `readPreference → ${v}`); syncAll(); }
+// Shared settings — every tab reads them
+function setWC(v) { archResetPlayback(); S.wc = v; log('INFO', 'CONCERNS', `writeConcern → ${{ w0: 'w:0', w1: 'w:1', wmaj: 'w:"majority"', wnum: 'w:3' }[v]}${v === 'wnum' ? tx(' (mapped to "majority" on Atlas Infinite)', ' (mapeado para "majority" no Atlas Infinite)') : ''}`); syncAll(); }
+function setRC(v) { archResetPlayback(); S.rc = v; log('INFO', 'CONCERNS', `readConcern → ${v}`); syncAll(); }
+function setRP(v) { archResetPlayback(); S.rp = v; log('INFO', 'CONCERNS', `readPreference → ${v}`); syncAll(); }
 
 // Keep selects in sync and refresh whatever is visible
 function syncAll() {
@@ -56,11 +40,11 @@ function syncAll() {
   if (S.tab === 'arch' && S.arch.busy) archUpdateInfo();
   if (S.tab === 'ha') haRender();
   if (S.tab === 'hs') hsUpdate();
-  updateCAP();
 }
 
 // Language switch — re-render every tab so hidden ones are ready too
 function rerenderAll() {
+  archResetPlayback();
   TABS.forEach(renderTab);
   document.querySelectorAll('.tc').forEach(el => el.classList.toggle('active', el.id === 'tab-' + S.tab));
   renderSteps('arch-steps', []);
@@ -68,8 +52,6 @@ function rerenderAll() {
   if (!S.ha.failingOver) { renderSteps('ha-steps', haFoSteps()); haUpdateCapacityStep(); }
   vsSetTimer();
   footRender();
-  capButtonLabel();
-  updateCAP();
 }
 
 window.addEventListener('load', () => {
@@ -81,7 +63,6 @@ window.addEventListener('load', () => {
   vsSetTimer();
   renderSteps('ha-steps', haFoSteps());
   footRender();
-  capButtonLabel();
   TABS.forEach(renderTab);
   let tab = 'arch';
   try { tab = new URL(location.href).searchParams.get('tab') || 'arch'; } catch (e) { /* ignore */ }

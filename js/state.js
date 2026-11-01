@@ -4,7 +4,7 @@ const S = {
   lang: 'en',
   view: 'basic',       // basic (Essentials) | detailed (Deep dive)
   tab: 'arch',
-  // Settings shared by every tab (and by the CAP panel)
+  // Settings shared by every tab
   wc: 'wmaj',          // w0 | w1 | wmaj | wnum
   rc: 'local',         // local | available | majority | linearizable | snapshot
   rp: 'primary',       // primary | primaryPreferred | secondary | secondaryPreferred | nearest

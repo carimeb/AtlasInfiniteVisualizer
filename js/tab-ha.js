@@ -188,8 +188,8 @@ function haUpdateInfo() {
   $('ha-bn-q').classList.toggle('show', !q && anyCompute);
   $('ha-bn-down').classList.toggle('show', !anyCompute);
   $('ha-bn-q-d').innerHTML = tx(
-    `Only ${upAZ} of 3 zones are reachable, so the Log Service can't form a majority (2). MongoDB describes the design as surviving the loss of <strong>one</strong> zone; with two zones gone, majority writes wait instead of risking divergence — Consistency is preserved over Availability. Set <strong>wtimeout</strong> so writes don't block indefinitely.${src('B4', 'D2')} <em>Shown here by quorum arithmetic — this scenario isn't described in the public docs.</em>`,
-    `Apenas ${upAZ} de 3 zonas estão acessíveis, então o Log Service não forma maioria (2). A MongoDB descreve o design como resistente à perda de <strong>uma</strong> zona; com duas zonas fora, escritas majority esperam em vez de arriscar divergência — a Consistência é preservada em vez da Disponibilidade. Defina <strong>wtimeout</strong> para as escritas não bloquearem indefinidamente.${src('B4', 'D2')} <em>Mostrado aqui pela aritmética de quórum — este cenário não é descrito na documentação pública.</em>`);
+    `Only ${upAZ} of 3 zones are reachable, so the Log Service can't form a majority (2). MongoDB describes the design as surviving the loss of <strong>one</strong> zone; with two zones gone, majority writes wait until the storage majority is reachable again. Set <strong>wtimeout</strong> so writes don't block indefinitely.${src('B4', 'D2')} <em>Shown here by quorum arithmetic — this scenario isn't described in the public docs.</em>`,
+    `Apenas ${upAZ} de 3 zonas estão acessíveis, então o Log Service não forma maioria (2). A MongoDB descreve o design como resistente à perda de <strong>uma</strong> zona; com duas zonas fora, escritas majority esperam até que a maioria do storage fique acessível novamente. Defina <strong>wtimeout</strong> para as escritas não bloquearem indefinidamente.${src('B4', 'D2')} <em>Mostrado aqui pela aritmética de quórum — este cenário não é descrito na documentação pública.</em>`);
 
   $('ha-status-label').textContent = S.ha.failingOver ? tx('failover in progress', 'failover em andamento')
     : !anyCompute ? tx('no compute available', 'sem compute disponível')
@@ -222,7 +222,6 @@ function haUpdateInfo() {
     `<div class="desc lav only-detailed" style="margin-top:8px">${tx('Timings in this animation are illustrative. The public preview docs don\'t publish an Atlas Infinite failover duration.', 'Os tempos desta animação são ilustrativos. A documentação do public preview não publica uma duração de failover para o Atlas Infinite.')}</div>`;
 
   haRenderCmp();
-  updateCAP();
 }
 
 function haRenderCmp() {

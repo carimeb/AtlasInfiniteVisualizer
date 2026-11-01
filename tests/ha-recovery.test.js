@@ -101,7 +101,6 @@ function simulation({ autoHeal = true } = {}) {
     src: () => '',
     log: () => {},
     syncAll: () => observe('syncAll'),
-    updateCAP: () => {},
     stepHTML: text => text,
     renderSteps(id, steps, states) {
       getElement(id).children = steps.map((text, index) => ({ ...element(), innerHTML: text, className: states?.[index] || '' }));

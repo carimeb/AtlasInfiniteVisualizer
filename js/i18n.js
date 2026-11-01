@@ -3,7 +3,19 @@
 // Dynamic strings use tx(en, pt) next to the code that renders them.
 
 const PT = {
-  'hdr.sub': 'HA · Failover · Escala Vertical e Horizontal · CAP · Backup — material educativo, não é documentação oficial da MongoDB',
+  'arch.playmode': 'Reprodução',
+  'arch.auto': 'Automática',
+  'arch.manual': 'Passo a passo',
+  'arch.speed': 'Velocidade da animação',
+  'arch.verySlow': '0,25× — muito lenta',
+  'arch.slow': '0,5× — lenta',
+  'arch.normal': '1× — normal',
+  'arch.next': 'Próxima etapa →',
+  'arch.stop': '■ Parar',
+  'arch.simulation': 'Simulação',
+  'arch.cacheOnlyRead': 'Esta escolha vale somente para a simulação de leitura. Ela não altera o caminho da escrita.',
+  'arch.timingNote': 'Tempos ilustrativos. Use Passo a passo para avançar no seu ritmo.',
+  'hdr.sub': 'HA · Failover · Escala Vertical e Horizontal · Backup — material educativo, não é documentação oficial da MongoDB',
   'hdr.badge': 'Public Preview',
   'view.basic': 'Essencial',
   'view.detailed': 'Detalhado',
@@ -123,19 +135,6 @@ const PT = {
   'lim.sources': 'Fontes oficiais usadas neste visualizador',
   'lim.legend': 'Chips como <a class="src">D2</a> apontam para a documentação da MongoDB; <a class="src blog">B4</a> apontam para posts de blog, press releases ou páginas de produto da MongoDB (afirmações do fabricante). Todo o resto nesta ferramenta é uma ilustração simplificada.',
 
-  'cap.title': 'Posição no Teorema CAP',
-  'cap.note': '<strong style="display:block;margin-bottom:2px">📌 Modelo simplificado — apenas ilustrativo</strong>Uma bússola direcional, não uma prova formal. Reage ao seu writeConcern, readConcern, readPreference e às falhas simuladas. Use como ponto de partida para a conversa, não como especificação.',
-  'cap.c': 'Consistência',
-  'cap.a': 'Disponibilidade',
-  'cap.p': 'Tolerância a partição',
-  'cap.zone': 'zona de operação',
-  'cap.trade': 'Trade-off C ↔ A',
-  'cap.l': '← Disponibilidade',
-  'cap.r': 'Consistência →',
-  'cap.metrics': 'Métricas de impacto',
-  'cap.p.title': 'Tolerância a partição no Atlas Infinite',
-  'cap.expl': 'Explicação',
-  'cap.active': 'Configurações ativas',
 };
 
 function applyStaticLang() {
@@ -166,7 +165,6 @@ function setLang(lang) {
 }
 
 function applyView() {
-  if (S.view === 'basic') setCAPPanel(false);
   document.body.classList.toggle('view-basic', S.view === 'basic');
   document.body.classList.toggle('view-detailed', S.view === 'detailed');
   document.querySelectorAll('.view-toggle button').forEach(b => b.classList.toggle('on', b.dataset.view === S.view));

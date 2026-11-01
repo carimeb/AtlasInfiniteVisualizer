@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MongoDB Atlas Infinite Visualizer — HA, Failover, Scaling, CAP &amp; Backup</title>
-<meta name="description" content="Interactive, educational visualizer for MongoDB Atlas Infinite (public preview): disaggregated compute/storage, high availability, failover, vertical and horizontal scaling, CAP theorem and backup.">
+<title>MongoDB Atlas Infinite Visualizer — HA, Failover, Scaling &amp; Backup</title>
+<meta name="description" content="Interactive, educational visualizer for MongoDB Atlas Infinite (public preview): disaggregated compute/storage, high availability, failover, vertical and horizontal scaling and backup.">
 <link href="https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -39,7 +39,6 @@ code{font-family:'SF Mono','Consolas',monospace;font-size:.92em;background:var(-
 .lang button.on{background:var(--spring);color:var(--slate)}
 .hdr-btn{background:rgba(0,237,100,.1);color:var(--spring);border:1px solid rgba(0,237,100,.35);border-radius:6px;padding:4px 12px;font-size:11px;font-weight:600;font-family:'Lexend Deca',sans-serif;cursor:pointer;white-space:nowrap;transition:background .2s,border-color .2s;letter-spacing:.3px}
 .hdr-btn:hover{background:rgba(0,237,100,.2);border-color:var(--spring)}
-.hdr-btn.active{background:var(--spring);color:var(--slate);border-color:var(--spring)}
 .hdr-btn.lav{background:rgba(249,235,255,.1);color:var(--lavender);border-color:rgba(249,235,255,.4)}
 .hdr-btn.lav:hover{background:rgba(249,235,255,.2)}
 
@@ -50,12 +49,8 @@ code{font-family:'SF Mono','Consolas',monospace;font-size:.92em;background:var(-
 .tab-btn.active{color:var(--slate);border-bottom-color:var(--spring);font-weight:700}
 
 /* MAIN */
-#main{flex:1;display:grid;grid-template-columns:minmax(0,1fr);overflow:hidden;transition:grid-template-columns .3s ease;min-height:0}
-#main.cap-visible{grid-template-columns:minmax(0,1fr) 310px}
+#main{flex:1;display:grid;grid-template-columns:minmax(0,1fr);overflow:hidden;min-height:0}
 #viz{overflow-y:auto;padding:16px;background:var(--bg1);min-width:0}
-#cap{background:var(--white);overflow-y:auto;padding:14px;display:none;flex-direction:column;gap:12px;border-left:1px solid var(--border)}
-#cap.cap-visible{display:flex}
-.panel-title{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--forest);font-weight:700}
 
 /* LOG */
 #log{height:92px;background:var(--white);border-top:1px solid var(--border);overflow-y:auto;padding:5px 14px;font-family:'SF Mono','Consolas',monospace;font-size:11px;flex-shrink:0}
@@ -178,24 +173,6 @@ svg text{font-family:'Lexend Deca',sans-serif}
 .cmp tr:last-child td{border-bottom:none}
 .tbl-wrap{overflow-x:auto}
 
-/* METRIC */
-.mrow{display:flex;align-items:center;gap:6px;margin-bottom:6px;font-size:12px}
-.mlbl{color:var(--text2);flex:1}
-.mtrk{width:70px;height:6px;background:var(--bg3);border-radius:3px;overflow:hidden}
-.mfil{height:100%;border-radius:3px;transition:width .5s;background:var(--forest)}
-.mval{color:var(--text);font-weight:600;min-width:58px;text-align:right;font-size:11px}
-
-/* CAP */
-#cap-svg{width:100%;flex-shrink:0}
-.cap-mode{padding:7px 10px;border-radius:8px;text-align:center;font-size:13px;font-weight:700}
-.cm-cp{background:var(--mist);color:var(--evergreen);border:1px solid rgba(0,104,74,.4)}
-.cm-ap{background:var(--lavender);color:var(--slate);border:1px solid rgba(0,30,43,.3)}
-.cm-bal{background:var(--offwhite);color:var(--slate);border:1px solid var(--border2)}
-.cm-down{background:var(--bad-bg);color:#7F1D1D;border:1px solid var(--bad)}
-.cap-desc{font-size:12px;color:var(--text2);line-height:1.65}
-.cap-desc strong{color:var(--text)}
-.note-y{background:var(--lavender);border:1px solid rgba(0,30,43,.18);border-radius:6px;padding:7px 10px;font-size:10.5px;color:var(--slate);line-height:1.6}
-
 /* GAUGE */
 .gauge{position:relative;height:22px;background:var(--bg3);border-radius:6px;overflow:hidden;border:1px solid var(--border)}
 .gauge-fill{position:absolute;left:0;top:0;bottom:0;background:var(--forest);transition:width .5s,background .3s}
@@ -272,10 +249,19 @@ body.view-basic .cmp tr.xr{display:none}
 .mini-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:4px 18px}
 
 /* RESPONSIVE */
+.arch-guide{position:sticky;top:0;z-index:3;background:var(--white);padding:8px 0 10px}
+.sim-controls{display:flex;gap:8px;align-items:end;flex-wrap:wrap;margin-bottom:8px}
+.sim-controls .fld{margin:0;flex:1;min-width:130px}
+.sim-controls .btn{min-height:34px}
+.sim-now{border:1px solid var(--forest);border-left:4px solid var(--forest);border-radius:8px;background:var(--mist);padding:10px 12px;line-height:1.5}
+.sim-now .sim-kicker{font-size:10px;font-weight:700;color:var(--forest);letter-spacing:.4px;margin-bottom:3px}
+.sim-now strong{display:block;font-size:14px;color:var(--slate)}
+.sim-now p{margin:4px 0 0;font-size:12px;color:var(--text2)}
+.sim-frozen *{animation-play-state:paused!important}
+.sim-read{border-top:1px solid var(--border);margin-top:12px;padding-top:12px}
+.sim-note{font-size:11px;line-height:1.5;color:var(--text3);margin:6px 0 10px}
 @media (max-width:1100px){
   .two-col{grid-template-columns:minmax(0,1fr)}
-  #main.cap-visible{grid-template-columns:minmax(0,1fr)}
-  #main.cap-visible #viz{display:none}
 }
 @media (max-width:700px){
   .value{flex-direction:column;gap:4px}
@@ -295,7 +281,7 @@ body.view-basic .cmp tr.xr{display:none}
   <div class="hdr-title">
     <img class="hdr-logo" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMjcgMzIiIGZpbGw9Im5vbmUiIHJvbGU9ImltZyIgYXJpYS1sYWJlbD0iTW9uZ29EQiBMb2dvIj4KPCEtLSBPZmZpY2lhbCBNb25nb0RCIGxvZ28sIHVuYWx0ZXJlZDogcGF0aHMgZnJvbSBAbGVhZnlncmVlbi11aS9sb2dvIDExLjEuMSAoTW9uZ29EQkxvZ28sIGNvbG9yICJncmVlbi1iYXNlIiA9ICMwMEVENjQgU3ByaW5nIEdyZWVuKSAtLT4KPHBhdGggZD0iTTkuNDkxMDkgMy4yOTQ4OEM4LjIzNzU0IDEuODIyODIgNy4xNjggMC4zMjc3NjMgNi45NDk0OSAwLjAxNzI1MDdDNi45MjY0OSAtMC4wMDU3NTAyMiA2Ljg5MTk5IC0wLjAwNTc1MDIyIDYuODY4OTkgMC4wMTcyNTA3QzYuNjUwNDggMC4zMjc3NjMgNS41ODA5NCAxLjgyMjgyIDQuMzM4ODkgMy4yOTQ4OEMtNi4zMjIwMyAxNi44NzY5IDYuMDE3OTUgMjYuMDMxMyA2LjAxNzk1IDI2LjAzMTNMNi4xMjE0NiAyNi4xMDAzQzYuMjEzNDYgMjcuNTE0OCA2LjQ0MzQ3IDI5LjU1MDQgNi40NDM0NyAyOS41NTA0SDYuOTAzNDlINy4zNjM1MUM3LjM2MzUxIDI5LjU1MDQgNy41OTM1MSAyNy41MjYzIDcuNjg1NTIgMjYuMTAwM0w3Ljc4OTAyIDI2LjAxOThDNy44MDA1MiAyNi4wMzEzIDIwLjE1MiAxNi44NzY5IDkuNDkxMDkgMy4yOTQ4OFpNNi45MTQ5OSAyNS44MzU4QzYuOTE0OTkgMjUuODM1OCA2LjM2Mjk3IDI1LjM2NDIgNi4yMTM0NiAyNS4xMjI3VjI1LjA5OTdMNi44ODA0OSAxMC4zMTAyQzYuODgwNDkgMTAuMjY0MiA2Ljk0OTQ5IDEwLjI2NDIgNi45NDk0OSAxMC4zMTAyTDcuNjE2NTIgMjUuMDk5N1YyNS4xMjI3QzcuNDY3MDEgMjUuMzY0MiA2LjkxNDk5IDI1LjgzNTggNi45MTQ5OSAyNS44MzU4WiIgZmlsbD0iIzAwRUQ2NCIvPgo8cGF0aCBkPSJNMjkuOTYxOSAyMi44MTExTDI0Ljg0NDIgMTAuMzIxNkwyNC44MzI3IDEwLjI4NzFIMjAuODQyMVYxMS4xMjY3SDIxLjQ4NjFDMjEuNjgxNiAxMS4xMjY3IDIxLjg2NTYgMTEuMjA3MiAyMi4wMDM2IDExLjM0NTJDMjIuMTQxNiAxMS40ODMyIDIyLjIxMDYgMTEuNjY3MiAyMi4yMTA2IDExLjg2MjdMMjIuMDk1NiAyNC40MzI3QzIyLjA5NTYgMjQuODIzNyAyMS43NzM2IDI1LjE0NTcgMjEuMzgyNiAyNS4xNTcyTDIwLjcyNzEgMjUuMTY4N1YyNS45OTY4SDI0LjYxNDJWMjUuMTY4N0wyNC4yMTE3IDI1LjE1NzJDMjMuODIwNyAyNS4xNDU3IDIzLjQ5ODcgMjQuODIzNyAyMy40OTg3IDI0LjQzMjdWMTIuNTg3MkwyOS4wNzY0IDI1Ljk4NTJDMjkuMTU2OSAyNi4xODA4IDI5LjM0MDkgMjYuMzA3MyAyOS41NDc5IDI2LjMwNzNDMjkuNzU0OSAyNi4zMDczIDI5LjkzODkgMjYuMTgwOCAzMC4wMTk0IDI1Ljk4NTJMMzUuNDgyMSAxMi44NzQ3TDM1LjU2MjYgMjQuNDIxMkMzNS41NjI2IDI0LjgyMzcgMzUuMjQwNiAyNS4xNDU3IDM0LjgzODEgMjUuMTU3MkgzNC40MjQxVjI1Ljk4NTJIMzguOTg5OFYyNS4xNTcySDM4LjM2ODdDMzcuOTc3NyAyNS4xNTcyIDM3LjY1NTcgMjQuODIzNyAzNy42NDQyIDI0LjQzMjdMMzcuNjA5NyAxMS44NjI3QzM3LjYwOTcgMTEuNDYwMiAzNy45MzE3IDExLjEzODIgMzguMzIyNyAxMS4xMjY3TDM4Ljk4OTggMTEuMTE1MlYxMC4yNzU2SDM1LjEwMjZMMjkuOTYxOSAyMi44MTExWiIgZmlsbD0iIzAwRUQ2NCIvPgo8cGF0aCBkPSJNNjUuNzk3MyAyNC45NjE3QzY1LjY3MDggMjQuODM1MiA2NS42MDE4IDI0LjY2MjcgNjUuNjAxOCAyNC40NTU3VjE4LjI5MTVDNjUuNjAxOCAxNy4xMTg0IDY1LjI1NjggMTYuMTk4NCA2NC41NjY4IDE1LjU0MjlDNjMuODg4MiAxNC44ODczIDYyLjk0NTIgMTQuNTUzOCA2MS43NzIyIDE0LjU1MzhDNjAuMTI3NiAxNC41NTM4IDU4LjgyOCAxNS4yMjA5IDU3LjkxOTUgMTYuNTMxOUM1Ny45MDggMTYuNTU0OSA1Ny44NzM1IDE2LjU2NjQgNTcuODM5IDE2LjU2NjRDNTcuODA0NSAxNi41NjY0IDU3Ljc4MTUgMTYuNTQzNCA1Ny43ODE1IDE2LjUwODlMNTcuMzU2IDE0Ljg2NDNINTYuNjQzTDU0LjgxNDQgMTUuOTEwOVYxNi40ODU5SDU1LjI4NTlDNTUuNTA0NCAxNi40ODU5IDU1LjY4ODQgMTYuNTQzNCA1NS44MTQ5IDE2LjY1ODRDNTUuOTQxNCAxNi43NzM0IDU2LjAxMDQgMTYuOTQ1OSA1Ni4wMTA0IDE3LjE4NzRWMjQuNDQ0MkM1Ni4wMTA0IDI0LjY1MTIgNTUuOTQxNCAyNC44MjM3IDU1LjgxNDkgMjQuOTUwMkM1NS42ODg0IDI1LjA3NjcgNTUuNTE1OSAyNS4xNDU3IDU1LjMwODkgMjUuMTQ1N0g1NC44NDg5VjI1Ljk4NTNINTkuMDU4MVYyNS4xNDU3SDU4LjU5OEM1OC4zOTEgMjUuMTQ1NyA1OC4yMTg1IDI1LjA3NjcgNTguMDkyIDI0Ljk1MDJDNTcuOTY1NSAyNC44MjM3IDU3Ljg5NjUgMjQuNjUxMiA1Ny44OTY1IDI0LjQ0NDJWMTkuNjZDNTcuODk2NSAxOS4wNTA1IDU4LjAzNDUgMTguNDQxIDU4LjI4NzUgMTcuODQzQzU4LjU1MiAxNy4yNTY0IDU4Ljk0MzEgMTYuNzYxOSA1OS40NjA2IDE2LjM4MjRDNTkuOTc4MSAxNi4wMDI5IDYwLjU5OTEgMTUuODE4OSA2MS4zMTIxIDE1LjgxODlDNjIuMTE3MiAxNS44MTg5IDYyLjcyNjcgMTYuMDcxOSA2My4xMDYyIDE2LjU3NzlDNjMuNDg1NyAxNy4wODM5IDYzLjY4MTIgMTcuNzM5NSA2My42ODEyIDE4LjUyMTVWMjQuNDU1N0M2My42ODEyIDI0LjY2MjcgNjMuNjEyMiAyNC44MzUyIDYzLjQ4NTcgMjQuOTYxN0M2My4zNTkyIDI1LjA4ODIgNjMuMTg2NyAyNS4xNTcyIDYyLjk3OTcgMjUuMTU3Mkg2Mi41MTk3VjI1Ljk5NjhINjYuNzI4OVYyNS4xNTcySDY2LjI2ODhDNjYuMDk2MyAyNS4xNTcyIDY1LjkyMzggMjUuMDk5NyA2NS43OTczIDI0Ljk2MTdaIiBmaWxsPSIjMDBFRDY0Ii8+CjxwYXRoIGQ9Ik0xMDQuNDA0IDExLjIzMDNDMTAzLjIzMSAxMC42MDkyIDEwMS45MiAxMC4yODcyIDEwMC41MDYgMTAuMjg3Mkg5NC45ODU0VjExLjEyNjhIOTUuNTI1OUM5NS43MzI5IDExLjEyNjggOTUuOTE2OSAxMS4yMDczIDk2LjEwMSAxMS4zOTEzQzk2LjI3MzUgMTEuNTYzOCA5Ni4zNjU1IDExLjc1OTMgOTYuMzY1NSAxMS45NjYzVjI0LjM0MDhDOTYuMzY1NSAyNC41NDc4IDk2LjI3MzUgMjQuNzQzMyA5Ni4xMDEgMjQuOTE1OEM5NS45Mjg0IDI1LjA4ODMgOTUuNzMyOSAyNS4xODAzIDk1LjUyNTkgMjUuMTgwM0g5NC45ODU0VjI2LjAxOThIMTAwLjUwNkMxMDEuOTIgMjYuMDE5OCAxMDMuMjMxIDI1LjY5NzggMTA0LjQwNCAyNS4wNzY4QzEwNS41NzcgMjQuNDU1OCAxMDYuNTMyIDIzLjUzNTcgMTA3LjIyMiAyMi4zNjI3QzEwNy45MTIgMjEuMTg5NyAxMDguMjY4IDE5Ljc3NTEgMTA4LjI2OCAxOC4xNjVDMTA4LjI2OCAxNi41NTUgMTA3LjkxMiAxNS4xNTE5IDEwNy4yMjIgMTMuOTY3NEMxMDYuNTMyIDEyLjc3MTMgMTA1LjU4OSAxMS44NTEzIDEwNC40MDQgMTEuMjMwM1pNMTA2LjA2IDE4LjE0MkMxMDYuMDYgMTkuNjE0MSAxMDUuNzk2IDIwLjg1NjEgMTA1LjI3OCAyMS44NTY3QzEwNC43NjEgMjIuODU3MiAxMDQuMDcxIDIzLjYwNDggMTAzLjIyIDI0LjA4NzhDMTAyLjM2OSAyNC41NzA4IDEwMS40MjYgMjQuODEyMyAxMDAuNDE0IDI0LjgxMjNIOTkuMjk4MUM5OS4wOTExIDI0LjgxMjMgOTguOTA3MSAyNC43MzE4IDk4LjcyMzEgMjQuNTQ3OEM5OC41NTA2IDI0LjM3NTMgOTguNDU4NSAyNC4xNzk4IDk4LjQ1ODUgMjMuOTcyOFYxMi4zMTEzQzk4LjQ1ODUgMTIuMTA0MyA5OC41MzkxIDExLjkyMDMgOTguNzIzMSAxMS43MzYzQzk4Ljg5NTYgMTEuNTYzOCA5OS4wOTExIDExLjQ3MTggOTkuMjk4MSAxMS40NzE4SDEwMC40MTRDMTAxLjQyNiAxMS40NzE4IDEwMi4zNjkgMTEuNzEzMyAxMDMuMjIgMTIuMTk2M0MxMDQuMDcxIDEyLjY3OTMgMTA0Ljc2MSAxMy40MjY5IDEwNS4yNzggMTQuNDI3NEMxMDUuNzk2IDE1LjQyNzkgMTA2LjA2IDE2LjY3IDEwNi4wNiAxOC4xNDJaIiBmaWxsPSIjMDBFRDY0Ii8+CjxwYXRoIGQ9Ik0xMjEuMjc1IDE4Ljk3QzEyMC43NjkgMTguMzgzNSAxMTkuNzkyIDE3Ljg4ODkgMTE4LjY0MiAxNy42MjQ0QzEyMC4yMjkgMTYuODMwOSAxMjEuMDQ1IDE1LjcxNTMgMTIxLjA0NSAxNC4yNzc4QzEyMS4wNDUgMTMuNDk1OCAxMjAuODM4IDEyLjc5NDIgMTIwLjQyNCAxMi4xOTYyQzEyMC4wMSAxMS41OTgyIDExOS40MjQgMTEuMTE1MiAxMTguNjc2IDEwLjc4MTdDMTE3LjkyOSAxMC40NDgxIDExNy4wNTUgMTAuMjc1NiAxMTYuMDY2IDEwLjI3NTZIMTA5Ljg2N1YxMS4xMTUySDExMC4zNjJDMTEwLjU2OSAxMS4xMTUyIDExMC43NTMgMTEuMTk1NyAxMTAuOTM3IDExLjM3OTdDMTExLjEwOSAxMS41NTIyIDExMS4yMDEgMTEuNzQ3NyAxMTEuMjAxIDExLjk1NDdWMjQuMzI5MkMxMTEuMjAxIDI0LjUzNjIgMTExLjEwOSAyNC43MzE3IDExMC45MzcgMjQuOTA0MkMxMTAuNzY0IDI1LjA3NjcgMTEwLjU2OSAyNS4xNjg3IDExMC4zNjIgMjUuMTY4N0gxMDkuODIxVjI2LjAwODJIMTE2LjU0OUMxMTcuNTcyIDI2LjAwODIgMTE4LjUyNyAyNS44MzU3IDExOS4zODkgMjUuNDkwN0MxMjAuMjUyIDI1LjE0NTcgMTIwLjk0MiAyNC42Mzk3IDEyMS40MzYgMjMuOTcyN0MxMjEuOTQzIDIzLjMwNTYgMTIyLjE5NiAyMi40ODkxIDEyMi4xOTYgMjEuNTQ2MUMxMjIuMTk2IDIwLjUzNCAxMjEuODg1IDE5LjY4MyAxMjEuMjc1IDE4Ljk3Wk0xMTMuNTcgMjQuNTQ3N0MxMTMuMzk4IDI0LjM3NTIgMTEzLjMwNiAyNC4xNzk3IDExMy4zMDYgMjMuOTcyN1YxOC40MThIMTE2LjUwM0MxMTcuNjMgMTguNDE4IDExOC40OTIgMTguNzA1NSAxMTkuMDkgMTkuMjgwNUMxMTkuNjg4IDE5Ljg1NTUgMTE5Ljk4NyAyMC42MDMgMTE5Ljk4NyAyMS41MjMxQzExOS45ODcgMjIuMDc1MSAxMTkuODQ5IDIyLjYxNTYgMTE5LjU5NiAyMy4xMTAxQzExOS4zMzIgMjMuNjE2MiAxMTguOTQxIDI0LjAxODcgMTE4LjQxMiAyNC4zMjkyQzExNy44OTQgMjQuNjM5NyAxMTcuMjUgMjQuODAwNyAxMTYuNTAzIDI0LjgwMDdIMTE0LjE0NUMxMTMuOTI3IDI0LjgxMjIgMTEzLjc0MyAyNC43MzE3IDExMy41NyAyNC41NDc3Wk0xMTMuMzA2IDE3LjIzMzRWMTIuMjk5N0MxMTMuMzA2IDEyLjA5MjcgMTEzLjM4NiAxMS45MDg3IDExMy41NyAxMS43MjQ3QzExMy43NDMgMTEuNTUyMiAxMTMuOTM4IDExLjQ2MDIgMTE0LjE0NSAxMS40NjAySDExNS42NjNDMTE2Ljc1NiAxMS40NjAyIDExNy41NjEgMTEuNzM2MiAxMTguMDY3IDEyLjI2NTJDMTE4LjU3MyAxMi44MDU3IDExOC44MjYgMTMuNDk1OCAxMTguODI2IDE0LjM0NjhDMTE4LjgyNiAxNS4yMjA4IDExOC41ODQgMTUuOTIyNCAxMTguMTEzIDE2LjQ1MTRDMTE3LjY0MSAxNi45Njg5IDExNi45MjggMTcuMjMzNCAxMTUuOTg1IDE3LjIzMzRIMTEzLjMwNloiIGZpbGw9IiMwMEVENjQiLz4KPHBhdGggZD0iTTQ5Ljc1NDIgMTUuMzAxM0M0OC44Njg2IDE0LjgxODMgNDcuODc5NiAxNC41NjUzIDQ2LjgxIDE0LjU2NTNDNDUuNzQwNSAxNC41NjUzIDQ0Ljc0IDE0LjgwNjggNDMuODY1OSAxNS4zMDEzQzQyLjk4MDQgMTUuNzg0NCA0Mi4yNzg5IDE2LjQ4NTkgNDEuNzYxMyAxNy4zNzE0QzQxLjI0MzggMTguMjU3IDQwLjk3OTMgMTkuMjkyIDQwLjk3OTMgMjAuNDQyQzQwLjk3OTMgMjEuNTkyMSA0MS4yNDM4IDIyLjYyNzEgNDEuNzYxMyAyMy41MTI3QzQyLjI3ODkgMjQuMzk4MiA0Mi45ODA0IDI1LjA5OTcgNDMuODY1OSAyNS41ODI3QzQ0Ljc1MTUgMjYuMDY1OCA0NS43NDA1IDI2LjMxODggNDYuODEgMjYuMzE4OEM0Ny44Nzk2IDI2LjMxODggNDguODgwMSAyNi4wNzczIDQ5Ljc1NDIgMjUuNTgyN0M1MC42Mzk3IDI1LjA5OTcgNTEuMzQxMiAyNC4zOTgyIDUxLjg1ODcgMjMuNTEyN0M1Mi4zNzYzIDIyLjYyNzEgNTIuNjQwOCAyMS41OTIxIDUyLjY0MDggMjAuNDQyQzUyLjY0MDggMTkuMjkyIDUyLjM3NjMgMTguMjU3IDUxLjg1ODcgMTcuMzcxNEM1MS4zNDEyIDE2LjQ3NDQgNTAuNjI4MiAxNS43ODQ0IDQ5Ljc1NDIgMTUuMzAxM1pNNTAuNjA1MiAyMC40NDJDNTAuNjA1MiAyMS44NTY2IDUwLjI2MDIgMjMuMDA2NiA0OS41NzAxIDIzLjgzNDdDNDguODkxNiAyNC42NjI3IDQ3Ljk2MDEgMjUuMDg4MiA0Ni44MSAyNS4wODgyQzQ1LjY2IDI1LjA4ODIgNDQuNzI4NSAyNC42NjI3IDQ0LjA0OTkgMjMuODM0N0M0My4zNTk5IDIzLjAwNjYgNDMuMDE0OSAyMS44NTY2IDQzLjAxNDkgMjAuNDQyQzQzLjAxNDkgMTkuMDI3NSA0My4zNTk5IDE3Ljg3NzQgNDQuMDQ5OSAxNy4wNDk0QzQ0LjcyODUgMTYuMjIxNCA0NS42NiAxNS43OTU5IDQ2LjgxIDE1Ljc5NTlDNDcuOTYwMSAxNS43OTU5IDQ4Ljg5MTYgMTYuMjIxNCA0OS41NzAxIDE3LjA0OTRDNTAuMjYwMiAxNy44Nzc0IDUwLjYwNTIgMTkuMDE2IDUwLjYwNTIgMjAuNDQyWiIgZmlsbD0iIzAwRUQ2NCIvPgo8cGF0aCBkPSJNOTAuMzM5MiAxNS4zMDEzQzg5LjQ1MzcgMTQuODE4MyA4OC40NjQ3IDE0LjU2NTMgODcuMzk1MSAxNC41NjUzQzg2LjMyNTYgMTQuNTY1MyA4NS4zMjUgMTQuODA2OCA4NC40NTEgMTUuMzAxM0M4My41NjU1IDE1Ljc4NDQgODIuODYzOSAxNi40ODU5IDgyLjM0NjQgMTcuMzcxNEM4MS44Mjg5IDE4LjI1NyA4MS41NjQ0IDE5LjI5MiA4MS41NjQ0IDIwLjQ0MkM4MS41NjQ0IDIxLjU5MjEgODEuODI4OSAyMi42MjcxIDgyLjM0NjQgMjMuNTEyN0M4Mi44NjM5IDI0LjM5ODIgODMuNTY1NSAyNS4wOTk3IDg0LjQ1MSAyNS41ODI3Qzg1LjMzNjUgMjYuMDY1OCA4Ni4zMjU2IDI2LjMxODggODcuMzk1MSAyNi4zMTg4Qzg4LjQ2NDcgMjYuMzE4OCA4OS40NjUyIDI2LjA3NzMgOTAuMzM5MiAyNS41ODI3QzkxLjIyNDggMjUuMDk5NyA5MS45MjYzIDI0LjM5ODIgOTIuNDQzOCAyMy41MTI3QzkyLjk2MTMgMjIuNjI3MSA5My4yMjU4IDIxLjU5MjEgOTMuMjI1OCAyMC40NDJDOTMuMjI1OCAxOS4yOTIgOTIuOTYxMyAxOC4yNTcgOTIuNDQzOCAxNy4zNzE0QzkxLjkyNjMgMTYuNDc0NCA5MS4yMjQ4IDE1Ljc4NDQgOTAuMzM5MiAxNS4zMDEzWk05MS4xOTAzIDIwLjQ0MkM5MS4xOTAzIDIxLjg1NjYgOTAuODQ1MyAyMy4wMDY2IDkwLjE1NTIgMjMuODM0N0M4OS40NzY3IDI0LjY2MjcgODguNTQ1MiAyNS4wODgyIDg3LjM5NTEgMjUuMDg4MkM4Ni4yNDUxIDI1LjA4ODIgODUuMzEzNSAyNC42NjI3IDg0LjYzNSAyMy44MzQ3QzgzLjk0NSAyMy4wMDY2IDgzLjYgMjEuODU2NiA4My42IDIwLjQ0MkM4My42IDE5LjAxNiA4My45NDUgMTcuODc3NCA4NC42MzUgMTcuMDQ5NEM4NS4zMTM1IDE2LjIyMTQgODYuMjQ1MSAxNS43OTU5IDg3LjM5NTEgMTUuNzk1OUM4OC41NDUyIDE1Ljc5NTkgODkuNDc2NyAxNi4yMjE0IDkwLjE1NTIgMTcuMDQ5NEM5MC44NDUzIDE3Ljg3NzQgOTEuMTkwMyAxOS4wMTYgOTEuMTkwMyAyMC40NDJaIiBmaWxsPSIjMDBFRDY0Ii8+CjxwYXRoIGQ9Ik03My45NjI2IDE0LjU2NTNDNzMuMDQyNiAxNC41NjUzIDcyLjIwMyAxNC43NjA4IDcxLjQ0NCAxNS4xNTE4QzcwLjY4NSAxNS41NDI4IDcwLjA4NyAxNi4wNzE5IDY5LjY2MTQgMTYuNzUwNEM2OS4yMzU5IDE3LjQxNzQgNjkuMDE3NCAxOC4xNjQ5IDY5LjAxNzQgMTguOTU4NUM2OS4wMTc0IDE5LjY3MTUgNjkuMTc4NCAyMC4zMjcgNjkuNTExOSAyMC45MTM2QzY5LjgzNCAyMS40NzcxIDcwLjI3MSAyMS45NDg2IDcwLjgyMyAyMi4zMzk2TDY5LjE3ODQgMjQuNTcwN0M2OC45NzE0IDI0Ljg0NjcgNjguOTQ4NCAyNS4yMTQ3IDY5LjA5NzkgMjUuNTEzN0M2OS4yNTg5IDI1LjgyNDIgNjkuNTU3OSAyNi4wMDgzIDY5LjkwMyAyNi4wMDgzSDcwLjM3NDVDNjkuOTE0NSAyNi4zMTg4IDY5LjU0NjQgMjYuNjg2OCA2OS4yOTM0IDI3LjEyMzhDNjguOTk0NCAyNy42MTgzIDY4Ljg0NDkgMjguMTM1OCA2OC44NDQ5IDI4LjY2NDlDNjguODQ0OSAyOS42NTM5IDY5LjI4MTkgMzAuNDcwNCA3MC4xNDQ1IDMxLjA4QzcwLjk5NTUgMzEuNjg5NSA3Mi4xOTE1IDMyIDczLjY5ODEgMzJDNzQuNzQ0NiAzMiA3NS43NDUyIDMxLjgyNzUgNzYuNjUzNyAzMS40OTRDNzcuNTczOCAzMS4xNjA1IDc4LjMyMTMgMzAuNjY1OSA3OC44NzMzIDMwLjAyMTlDNzkuNDM2OCAyOS4zNzc5IDc5LjcyNDMgMjguNTk1OSA3OS43MjQzIDI3LjY5ODhDNzkuNzI0MyAyNi43NTU4IDc5LjM3OTMgMjYuMDg4OCA3OC41NzQzIDI1LjQ0NDdDNzcuODg0MyAyNC45MDQyIDc2LjgwMzIgMjQuNjE2NyA3NS40NTc3IDI0LjYxNjdINzAuODU3NUM3MC44NDYgMjQuNjE2NyA3MC44MzQ1IDI0LjYwNTIgNzAuODM0NSAyNC42MDUyQzcwLjgzNDUgMjQuNjA1MiA3MC44MjMgMjQuNTgyMiA3MC44MzQ1IDI0LjU3MDdMNzIuMDMwNSAyMi45NjA2QzcyLjM1MjUgMjMuMTEwMSA3Mi42NTE2IDIzLjIwMjEgNzIuOTE2MSAyMy4yNTk2QzczLjE5MjEgMjMuMzE3MiA3My41MDI2IDIzLjM0MDIgNzMuODQ3NiAyMy4zNDAyQzc0LjgxMzYgMjMuMzQwMiA3NS42ODc3IDIzLjE0NDYgNzYuNDQ2NyAyMi43NTM2Qzc3LjIwNTcgMjIuMzYyNiA3Ny44MTUzIDIxLjgzMzYgNzguMjUyMyAyMS4xNTUxQzc4LjY4OTMgMjAuNDg4IDc4LjkwNzggMTkuNzQwNSA3OC45MDc4IDE4Ljk0N0M3OC45MDc4IDE4LjA5NTkgNzguNDkzOCAxNi41NDM0IDc3LjM2NjcgMTUuNzQ5OUM3Ny4zNjY3IDE1LjczODQgNzcuMzc4MiAxNS43Mzg0IDc3LjM3ODIgMTUuNzM4NEw3OS44NTA4IDE2LjAxNDRWMTQuODc1OEg3NS44OTQ3Qzc1LjI3MzcgMTQuNjY4OCA3NC42MTgxIDE0LjU2NTMgNzMuOTYyNiAxNC41NjUzWk03NS4zNDI3IDIxLjc2NDZDNzQuOTA1NiAyMS45OTQ2IDc0LjQzNDEgMjIuMTIxMSA3My45NjI2IDIyLjEyMTFDNzMuMTkyMSAyMi4xMjExIDcyLjUxMzYgMjEuODQ1MSA3MS45Mzg1IDIxLjMwNDZDNzEuMzYzNSAyMC43NjQxIDcxLjA3NiAxOS45NzA1IDcxLjA3NiAxOC45NTg1QzcxLjA3NiAxNy45NDY0IDcxLjM2MzUgMTcuMTUyOSA3MS45Mzg1IDE2LjYxMjRDNzIuNTEzNiAxNi4wNzE5IDczLjE5MjEgMTUuNzk1OSA3My45NjI2IDE1Ljc5NTlDNzQuNDQ1NiAxNS43OTU5IDc0LjkwNTYgMTUuOTEwOSA3NS4zNDI3IDE2LjE1MjRDNzUuNzc5NyAxNi4zODI0IDc2LjEzNjIgMTYuNzM4OSA3Ni40MjM3IDE3LjIxMDRDNzYuNjk5NyAxNy42ODE5IDc2Ljg0OTIgMTguMjY4NSA3Ni44NDkyIDE4Ljk1ODVDNzYuODQ5MiAxOS42NiA3Ni43MTEyIDIwLjI0NjUgNzYuNDIzNyAyMC43MDY1Qzc2LjEzNjIgMjEuMTc4MSA3NS43Nzk3IDIxLjUyMzEgNzUuMzQyNyAyMS43NjQ2Wk03Mi4yMTQ1IDI1Ljk5NjhINzUuMzMxMkM3Ni4xOTM3IDI1Ljk5NjggNzYuNzQ1NyAyNi4xNjkzIDc3LjExMzcgMjYuNTM3M0M3Ny40ODE3IDI2LjkwNTMgNzcuNjY1OCAyNy4zOTk4IDc3LjY2NTggMjcuOTc0OEM3Ny42NjU4IDI4LjgxNDQgNzcuMzMyMiAyOS41MDQ0IDc2LjY2NTIgMzAuMDIxOUM3NS45OTgyIDMwLjUzOTQgNzUuMTAxMiAzMC44MDM5IDczLjk5NzEgMzAuODAzOUM3My4wMzExIDMwLjgwMzkgNzIuMjI2IDMwLjU4NTQgNzEuNjM5NSAzMC4xNzE0QzcxLjA1MyAyOS43NTc0IDcwLjc1NCAyOS4xMjQ5IDcwLjc1NCAyOC4zMTk4QzcwLjc1NCAyNy44MTM4IDcwLjg5MiAyNy4zNDIzIDcxLjE2OCAyNi45MjgzQzcxLjQ1NTUgMjYuNTE0MyA3MS43ODkgMjYuMjE1MyA3Mi4yMTQ1IDI1Ljk5NjhaIiBmaWxsPSIjMDBFRDY0Ii8+CjxwYXRoIGQ9Ik0xMjQuNTQyIDI1Ljg1ODhDMTI0LjMxMiAyNS43MzIzIDEyNC4xMzkgMjUuNTQ4MyAxMjQuMDAxIDI1LjMyOThDMTIzLjg3NSAyNS4wOTk4IDEyMy44MDYgMjQuODU4MiAxMjMuODA2IDI0LjU5MzdDMTIzLjgwNiAyNC4zMjkyIDEyMy44NzUgMjQuMDc2MiAxMjQuMDAxIDIzLjg1NzdDMTI0LjEyOCAyMy42Mjc3IDEyNC4zMTIgMjMuNDU1MiAxMjQuNTQyIDIzLjMyODdDMTI0Ljc3MiAyMy4yMDIyIDEyNS4wMjUgMjMuMTMzMiAxMjUuMzEyIDIzLjEzMzJDMTI1LjYgMjMuMTMzMiAxMjUuODUzIDIzLjIwMjIgMTI2LjA4MyAyMy4zMjg3QzEyNi4zMTMgMjMuNDU1MiAxMjYuNDg1IDIzLjYzOTIgMTI2LjYyMyAyMy44NTc3QzEyNi43NSAyNC4wODc3IDEyNi44MTkgMjQuMzI5MiAxMjYuODE5IDI0LjU5MzdDMTI2LjgxOSAyNC44NTgyIDEyNi43NSAyNS4xMTEzIDEyNi42MjMgMjUuMzI5OEMxMjYuNDk3IDI1LjU1OTggMTI2LjMxMyAyNS43MzIzIDEyNi4wODMgMjUuODU4OEMxMjUuODUzIDI1Ljk4NTMgMTI1LjYgMjYuMDU0MyAxMjUuMzEyIDI2LjA1NDNDMTI1LjAyNSAyNi4wNTQzIDEyNC43NzIgMjUuOTg1MyAxMjQuNTQyIDI1Ljg1ODhaTTEyNS45NTYgMjUuNjg2M0MxMjYuMTUyIDI1LjU4MjggMTI2LjI5IDI1LjQyMTggMTI2LjQwNSAyNS4yMzc4QzEyNi41MDggMjUuMDQyMyAxMjYuNTY2IDI0LjgyMzcgMTI2LjU2NiAyNC41ODIyQzEyNi41NjYgMjQuMzQwNyAxMjYuNTA4IDI0LjEyMjIgMTI2LjQwNSAyMy45MjY3QzEyNi4zMDEgMjMuNzMxMiAxMjYuMTUyIDIzLjU4MTcgMTI1Ljk1NiAyMy40NzgyQzEyNS43NjEgMjMuMzc0NyAxMjUuNTU0IDIzLjMxNzIgMTI1LjMxMiAyMy4zMTcyQzEyNS4wNzEgMjMuMzE3MiAxMjQuODY0IDIzLjM3NDcgMTI0LjY2OCAyMy40NzgyQzEyNC40NzMgMjMuNTgxNyAxMjQuMzM1IDIzLjc0MjcgMTI0LjIyIDIzLjkyNjdDMTI0LjExNiAyNC4xMjIyIDEyNC4wNTkgMjQuMzQwNyAxMjQuMDU5IDI0LjU4MjJDMTI0LjA1OSAyNC44MjM3IDEyNC4xMTYgMjUuMDQyMyAxMjQuMjIgMjUuMjM3OEMxMjQuMzIzIDI1LjQzMzMgMTI0LjQ3MyAyNS41ODI4IDEyNC42NjggMjUuNjg2M0MxMjQuODY0IDI1Ljc4OTggMTI1LjA3MSAyNS44NDczIDEyNS4zMTIgMjUuODQ3M0MxMjUuNTU0IDI1Ljg0NzMgMTI1Ljc2MSAyNS44MDEzIDEyNS45NTYgMjUuNjg2M1pNMTI0LjY5MSAyNS4yODM4VjI1LjE4MDNMMTI0LjcxNCAyNS4xNjg4SDEyNC43ODNDMTI0LjgwNiAyNS4xNjg4IDEyNC44MjkgMjUuMTU3MyAxMjQuODQxIDI1LjE0NThDMTI0Ljg2NCAyNS4xMjI4IDEyNC44NjQgMjUuMTExMyAxMjQuODY0IDI1LjA4ODNWMjQuMDE4N0MxMjQuODY0IDIzLjk5NTcgMTI0Ljg1MiAyMy45NzI3IDEyNC44NDEgMjMuOTYxMkMxMjQuODE4IDIzLjkzODIgMTI0LjgwNiAyMy45MzgyIDEyNC43ODMgMjMuOTM4MkgxMjQuNzE0TDEyNC42OTEgMjMuOTI2N1YyMy44MjMyTDEyNC43MTQgMjMuODExN0gxMjUuMzEyQzEyNS40ODUgMjMuODExNyAxMjUuNjExIDIzLjg0NjIgMTI1LjcxNSAyMy45MjY3QzEyNS44MTggMjQuMDA3MiAxMjUuODY0IDI0LjExMDcgMTI1Ljg2NCAyNC4yNDg3QzEyNS44NjQgMjQuMzUyMiAxMjUuODMgMjQuNDU1NyAxMjUuNzQ5IDI0LjUyNDdDMTI1LjY2OSAyNC42MDUyIDEyNS41NzcgMjQuNjUxMiAxMjUuNDYyIDI0LjY2MjdMMTI1LjYgMjQuNzA4N0wxMjUuODY0IDI1LjEzNDNDMTI1Ljg4NyAyNS4xNjg4IDEyNS45MSAyNS4xODAzIDEyNS45NDUgMjUuMTgwM0gxMjYuMDE0TDEyNi4wMjUgMjUuMTkxOFYyNS4yOTUzTDEyNi4wMTQgMjUuMzA2OEgxMjUuNjU3TDEyNS42MzQgMjUuMjk1M0wxMjUuMjY2IDI0LjY3NDJIMTI1LjE3NFYyNS4wODgzQzEyNS4xNzQgMjUuMTExMyAxMjUuMTg2IDI1LjEzNDMgMTI1LjE5NyAyNS4xNDU4QzEyNS4yMiAyNS4xNjg4IDEyNS4yMzIgMjUuMTY4OCAxMjUuMjU1IDI1LjE2ODhIMTI1LjMyNEwxMjUuMzQ3IDI1LjE4MDNWMjUuMjgzOEwxMjUuMzI0IDI1LjI5NTNIMTI0LjcxNEwxMjQuNjkxIDI1LjI4MzhaTTEyNS4yNjYgMjQuNTM2MkMxMjUuMzU4IDI0LjUzNjIgMTI1LjQzOSAyNC41MTMyIDEyNS40ODUgMjQuNDU1N0MxMjUuNTMxIDI0LjQwOTcgMTI1LjU2NSAyNC4zMjkyIDEyNS41NjUgMjQuMjM3MkMxMjUuNTY1IDI0LjE0NTIgMTI1LjU0MiAyNC4wNzYyIDEyNS40OTYgMjQuMDE4N0MxMjUuNDUgMjMuOTYxMiAxMjUuMzgxIDIzLjkzODIgMTI1LjMwMSAyMy45MzgySDEyNS4yNTVDMTI1LjIzMiAyMy45MzgyIDEyNS4yMDkgMjMuOTQ5NyAxMjUuMTk3IDIzLjk2MTJDMTI1LjE3NCAyMy45ODQyIDEyNS4xNzQgMjMuOTk1NyAxMjUuMTc0IDI0LjAxODdWMjQuNTM2MkgxMjUuMjY2WiIgZmlsbD0iIzAwRUQ2NCIvPgo8L3N2Zz4K" alt="MongoDB">
     <span>Atlas <span class="inf">Infinite</span> Visualizer</span>
-    <span class="hdr-sub" data-i18n="hdr.sub">HA · Failover · Vertical &amp; Horizontal Scaling · CAP · Backup — educational, not official MongoDB documentation</span>
+    <span class="hdr-sub" data-i18n="hdr.sub">HA · Failover · Vertical &amp; Horizontal Scaling · Backup — educational, not official MongoDB documentation</span>
   </div>
   <span class="hdr-badge" data-i18n="hdr.badge">Public Preview</span>
   <div class="view-toggle" role="group" aria-label="View">
@@ -307,7 +293,6 @@ body.view-basic .cmp tr.xr{display:none}
     <button data-lang="pt" onclick="setLang('pt')">PT</button>
   </div>
   <button class="hdr-btn lav" onclick="switchTab('lim')" data-i18n="hdr.limits">⚠ Preview limits</button>
-  <button id="cap-toggle-btn" class="hdr-btn only-detailed" onclick="toggleCAPPanel()">⬡ CAP Positioning</button>
 </div>
 
 <div id="tab-nav">
@@ -331,13 +316,23 @@ body.view-basic .cmp tr.xr{display:none}
           <div class="card">
             <div class="card-title"><span data-i18n="arch.topo">Deployment Topology</span> <span class="hl" id="arch-mode-label"></span></div>
             <div class="leg" id="arch-legend"></div>
+            <div class="arch-guide">
+              <div class="sim-controls">
+                <label class="fld"><span class="lbl" data-i18n="arch.playmode">Playback</span><select id="arch-play-mode" onchange="archSetPlaybackMode(this.value)"><option value="auto" data-i18n="arch.auto">Automatic</option><option value="manual" data-i18n="arch.manual">Step by step</option></select></label>
+                <label class="fld"><span class="lbl" data-i18n="arch.speed">Animation speed</span><select id="arch-speed" onchange="archSetSpeed(this.value)"><option value="0.25" data-i18n="arch.verySlow">0.25× — very slow</option><option value="0.5" selected data-i18n="arch.slow">0.5× — slow</option><option value="1" data-i18n="arch.normal">1× — normal</option></select></label>
+                <button class="btn btn-g btn-sm" id="arch-pause" onclick="archTogglePause()" disabled>Ⅱ Pause</button>
+                <button class="btn btn-p btn-sm" id="arch-next" onclick="archNext()" disabled data-i18n="arch.next">Next step →</button>
+                <button class="btn btn-g btn-sm" id="arch-stop" onclick="archStop()" disabled data-i18n="arch.stop">■ Stop</button>
+              </div>
+              <div class="sim-now" id="arch-now" aria-live="polite"></div>
+            </div>
             <div id="arch-svg"></div>
           </div>
           <div class="card only-detailed">
             <div class="card-title" data-i18n="arch.ideas">Key ideas</div>
             <div class="ideas" id="arch-ideas"></div>
           </div>
-          <div class="card">
+          <div class="card only-detailed">
             <div class="card-title" data-i18n="arch.cmp">Atlas Core vs Atlas Infinite — side by side</div>
             <div class="tbl-wrap" id="arch-cmp"></div>
           </div>
@@ -352,8 +347,17 @@ body.view-basic .cmp tr.xr{display:none}
             <div class="desc only-detailed" id="arch-mode-desc"></div>
           </div>
           <div class="card">
-            <div class="card-title only-detailed" data-i18n="cc.title">Write &amp; read settings</div>
-            <div class="card-title only-basic" data-i18n="cc.try">Try it</div>
+            <div class="card-title" data-i18n="arch.simulation">Simulation</div>
+            <button class="btn btn-p" id="arch-btn-w" onclick="archSimWrite()" data-i18n="btn.simw">▶ Simulate Write</button>
+            <div class="sim-read">
+              <label class="fld"><span class="lbl" data-i18n="arch.cache">Read scenario</span><select id="arch-cache" onchange="archSetReadCache(this.value)"><option value="miss" selected data-i18n="arch.cache.miss">Cache miss — fetch from storage</option><option value="hit" data-i18n="arch.cache.hit">Cache hit — read from memory</option></select></label>
+              <p class="sim-note" data-i18n="arch.cacheOnlyRead">This choice applies only to the read simulation. It does not change the write path.</p>
+              <button class="btn btn-g" id="arch-btn-r" onclick="archSimRead()" data-i18n="btn.simr">▶ Simulate Read</button>
+            </div>
+            <p class="sim-note" data-i18n="arch.timingNote">Illustrative timing. Use Step by step to advance at your own pace.</p>
+          </div>
+          <div class="card only-detailed">
+            <div class="card-title" data-i18n="cc.title">Write &amp; read settings</div>
             <div class="only-detailed">
             <label class="fld"><span class="lbl">writeConcern</span>
               <select class="sync-wc" onchange="setWC(this.value)">
@@ -383,16 +387,6 @@ body.view-basic .cmp tr.xr{display:none}
               </select>
             </label>
             <div class="desc" id="arch-read-desc"></div>
-            </div>
-            <label class="fld"><span class="lbl" data-i18n="arch.cache">Read scenario</span>
-              <select id="arch-cache" onchange="archSetReadCache(this.value)">
-                <option value="miss" selected data-i18n="arch.cache.miss">Cache miss — fetch from storage</option>
-                <option value="hit" data-i18n="arch.cache.hit">Cache hit — read from memory</option>
-              </select>
-            </label>
-            <div class="btn-row">
-              <button class="btn btn-p" id="arch-btn-w" onclick="archSimWrite()" data-i18n="btn.simw">▶ Simulate Write</button>
-              <button class="btn btn-g" id="arch-btn-r" onclick="archSimRead()" data-i18n="btn.simr">▶ Simulate Read</button>
             </div>
           </div>
           <div class="card">
@@ -670,61 +664,7 @@ body.view-basic .cmp tr.xr{display:none}
     <div class="foot" id="foot"></div>
   </div><!-- end #viz -->
 
-  <!-- ═══════════════ CAP PANEL ═══════════════ -->
-  <div id="cap" class="only-detailed">
-    <div class="panel-title" data-i18n="cap.title">CAP Theorem Position</div>
-    <div class="note-y only-detailed" data-i18n="cap.note"><strong style="display:block;margin-bottom:2px">📌 Simplified model — for illustration only</strong>A directional compass, not a formal proof. It reacts to your writeConcern, readConcern, readPreference and to the failures you simulate. Use it as a conversation anchor, not as a specification.</div>
-    <svg id="cap-svg" viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <linearGradient id="triGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stop-color="#E3FCF7"/>
-          <stop offset="100%" stop-color="#F9EBFF"/>
-        </linearGradient>
-      </defs>
-      <polygon points="150,14 18,180 282,180" fill="url(#triGrad)" stroke="rgba(0,30,43,.25)" stroke-width="1.5"/>
-      <polygon points="150,47 85,158 215,158" fill="rgba(0,104,74,0.06)" stroke="rgba(0,104,74,0.2)" stroke-width="1" stroke-dasharray="4 3"/>
-      <text x="150" y="10" text-anchor="middle" font-size="11" font-weight="700" fill="#00684A">C</text>
-      <text x="150" y="25" text-anchor="middle" font-size="8" fill="rgba(0,30,43,.6)" data-i18n="cap.c">Consistency</text>
-      <text x="8" y="186" text-anchor="start" font-size="11" font-weight="700" fill="#001E2B">A</text>
-      <text x="10" y="196" text-anchor="start" font-size="7" fill="rgba(0,30,43,.6)" data-i18n="cap.a">Availability</text>
-      <text x="292" y="186" text-anchor="end" font-size="11" font-weight="700" fill="#001E2B">P</text>
-      <text x="292" y="196" text-anchor="end" font-size="7" fill="rgba(0,30,43,.6)" data-i18n="cap.p">Partition tolerance</text>
-      <text x="150" y="130" text-anchor="middle" font-size="8" fill="rgba(0,104,74,0.45)">Atlas Infinite</text>
-      <text x="150" y="141" text-anchor="middle" font-size="8" fill="rgba(0,104,74,0.45)" data-i18n="cap.zone">operating zone</text>
-      <circle id="cap-dot-ring" cx="185" cy="100" r="12" fill="none" stroke="rgba(0,104,74,0.3)" stroke-width="1.5">
-        <animate attributeName="r" values="10;20;10" dur="2s" repeatCount="indefinite"/>
-        <animate attributeName="opacity" values="0.5;0;0.5" dur="2s" repeatCount="indefinite"/>
-      </circle>
-      <circle id="cap-dot" cx="185" cy="100" r="7" fill="#00684A" stroke="#fff" stroke-width="2"/>
-      <text id="cap-dot-lbl" x="196" y="97" font-size="9" fill="#00684A" font-weight="700">CP</text>
-    </svg>
-    <div class="cap-mode cm-cp" id="cap-mode-badge">CP</div>
-    <div>
-      <div class="panel-title" style="margin-bottom:6px" data-i18n="cap.trade">C ↔ A trade-off</div>
-      <div style="position:relative;height:18px;background:linear-gradient(to right,#F9EBFF,#FAFBFC,#E3FCF7);border-radius:4px;border:1px solid var(--border)">
-        <div id="cap-slider-dot" style="position:absolute;top:50%;transform:translate(-50%,-50%);width:12px;height:12px;border-radius:50%;background:var(--green);border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,0.2);transition:left .6s ease;left:75%"></div>
-      </div>
-      <div style="display:flex;justify-content:space-between;font-size:9px;color:var(--text3);margin-top:3px">
-        <span data-i18n="cap.l">← Availability</span><span data-i18n="cap.r">Consistency →</span>
-      </div>
-    </div>
-    <div class="only-detailed">
-      <div class="panel-title" style="margin-bottom:6px" data-i18n="cap.metrics">Impact metrics</div>
-      <div id="cap-metrics"></div>
-    </div>
-    <div class="only-detailed">
-      <div class="panel-title" style="margin-bottom:6px" data-i18n="cap.p.title">Partition tolerance in Atlas Infinite</div>
-      <div class="cap-desc" id="cap-p-text"></div>
-    </div>
-    <div>
-      <div class="panel-title" style="margin-bottom:6px" data-i18n="cap.expl">Explanation</div>
-      <div class="cap-desc" id="cap-desc-text"></div>
-    </div>
-    <div class="only-detailed">
-      <div class="panel-title" style="margin-bottom:6px" data-i18n="cap.active">Active settings</div>
-      <div id="cap-config-tbl"></div>
-    </div>
-  </div>
+
 </div>
 
 <div id="log"></div>
@@ -737,7 +677,7 @@ const S = {
   lang: 'en',
   view: 'basic',       // basic (Essentials) | detailed (Deep dive)
   tab: 'arch',
-  // Settings shared by every tab (and by the CAP panel)
+  // Settings shared by every tab
   wc: 'wmaj',          // w0 | w1 | wmaj | wnum
   rc: 'local',         // local | available | majority | linearizable | snapshot
   rp: 'primary',       // primary | primaryPreferred | secondary | secondaryPreferred | nearest
@@ -821,7 +761,19 @@ const SOURCES = {
 // Dynamic strings use tx(en, pt) next to the code that renders them.
 
 const PT = {
-  'hdr.sub': 'HA · Failover · Escala Vertical e Horizontal · CAP · Backup — material educativo, não é documentação oficial da MongoDB',
+  'arch.playmode': 'Reprodução',
+  'arch.auto': 'Automática',
+  'arch.manual': 'Passo a passo',
+  'arch.speed': 'Velocidade da animação',
+  'arch.verySlow': '0,25× — muito lenta',
+  'arch.slow': '0,5× — lenta',
+  'arch.normal': '1× — normal',
+  'arch.next': 'Próxima etapa →',
+  'arch.stop': '■ Parar',
+  'arch.simulation': 'Simulação',
+  'arch.cacheOnlyRead': 'Esta escolha vale somente para a simulação de leitura. Ela não altera o caminho da escrita.',
+  'arch.timingNote': 'Tempos ilustrativos. Use Passo a passo para avançar no seu ritmo.',
+  'hdr.sub': 'HA · Failover · Escala Vertical e Horizontal · Backup — material educativo, não é documentação oficial da MongoDB',
   'hdr.badge': 'Public Preview',
   'view.basic': 'Essencial',
   'view.detailed': 'Detalhado',
@@ -941,19 +893,6 @@ const PT = {
   'lim.sources': 'Fontes oficiais usadas neste visualizador',
   'lim.legend': 'Chips como <a class="src">D2</a> apontam para a documentação da MongoDB; <a class="src blog">B4</a> apontam para posts de blog, press releases ou páginas de produto da MongoDB (afirmações do fabricante). Todo o resto nesta ferramenta é uma ilustração simplificada.',
 
-  'cap.title': 'Posição no Teorema CAP',
-  'cap.note': '<strong style="display:block;margin-bottom:2px">📌 Modelo simplificado — apenas ilustrativo</strong>Uma bússola direcional, não uma prova formal. Reage ao seu writeConcern, readConcern, readPreference e às falhas simuladas. Use como ponto de partida para a conversa, não como especificação.',
-  'cap.c': 'Consistência',
-  'cap.a': 'Disponibilidade',
-  'cap.p': 'Tolerância a partição',
-  'cap.zone': 'zona de operação',
-  'cap.trade': 'Trade-off C ↔ A',
-  'cap.l': '← Disponibilidade',
-  'cap.r': 'Consistência →',
-  'cap.metrics': 'Métricas de impacto',
-  'cap.p.title': 'Tolerância a partição no Atlas Infinite',
-  'cap.expl': 'Explicação',
-  'cap.active': 'Configurações ativas',
 };
 
 function applyStaticLang() {
@@ -984,7 +923,6 @@ function setLang(lang) {
 }
 
 function applyView() {
-  if (S.view === 'basic') setCAPPanel(false);
   document.body.classList.toggle('view-basic', S.view === 'basic');
   document.body.classList.toggle('view-detailed', S.view === 'detailed');
   document.querySelectorAll('.view-toggle button').forEach(b => b.classList.toggle('on', b.dataset.view === S.view));
@@ -1213,106 +1151,266 @@ function fmtTB(tb) {
 }
 
 
-// ═══ js/cap.js ═══
-// ─── CAP THEOREM PANEL ───────────────────────────────────────────────────────
-// Directional, simplified model. It combines the shared settings (writeConcern,
-// readConcern, readPreference) with the failures simulated in tab ② and the
-// storage-limit state from tab ③.
+// ═══ js/arch-playback.js ═══
+// Active-time clock shared by every animation in an architecture demonstration.
+// A stage receives a run-scoped view so a cancelled run cannot control its successor.
+class ArchPlayback {
+  constructor({ onChange = () => {}, scheduler = {} } = {}) {
+    this.status = 'idle';
+    this.index = -1;
+    this.stages = [];
+    this.speed = 0.5;
+    this.manual = false;
+    this.message = '';
+    this._onChange = onChange;
+    this._clock = {
+      now: scheduler.now || (() => performance.now()),
+      requestFrame: scheduler.requestFrame || (fn => requestAnimationFrame(fn)),
+      cancelFrame: scheduler.cancelFrame || (id => cancelAnimationFrame(id)),
+    };
+    this._run = null;
+  }
 
-function getCAPScores() {
-  const rcBase = { linearizable: 96, snapshot: 90, majority: 90, local: 78, available: 66 }[S.rc];
-  const rpC = { primary: 0, primaryPreferred: -4, secondary: -12, secondaryPreferred: -10, nearest: -12 }[S.rp];
-  const wcC = { wmaj: 4, wnum: 4, w1: -10, w0: -22 }[S.wc];
-  let c = clamp(rcBase + (S.rc === 'linearizable' ? 0 : rpC) + wcC, 5, 99);
+  start(stages) {
+    if (!Array.isArray(stages) || stages.some(stage => !stage || typeof stage.run !== 'function')) {
+      return Promise.reject(new TypeError('Each playback stage must provide a run function.'));
+    }
+    this.cancel();
+    const abort = this._deferred();
+    const run = { abort, stopped: false, waiters: new Set(), frame: null, lastTime: null, gate: null, resumeGate: null };
+    this._run = run;
+    this.stages = stages.slice();
+    this.index = -1;
+    this.message = '';
+    this.status = 'playing';
+    return this._drive(run, this.stages);
+  }
 
-  const up = [...S.ha.nodes, ...S.extra].filter(n => n.state === 'UP');
-  const prim = up.some(n => n.role === 'PRIMARY');
-  const upAZ = S.ha.azDown.filter(d => !d).length, quorum = upAZ >= 2;
-  const storage = vsStorageState();
-  let a = 76 + { primary: 0, primaryPreferred: 6, secondary: 2, secondaryPreferred: 8, nearest: 8 }[S.rp] + { w0: 6, w1: 4, wmaj: 0, wnum: 0 }[S.wc];
-  a += Math.min(6, 2 * S.extra.filter(n => n.state === 'UP').length);
-  if (S.ha.failingOver) a -= 22;
-  else if (!prim) a -= 40;
-  if (upAZ === 2) a -= 6;
-  if (!quorum) a -= 45;
-  if (storage.blocked) a -= 30;
-  if (!up.length) a = 2;
-  a = clamp(a, 2, 99);
+  wait(ms, onProgress) {
+    return this._wait(this._run, ms, onProgress);
+  }
 
-  const d = { wmaj: 96, wnum: 96, w1: 68, w0: 25 }[S.wc];
-  const lat = {
-    w0: tx('none (no ACK)', 'nenhuma (sem ACK)'),
-    w1: tx('lowest ACK', 'ACK mais rápido'),
-    wmaj: tx('+ storage quorum', '+ quórum do storage'),
-    wnum: tx('+ storage quorum', '+ quórum do storage'),
-  }[S.wc];
-  const latPct = { w0: 8, w1: 25, wmaj: 55, wnum: 55 }[S.wc];
-  return { c, a, d, lat, latPct, up, prim, upAZ, quorum, storage };
+  pause() {
+    const run = this._run;
+    if (!run || this.status !== 'playing') return;
+    this._advance(run);
+    if (!this._active(run)) return;
+    this.status = 'paused';
+    run.resumeGate = this._deferred();
+    this._cancelFrame(run);
+    this._notify();
+  }
+
+  resume() {
+    const run = this._run;
+    if (!run || this.status !== 'paused') return;
+    this.status = 'playing';
+    const gate = run.resumeGate;
+    run.resumeGate = null;
+    gate?.resolve();
+    this._schedule(run);
+    this._notify();
+  }
+
+  next() {
+    const run = this._run;
+    if (!run || this.status !== 'waiting' || !run.gate) return;
+    const gate = run.gate;
+    run.gate = null;
+    this.status = 'playing'; // Synchronous guard against repeated Next clicks.
+    gate.resolve();
+    this._notify();
+  }
+
+  cancel() {
+    if (this._run) this._stop(this._run, 'cancelled');
+  }
+
+  block(message) {
+    if (this._run) this._stop(this._run, 'blocked', String(message || 'Playback blocked.'));
+  }
+
+  setSpeed(speed) {
+    if (![0.25, 0.5, 1].includes(speed)) throw new RangeError('Playback speed must be 0.25, 0.5 or 1.');
+    if (this._run && this.status === 'playing') this._advance(this._run);
+    this.speed = speed;
+    this._notify();
+  }
+
+  setManual(manual) {
+    this.manual = Boolean(manual);
+    if (!this.manual && this.status === 'waiting') this.next();
+    else this._notify();
+  }
+
+  async _drive(run, stages) {
+    const view = this._view(run);
+    try {
+      this._notify();
+      for (let index = 0; index < stages.length; index++) {
+        await this._resumed(run);
+        this._check(run);
+        this.index = index;
+        this._notify();
+        await Promise.race([
+          Promise.resolve().then(async () => {
+            await this._resumed(run);
+            this._check(run);
+            return stages[index].run(view);
+          }),
+          run.abort.promise,
+        ]);
+        this._check(run);
+        await this._wait(run, 1200);
+        await this._resumed(run);
+        this._check(run);
+        if (index < stages.length - 1 && this.manual) {
+          const gate = run.gate = this._deferred();
+          this.status = 'waiting';
+          this._notify();
+          await Promise.race([gate.promise, run.abort.promise]);
+        }
+      }
+      this._check(run);
+      this._stop(run, 'completed');
+    } catch (error) {
+      if (error && error.archPlaybackAbort === run) return;
+      if (this._active(run)) this._stop(run, 'blocked', error?.message || String(error));
+      throw error;
+    }
+  }
+
+  _view(run) {
+    const owner = this;
+    return Object.freeze({
+      wait: (ms, progress) => owner._wait(run, ms, progress),
+      block: message => { if (owner._active(run)) owner._stop(run, 'blocked', String(message || 'Playback blocked.')); },
+      get status() { return owner._active(run) ? owner.status : run.finalStatus; },
+      get index() { return owner._active(run) ? owner.index : run.finalIndex; },
+      get stages() { return owner.stages; },
+      get speed() { return owner.speed; },
+      get manual() { return owner.manual; },
+      get message() { return owner._active(run) ? owner.message : run.finalMessage; },
+    });
+  }
+
+  _wait(run, ms, onProgress) {
+    const deferred = this._deferred();
+    try {
+      this._check(run);
+      if (!Number.isFinite(ms) || ms < 0) throw new RangeError('Wait duration must be a non-negative finite number.');
+      if (onProgress !== undefined && typeof onProgress !== 'function') throw new TypeError('Progress must be a function.');
+      onProgress?.(0);
+      this._check(run);
+      if (ms === 0) {
+        onProgress?.(1);
+        deferred.resolve();
+      } else {
+        run.waiters.add({ duration: ms, elapsed: 0, progress: onProgress, ...deferred });
+        this._schedule(run);
+      }
+    } catch (error) {
+      deferred.reject(error);
+    }
+    return deferred.promise;
+  }
+
+  async _resumed(run) {
+    this._check(run);
+    while (this.status === 'paused') {
+      await Promise.race([run.resumeGate.promise, run.abort.promise]);
+      this._check(run);
+    }
+  }
+
+  _schedule(run) {
+    if (!this._active(run) || this.status !== 'playing' || !run.waiters.size || run.frame !== null) return;
+    run.lastTime = this._clock.now();
+    const frame = this._clock.requestFrame(() => {
+      if (!this._active(run) || run.frame !== frame) return;
+      run.frame = null;
+      this._advance(run);
+      this._schedule(run);
+    });
+    run.frame = frame;
+  }
+
+  _advance(run) {
+    if (!this._active(run) || this.status !== 'playing' || run.lastTime === null || run.advancing) return;
+    const now = this._clock.now();
+    // A background tab may skip frames for seconds. Do not jump over the lesson.
+    const delta = Math.min(100, Math.max(0, now - run.lastTime)) * this.speed;
+    run.lastTime = now;
+    run.advancing = true;
+    try {
+      for (const waiter of [...run.waiters]) {
+        if (!this._active(run) || this.status !== 'playing') break;
+        waiter.elapsed = Math.min(waiter.duration, waiter.elapsed + delta);
+        try {
+          waiter.progress?.(waiter.elapsed / waiter.duration);
+          if (waiter.elapsed >= waiter.duration) {
+            run.waiters.delete(waiter);
+            waiter.resolve();
+          }
+        } catch (error) {
+          run.waiters.delete(waiter);
+          waiter.reject(error);
+        }
+      }
+    } finally {
+      run.advancing = false;
+    }
+  }
+
+  _stop(run, status, message = '') {
+    if (!this._active(run)) return;
+    run.stopped = true;
+    run.finalStatus = status;
+    run.finalIndex = this.index;
+    run.finalMessage = message;
+    this._cancelFrame(run);
+    const error = new Error(`Playback ${status}.`);
+    error.archPlaybackAbort = run;
+    run.abortError = error;
+    run.abort.reject(error);
+    for (const waiter of run.waiters) waiter.reject(error);
+    run.waiters.clear();
+    run.gate?.reject(error);
+    run.resumeGate?.reject(error);
+    run.gate = run.resumeGate = null;
+    this._run = null;
+    this.status = status;
+    this.message = message;
+    this._notify();
+  }
+
+  _cancelFrame(run) {
+    if (run.frame !== null) this._clock.cancelFrame(run.frame);
+    run.frame = null;
+    run.lastTime = null;
+  }
+
+  _active(run) { return Boolean(run && this._run === run && !run.stopped); }
+
+  _check(run) {
+    if (!this._active(run)) {
+      if (run?.abortError) throw run.abortError;
+      throw new Error('No active playback.');
+    }
+  }
+
+  _deferred() {
+    let resolve, reject;
+    const promise = new Promise((yes, no) => { resolve = yes; reject = no; });
+    // Cancellation may precede a consumer's next microtask or Promise.all call.
+    promise.catch(() => {});
+    return { promise, resolve, reject };
+  }
+
+  _notify() { this._onChange(this); }
 }
 
-function capLevel(v) { return v >= 85 ? tx('High', 'Alta') : v >= 65 ? tx('Medium', 'Média') : v >= 35 ? tx('Low', 'Baixa') : tx('Very low', 'Muito baixa'); }
-
-function updateCAP() {
-  if (!$('cap').classList.contains('cap-visible')) return;
-  const k = getCAPScores();
-  const invalid = S.rc === 'linearizable' && S.rp !== 'primary';
-  let mode, cls, lbl;
-  if (!k.up.length) { mode = tx('Unavailable — no compute node', 'Indisponível — sem nó de compute'); cls = 'cm-down'; lbl = '—'; }
-  else if (k.c - k.a >= 8) { mode = tx('CP — Consistency priority', 'CP — Prioridade à consistência'); cls = 'cm-cp'; lbl = 'CP'; }
-  else if (k.a - k.c >= 8) { mode = tx('AP-leaning — Availability / latency priority', 'Tendendo a AP — prioridade a disponibilidade / latência'); cls = 'cm-ap'; lbl = 'AP'; }
-  else { mode = tx('Balanced (PA/EC)', 'Equilibrado (PA/EC)'); cls = 'cm-bal'; lbl = 'PA/EC'; }
-  const badge = $('cap-mode-badge');
-  badge.textContent = mode; badge.className = 'cap-mode ' + cls;
-
-  // dot: slide along C→A and lean towards P (Atlas Infinite tolerates the loss of one AZ)
-  const t = clamp((k.a - k.c) / 80 + 0.5, 0.06, 0.94);
-  const cx = 150 + (52 - 150) * t, cy = 48 + (162 - 48) * t;
-  const px = cx + (215 - cx) * 0.32, py = cy + (158 - cy) * 0.32;
-  ['cap-dot', 'cap-dot-ring'].forEach(id => { $(id).setAttribute('cx', px); $(id).setAttribute('cy', py); });
-  $('cap-dot').setAttribute('fill', cls === 'cm-down' ? C.bad : C.forest);
-  const dl = $('cap-dot-lbl');
-  dl.setAttribute('x', px + 11); dl.setAttribute('y', py - 3); dl.textContent = lbl;
-  dl.setAttribute('fill', cls === 'cm-down' ? C.bad : C.forest);
-  $('cap-slider-dot').style.left = clamp(100 * k.c / (k.c + k.a), 5, 95) + '%';
-
-  const bar = (name, v, txt) => `<div class="mrow"><span class="mlbl">${name}</span><div class="mtrk"><div class="mfil" style="width:${v}%"></div></div><span class="mval">${txt}</span></div>`;
-  $('cap-metrics').innerHTML =
-    bar(tx('Consistency', 'Consistência'), k.c, capLevel(k.c)) +
-    bar(tx('Availability', 'Disponibilidade'), k.a, capLevel(k.a)) +
-    bar(tx('Durability', 'Durabilidade'), k.d, capLevel(k.d)) +
-    bar(tx('Write latency', 'Latência de escrita'), k.latPct, k.lat);
-
-  $('cap-p-text').innerHTML = tx(
-    `Inside the region, the Log Service commits on a <strong>majority across 3 AZs</strong>, so losing or partitioning <strong>one zone</strong> doesn't stop durable writes${src('B4')}. A side that can't reach a storage majority can't commit writes — the system chooses <strong>consistency over availability</strong>. Region-level partitions aren't covered yet: multi-region isn't available in the preview${src('D1')}.<br><span class="cap-hl">Now: ${k.upAZ}/3 AZs · ${k.quorum ? 'storage majority ✓' : 'no storage majority ✕'}</span>`,
-    `Dentro da região, o Log Service faz commit numa <strong>maioria entre 3 AZs</strong>, então perder ou particionar <strong>uma zona</strong> não interrompe as escritas duráveis${src('B4')}. Um lado que não alcança a maioria do storage não consegue fazer commit — o sistema escolhe <strong>consistência em vez de disponibilidade</strong>. Partições no nível de região ainda não são cobertas: multi-region não está disponível no preview${src('D1')}.<br><span class="cap-hl">Agora: ${k.upAZ}/3 AZs · ${k.quorum ? 'maioria do storage ✓' : 'sem maioria do storage ✕'}</span>`);
-
-  let d = '';
-  if (lbl === 'CP') d = tx(
-    `Acknowledged writes are durable in a <strong>storage-layer majority</strong> and are never rolled back; reads ${S.rp === 'primary' ? 'come from the primary' : 'favour fresh data'}. Under failure, writes <strong>wait or retry</strong> instead of diverging.`,
-    `Escritas confirmadas são duráveis numa <strong>maioria da camada de storage</strong> e nunca sofrem rollback; as leituras ${S.rp === 'primary' ? 'vêm do primário' : 'favorecem dados recentes'}. Sob falha, as escritas <strong>esperam ou são refeitas</strong> em vez de divergir.`);
-  else if (lbl === 'AP') d = tx(
-    `You traded consistency for latency/availability: ${S.wc === 'w0' ? '<strong>w:0</strong> never confirms a write' : S.wc === 'w1' ? '<strong>w:1</strong> returns sooner than majority (can be rolled back in rare failures)' : 'writes are majority-durable'}${['secondary', 'secondaryPreferred', 'nearest'].includes(S.rp) ? ', and reads from the standby/read-only nodes may be slightly stale' : ''}.`,
-    `Você trocou consistência por latência/disponibilidade: ${S.wc === 'w0' ? '<strong>w:0</strong> nunca confirma uma escrita' : S.wc === 'w1' ? '<strong>w:1</strong> retorna antes do majority (pode sofrer rollback em falhas raras)' : 'as escritas são duráveis na maioria'}${['secondary', 'secondaryPreferred', 'nearest'].includes(S.rp) ? ', e leituras do standby/nós read-only podem estar levemente defasadas' : ''}.`);
-  else if (lbl === 'PA/EC') d = tx(
-    `Writes stay majority-durable, while reads are spread to the standby and read-only nodes for availability — those reads can lag by milliseconds${src('B4')}. Use causally consistent sessions when a client must read its own writes.`,
-    `As escritas seguem duráveis na maioria, enquanto as leituras são distribuídas para o standby e nós read-only para ganhar disponibilidade — essas leituras podem ter lag de milissegundos${src('B4')}. Use sessões com consistência causal quando um cliente precisar ler as próprias escritas.`);
-  else d = tx('No compute node is up. Data remains durable in the storage layer; service returns when a compute node is back.', 'Nenhum nó de compute ativo. Os dados seguem duráveis na camada de storage; o serviço volta quando um nó de compute retornar.');
-  if (S.ha.failingOver) d += ' ' + tx('<strong>Failover in progress:</strong> writes are briefly paused while drivers retry.', '<strong>Failover em andamento:</strong> escritas pausadas brevemente enquanto os drivers refazem.');
-  if (!k.quorum && k.up.length) d += ' ' + tx('<strong>Storage majority lost:</strong> majority writes can\'t be acknowledged.', '<strong>Maioria do storage perdida:</strong> escritas majority não podem ser confirmadas.');
-  if (k.storage.blocked) d += ' ' + tx('<strong>Max storage limit reached:</strong> writes blocked, reads still served.', '<strong>Limite máximo de storage atingido:</strong> escritas bloqueadas, leituras seguem atendidas.');
-  if (invalid) d += ' ⚠ ' + tx('linearizable + non-primary readPreference is rejected by the server.', 'linearizable + readPreference diferente de primary é rejeitado pelo servidor.');
-  $('cap-desc-text').innerHTML = d;
-
-  const row = (kk, v) => `<div class="irow"><span class="ik">${kk}</span><span class="iv">${v}</span></div>`;
-  $('cap-config-tbl').innerHTML =
-    row('writeConcern', { w0: 'w:0', w1: 'w:1', wmaj: 'w:"majority"', wnum: 'w:3 → majority' }[S.wc]) +
-    row('readConcern', S.rc) + row('readPreference', S.rp) +
-    row(tx('Edition', 'Edição'), 'Atlas Infinite') +
-    row(tx('AZs up', 'AZs ativas'), `${k.upAZ}/3`) +
-    row(tx('Primary', 'Primário'), k.prim ? '✓' : (S.ha.failingOver ? tx('failing over', 'em failover') : '✕')) +
-    row(tx('Read-only/analytics', 'Read-only/analytics'), `${S.extra.filter(n => n.state === 'UP').length}/5`) +
-    row('Storage', k.storage.blocked ? tx('writes blocked', 'escritas bloqueadas') : `${Math.round(k.storage.r * 100)}% ${tx('of limit', 'do limite')}`);
-}
+if (typeof module !== 'undefined' && module.exports) module.exports = { ArchPlayback };
 
 
 // ═══ js/tab-arch.js ═══
@@ -1321,7 +1419,7 @@ function updateCAP() {
 const AP = {};   // coordinates of the last render, used by the animations
 
 function archSetMode(mode) {
-  if (S.arch.busy) return;
+  archResetPlayback();
   S.arch.mode = mode;
   document.querySelectorAll('#arch-seg button').forEach(b => b.classList.toggle('on', b.dataset.mode === mode));
   archRender();
@@ -1331,7 +1429,6 @@ function archSetMode(mode) {
   log('INFO', 'ARCH', mode === 'core'
     ? tx('Showing Atlas Core — compute and storage coupled on every node', 'Exibindo Atlas Core — compute e storage acoplados em cada nó')
     : tx('Showing Atlas Infinite — compute and storage as independent layers', 'Exibindo Atlas Infinite — compute e storage como camadas independentes'));
-  updateCAP();
 }
 
 function archElectable() { return S.ha.nodes; }
@@ -1340,8 +1437,7 @@ function archUpAZ(i) { return !S.ha.azDown[i]; }
 function archSetReadCache(value) {
   if (S.arch.busy || !['hit', 'miss'].includes(value)) return;
   S.arch.readCache = value;
-  renderSteps('arch-steps', []);
-  $('arch-steps-label').textContent = '';
+  archResetPlayback();
 }
 
 function archRender() {
@@ -1445,7 +1541,8 @@ function archRender() {
 }
 
 function archRenderCore() {
-  let s = `<svg viewBox="0 0 800 520" width="100%" xmlns="http://www.w3.org/2000/svg">`;
+  let s = `<svg viewBox="0 0 800 520" width="100%" xmlns="http://www.w3.org/2000/svg">
+    <defs><marker id="arch-core-repl-arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#001E2B"/></marker></defs>`;
   s += `<rect x="20" y="64" width="760" height="380" rx="12" fill="#FAFBFC" stroke="rgba(0,30,43,.14)" stroke-width="1.5"/>
     <text x="34" y="83" font-size="10" font-weight="800" fill="#001E2B" letter-spacing="1">${tx('REPLICA SET — EVERY NODE = COMPUTE + ITS OWN STORAGE', 'REPLICA SET — CADA NÓ = COMPUTE + SEU PRÓPRIO STORAGE')}</text>`;
   AP.client = [400, 46];
@@ -1453,12 +1550,15 @@ function archRenderCore() {
   const xs = [160, 400, 640];
   AP.core = xs.map(x => [x, 175]);
   AP.coreDisk = xs.map(x => [x, 300]);
+  // Keep a clear replication lane above the cards; draw routes over their backgrounds.
+  xs.forEach(x => {
+    s += `<rect x="${x - 95}" y="134" width="190" height="248" rx="12" fill="#fff" stroke="rgba(0,30,43,.22)" stroke-width="1.3"/>`;
+  });
   s += `<line x1="400" y1="46" x2="160" y2="146" stroke="#00684A" stroke-width="1.5" stroke-dasharray="5 4" opacity=".55"/>`;
-  s += `<path d="M190,170 C260,150 330,150 372,170" fill="none" stroke="rgba(0,30,43,.35)" stroke-width="1.8" class="repl"/>
-        <path d="M190,182 C330,232 500,232 612,182" fill="none" stroke="rgba(0,30,43,.35)" stroke-width="1.8" class="repl"/>
-        <text x="281" y="146" text-anchor="middle" font-size="8.5" fill="rgba(0,30,43,.72)">${tx('oplog replication', 'replicação do oplog')}</text>`;
+  s += `<path data-connection="core-oplog" d="M190,175 H278 V118 H640 V146" fill="none" stroke="#001E2B" stroke-width="1.5" stroke-linejoin="round" class="repl" marker-end="url(#arch-core-repl-arrow)"/>
+        <path data-connection="core-oplog" d="M400,118 V146" fill="none" stroke="#001E2B" stroke-width="1.5" class="repl" marker-end="url(#arch-core-repl-arrow)"/>
+        <text x="460" y="107" text-anchor="middle" font-size="9" font-weight="600" fill="#001E2B">${tx('oplog replication', 'replicação do oplog')}</text>`;
   xs.forEach((x, i) => {
-    s += `<rect x="${x - 95}" y="112" width="190" height="270" rx="12" fill="#fff" stroke="rgba(0,30,43,.22)" stroke-width="1.3"/>`;
     s += `<g class="${i === 0 ? 'gnod' : ''}">${mdbNodeIcon(x, 175, 50, 'UP', i === 0 ? 'PRIMARY' : 'SECONDARY')}</g>`;
     s += roleBadge(x, 208, i === 0 ? 'PRIMARY' : 'SECONDARY', 'UP', i === 0 ? tx('PRIMARY', 'PRIMÁRIO') : tx('SECONDARY', 'SECUNDÁRIO'));
     s += `<line x1="${x}" y1="226" x2="${x}" y2="270" stroke="#001E2B" stroke-width="1.3"/>`;
@@ -1493,6 +1593,7 @@ function archLegend() {
 // ── Side panel texts ─────────────────────────────────────────────────────────
 
 function archUpdateInfo() {
+  archPlaybackUI();
   const core = S.arch.mode === 'core';
   $('arch-cache').value = S.arch.readCache;
   $('arch-mode-desc').innerHTML = core
@@ -1581,232 +1682,273 @@ function archRenderCmp() {
     ${rows.map(r => { const xr = r[0] === 'xr', c = xr ? r.slice(1) : r; return `<tr class="${xr ? 'xr' : ''}"><td>${c[0]}</td><td>${c[1]}</td><td class="inf">${c[2]}</td></tr>`; }).join('')}</tbody></table>`;
 }
 
-// ── Animations ───────────────────────────────────────────────────────────────
 
-function archLock(on) {
-  S.arch.busy = on;
-  $('arch-btn-w').disabled = on; $('arch-btn-r').disabled = on;
-  $('arch-cache').disabled = on;
+// ═══ js/arch-simulation.js ═══
+// ─── GUIDED ARCHITECTURE SIMULATIONS ────────────────────────────────────────
+// One clock drives packets, parallel branches and the pause between stages.
+let archPlayer;
+let archRunLabel = '';
+let archDrawnStage = null;
+
+function archGetPlayer() {
+  if (!archPlayer) archPlayer = new ArchPlayback({ onChange: archPlaybackUI });
+  return archPlayer;
 }
 
-async function archSimWrite() {
-  if (S.arch.busy) return;
-  if (S.arch.mode === 'core') return archSimWriteCore();
-  const prim = S.ha.nodes.find(n => n.role === 'PRIMARY' && n.state === 'UP');
-  const wc = S.wc, ackOnMajority = wc === 'wmaj' || wc === 'wnum';
-  const steps = [
-    tx('<b>Client → primary.</b> The driver routes the write to the primary compute node.', '<b>Cliente → primário.</b> O driver envia a escrita ao nó de compute primário.'),
-    tx('<b>Primary → Log Service.</b> The primary executes the write and appends the oplog entry to the storage layer.', '<b>Primário → Log Service.</b> O primário executa a escrita e anexa a entrada do oplog na camada de storage.'),
-    tx('<b>Replicated across 3 AZs.</b> The Log Service replicates the entry to its replicas in three Availability Zones.', '<b>Replicado em 3 AZs.</b> O Log Service replica a entrada para suas réplicas em três Availability Zones.'),
-    ackOnMajority ? tx('<b>Majority durable → ACK.</b> 2 of 3 log replicas hold the entry → the write is acknowledged. It will never be rolled back.', '<b>Maioria durável → ACK.</b> 2 de 3 réplicas do log têm a entrada → a escrita é confirmada. Nunca sofrerá rollback.')
-      : wc === 'w1' ? tx('<b>ACK already sent (w:1).</b> w:1 returns sooner than a majority write — but Atlas can roll it back in rare failures. (The exact acknowledgment point is drawn here for illustration.)', '<b>ACK já enviado (w:1).</b> O w:1 retorna antes de uma escrita majority — mas o Atlas pode fazer rollback em falhas raras. (O ponto exato do ACK é desenhado aqui apenas como ilustração.)')
-      : tx('<b>No ACK (w:0).</b> The client never waits for — or learns about — the outcome.', '<b>Sem ACK (w:0).</b> O cliente nunca espera — nem fica sabendo — o resultado.'),
-    tx('<b>Standby follows the log asynchronously.</b> It applies the oplog into an in-memory ingest table on top of the stable table. This runs independently of page materialization and does not gate the client ACK.', '<b>Standby acompanha o log de forma assíncrona.</b> Aplica o oplog numa ingest table em memória sobre a stable table. Isso ocorre independentemente da materialização de páginas e não condiciona o ACK ao cliente.'),
-    tx('<b>Materializer → Page Service and S3 in parallel.</b> At checkpoint the engine emits the physical log (phylog). Each zone\'s Page Materializer tails the log, distributes phylog to page servers and, in parallel, uploads oplog + phylog to object storage. This background work is shown after the ACK for clarity; it is not a prerequisite for the ACK.', '<b>Materializer → Page Service e S3 em paralelo.</b> No checkpoint o engine emite o log físico (phylog). O Page Materializer de cada zona acompanha o log, distribui phylog aos page servers e, em paralelo, envia oplog + phylog ao object storage. Esse trabalho de fundo é mostrado após o ACK para facilitar a leitura; ele não é um pré-requisito do ACK.'),
-  ];
-  renderSteps('arch-steps', steps);
-  $('arch-steps-label').textContent = tx('write · ', 'escrita · ') + { w0: 'w:0', w1: 'w:1', wmaj: 'w:"majority"', wnum: 'w:3 → majority' }[wc];
-  if (!prim) {
-    setStep('arch-steps', 0, 'active');
-    log('WARN', 'DRIVER', tx('No primary available right now — the driver waits for a new primary and retries the write (retryable writes)', 'Nenhum primário disponível agora — o driver espera um novo primário e refaz a escrita (retryable writes)'));
-    return;
-  }
-  archLock(true);
-  const [px, py] = AP.nodes[prim.id];
-  log('INFO', 'CLIENT', tx(`insertOne() with writeConcern ${$('arch-steps-label').textContent.split('· ')[1]}`, `insertOne() com writeConcern ${$('arch-steps-label').textContent.split('· ')[1]}`));
-  setStep('arch-steps', 0, 'active');
-  await fly('arch-svg', [AP.client, [px, py - 26]], 650, '#00ED64');
-  setStep('arch-steps', 0, 'done'); setStep('arch-steps', 1, 'active');
-  flash('arch-svg', px, py - 34, tx('apply', 'aplica'), '#00684A');
-  let ackP = Promise.resolve();
-  const ackW1 = () => { ackP = fly('arch-svg', [[px, py - 26], AP.client], 600, '#00684A').then(() => { flash('arch-svg', 400, 62, 'ACK (w:1)', '#B45309'); log('SUCCESS', 'CLIENT', tx('ACK received (w:1) — sooner than majority; can be rolled back in rare failures', 'ACK recebido (w:1) — antes do majority; pode sofrer rollback em falhas raras')); }); };
-  await sleep(250);
-  setStep('arch-steps', 1, 'done'); setStep('arch-steps', 2, 'active');
-  const upAZ = [0, 1, 2].filter(archUpAZ);
-  let arrived = 0, majorityAt = null;
-  const durs = [700, 900, 1250];
-  const flights = [0, 1, 2].map(i => {
-    if (!archUpAZ(i)) return Promise.resolve();
-    const [lx, ly] = AP.log[i];
-    return fly('arch-svg', [[px, py + 62], [px, py + 100], [lx, ly - 70], [lx, ly - 20]], durs[i], '#023430').then(() => {
-      arrived++;
-      flash('arch-svg', lx, ly - 26, `${arrived}/3`, '#001E2B');
-      if (arrived === 1 && wc === 'w1') ackW1();
-      if (arrived === 2) majorityAt = performance.now();
+function archClearMotion() {
+  $('arch-svg').querySelectorAll('[data-arch-motion]').forEach(el => el.remove());
+}
+
+function archPlaybackUI(player = archGetPlayer()) {
+  const busy = ['playing', 'paused', 'waiting'].includes(player.status);
+  S.arch.busy = busy;
+  ['arch-btn-w', 'arch-btn-r', 'arch-cache'].forEach(id => { $(id).disabled = busy; });
+  document.querySelectorAll('#tab-arch .sync-wc, #tab-arch .sync-rc, #tab-arch .sync-rp').forEach(el => { el.disabled = busy; });
+  $('arch-pause').disabled = !['playing', 'paused'].includes(player.status);
+  $('arch-pause').textContent = player.status === 'paused' ? tx('▶ Resume', '▶ Continuar') : tx('Ⅱ Pause', 'Ⅱ Pausar');
+  $('arch-next').disabled = player.status !== 'waiting';
+  $('arch-stop').disabled = !busy;
+  $('arch-play-mode').value = player.manual ? 'manual' : 'auto';
+  $('arch-speed').value = String(player.speed);
+  $('arch-svg').classList.toggle('sim-frozen', player.status !== 'playing');
+  const stage = player.stages[player.index];
+  if (stage !== archDrawnStage) { archClearMotion(); archDrawnStage = stage; }
+  const status = {
+    playing: tx('In progress', 'Em andamento'), paused: tx('Paused — resume when ready', 'Pausada — continue quando quiser'),
+    waiting: tx('Stage complete — click Next step', 'Etapa concluída — clique em Próxima etapa'),
+    completed: tx('Simulation complete', 'Simulação concluída'), cancelled: tx('Stopped — choose a simulation to restart', 'Interrompida — escolha uma simulação para recomeçar'),
+    blocked: tx('Cannot continue in this scenario', 'Não é possível continuar neste cenário'),
+  }[player.status];
+  $('arch-now').innerHTML = stage
+    ? `<div class="sim-kicker">${archRunLabel} · ${tx('Step', 'Etapa')} ${player.index + 1}/${player.stages.length} · ${status}</div><strong>${stage.title}</strong><p>${player.message || stage.detail}</p>${stage.more && !player.message ? `<p class="only-detailed">${stage.more}</p>` : ''}`
+    : `<div class="sim-kicker">${tx('Follow the path', 'Acompanhe o caminho')}</div><strong>${tx('Choose Simulate Write or Simulate Read', 'Escolha Simular Escrita ou Simular Leitura')}</strong><p>${tx('Start at 0.5×, pause whenever you need, or use Step by step. The current explanation stays here.', 'Comece em 0,5×, pause quando precisar ou use Passo a passo. A explicação da etapa atual fica aqui.')}</p>`;
+  renderSteps('arch-steps', player.stages.map(s => `<b>${s.title}</b> ${s.detail}`), player.stages.map((s, i) => i < player.index || player.status === 'completed' ? 'done' : i === player.index ? 'active' : ''));
+  $('arch-steps-label').textContent = archRunLabel;
+}
+
+function archResetPlayback() {
+  const player = archGetPlayer();
+  player.cancel();
+  player.stages = []; player.index = -1; player.status = 'idle'; player.message = '';
+  archRunLabel = ''; archDrawnStage = null;
+  archClearMotion(); archPlaybackUI(player);
+}
+function archSetPlaybackMode(mode) { archGetPlayer().setManual(mode === 'manual'); }
+function archSetSpeed(speed) { archGetPlayer().setSpeed(Number(speed)); }
+function archTogglePause() { const p = archGetPlayer(); p.status === 'paused' ? p.resume() : p.pause(); }
+function archNext() { archGetPlayer().next(); }
+function archStop() { archGetPlayer().cancel(); archClearMotion(); }
+
+function archFx(tag, attrs) {
+  const el = document.createElementNS('http://www.w3.org/2000/svg', tag);
+  el.setAttribute('data-arch-motion', '');
+  Object.entries(attrs).forEach(([key, value]) => el.setAttribute(key, value));
+  $('arch-svg').querySelector('svg').appendChild(el);
+  return el;
+}
+function archHalo(x, y, r = 31) {
+  archFx('circle', { cx: x, cy: y, r, fill: 'none', stroke: C.forest, 'stroke-width': 3 });
+}
+function archLabel(x, y, label) {
+  const el = archFx('text', { x, y, 'text-anchor': 'middle', 'font-size': 10, 'font-weight': 800, fill: C.forest, 'paint-order': 'stroke', stroke: '#fff', 'stroke-width': 4 });
+  el.textContent = label;
+}
+async function archFly(play, points, ms = 800, color = C.spring) {
+  archFx('polyline', { points: points.map(p => p.join(',')).join(' '), fill: 'none', stroke: color === C.spring ? C.forest : color, 'stroke-width': 2.5, 'stroke-linejoin': 'round', opacity: .65 });
+  const dot = archFx('circle', { r: 6, fill: color, stroke: color === C.slate ? '#fff' : C.slate, 'stroke-width': 1.5 });
+  const lengths = points.slice(1).map((p, i) => Math.hypot(p[0] - points[i][0], p[1] - points[i][1]));
+  const total = lengths.reduce((a, b) => a + b, 0);
+  try {
+    await play.wait(ms, progress => {
+      let distance = total * progress, i = 0;
+      while (i < lengths.length - 1 && distance > lengths[i]) distance -= lengths[i++];
+      const f = lengths[i] ? distance / lengths[i] : 1;
+      dot.setAttribute('cx', points[i][0] + (points[i + 1][0] - points[i][0]) * f);
+      dot.setAttribute('cy', points[i][1] + (points[i + 1][1] - points[i][1]) * f);
     });
-  });
-  // wait for majority (or all flights)
-  await new Promise(res => {
-    const iv = setInterval(() => { if (arrived >= 2 || arrived >= upAZ.length) { clearInterval(iv); res(); } }, 40);
-    Promise.all(flights).then(() => { clearInterval(iv); res(); });
-  });
-  setStep('arch-steps', 2, 'done');
-  setStep('arch-steps', 3, 'active');
-  if (upAZ.length < 2) {
-    flash('arch-svg', 400, 236, tx('no storage majority', 'sem maioria no storage'), '#C0392B');
-    setStep('arch-steps', 3, 'active');
-    $('arch-steps').children[3].innerHTML = stepHTML(tx('<b>Waiting… no storage-layer majority.</b> Only 1 of 3 AZs is reachable, so a majority write can\'t be acknowledged. Without <b>wtimeout</b> the write waits indefinitely.', '<b>Esperando… sem maioria na camada de storage.</b> Só 1 de 3 AZs está acessível, então uma escrita majority não pode ser confirmada. Sem <b>wtimeout</b>, a escrita espera indefinidamente.'));
-    log('ERROR', 'STORAGE', tx('Log Service has 1/3 replicas — majority (2) unavailable; majority writes cannot be acknowledged', 'Log Service com 1/3 réplicas — maioria (2) indisponível; escritas majority não podem ser confirmadas'));
-    await Promise.all(flights);
-    await ackP;
-    archLock(false);
-    updateCAP();
-    return;
-  }
-  log('SUCCESS', 'LOG-SVC', tx('Entry durable on a majority of log replicas (2/3 AZs)', 'Entrada durável na maioria das réplicas do log (2/3 AZs)'));
-  if (ackOnMajority) {
-    flash('arch-svg', px + 40, py - 30, tx('majority ✓', 'maioria ✓'), '#001E2B');
-    await fly('arch-svg', [[px, py - 26], AP.client], 600, '#00684A');
-    flash('arch-svg', 400, 62, 'ACK ✓', '#00684A');
-    log('SUCCESS', 'CLIENT', tx('ACK received — write is majority-durable in the storage layer and will never be rolled back', 'ACK recebido — escrita durável na maioria da camada de storage; nunca sofrerá rollback'));
-  } else {
-    await ackP;
-    if (wc === 'w0') log('INFO', 'CLIENT', tx('w:0 — no ACK requested', 'w:0 — nenhum ACK solicitado'));
-  }
-  setStep('arch-steps', 3, 'done'); setStep('arch-steps', 4, 'active'); setStep('arch-steps', 5, 'active');
-  const stby = S.ha.nodes.find(n => n.role === 'STANDBY' && n.state === 'UP');
-  // Standby ingestion and page materialization are independent background work.
-  const standbyWork = (async () => {
-    if (stby) {
-      const li = archUpAZ(stby.az) ? stby.az : upAZ[0];
-      const [lx, ly] = AP.log[li]; const [sx, sy] = AP.nodes[stby.id];
-      await fly('arch-svg', [[lx + 8, ly - 20], [sx, sy + 90], [sx, sy + 59]], 650, '#00684A', 5);
-      flash('arch-svg', sx, sy - 34, tx('oplog applied', 'oplog aplicado'), '#00684A');
-    }
-    setStep('arch-steps', 4, stby ? 'done' : 'skip');
-  })();
-  const materializationWork = (async () => {
-    flash('arch-svg', px, py - 34, 'checkpoint → phylog', '#00684A');
-    await Promise.all(upAZ.map(async i => {
-      const [lx, ly] = AP.log[i], [mx, my] = AP.materializer[i], [pgx, pgy] = AP.page[i];
-      await flights[i];
-      await fly('arch-svg', [[px, py + 62], [lx, ly - 20]], 550, '#00684A', 5);
-      await fly('arch-svg', [[lx, ly + 22], [mx, my - 16]], 450, '#00684A', 5);
-      // Both destinations are fed by the materializer, never Page Service → S3.
-      await Promise.all([
-        fly('arch-svg', [[mx + 50, my], [pgx - 22, pgy]], 650, '#00684A', 5),
-        fly('arch-svg', [[mx, my + 16], AP.s3[i]], 650, '#001E2B', 5),
-      ]);
-    }));
-    flash('arch-svg', 400, 486, tx('oplog + phylog stored', 'oplog + phylog persistidos'), '#00684A');
-    setStep('arch-steps', 5, 'done');
-    log('INFO', 'MATERIALIZER', tx('Parallel destinations: phylog to Page Service; oplog + phylog to object storage. Neither gates the ACK.', 'Destinos paralelos: phylog ao Page Service; oplog + phylog ao object storage. Nenhum condiciona o ACK.'));
-  })();
-  await Promise.all([standbyWork, materializationWork]);
-  archLock(false);
+  } finally { dot.remove(); }
+}
+async function archAck(play, position, label) {
+  await archFly(play, [[position[0], position[1] - 26], AP.client], 700, C.forest);
+  archLabel(400, 61, label);
+  log('SUCCESS', 'CLIENT', label);
 }
 
-async function archSimWriteCore() {
-  const wc = S.wc;
-  const steps = [
-    tx('<b>Client → primary.</b> The driver routes the write to the primary node.', '<b>Cliente → primário.</b> O driver envia a escrita ao nó primário.'),
-    tx('<b>Primary writes locally.</b> Applies the write and journals it to its own local volume.', '<b>Primário grava localmente.</b> Aplica a escrita e registra no journal do seu próprio volume local.'),
-    tx('<b>Secondaries replicate.</b> Each secondary pulls the oplog and applies it to its own full copy.', '<b>Secundários replicam.</b> Cada secundário puxa o oplog e aplica na sua própria cópia completa.'),
-    { w0: tx('<b>No ACK (w:0).</b>', '<b>Sem ACK (w:0).</b>'), w1: tx('<b>ACK after the primary (w:1).</b> Fast, but can be rolled back if the primary fails before replicating.', '<b>ACK após o primário (w:1).</b> Rápido, mas pode sofrer rollback se o primário falhar antes de replicar.'), wmaj: tx('<b>ACK at 2 of 3 nodes (majority).</b>', '<b>ACK em 2 de 3 nós (maioria).</b>'), wnum: tx('<b>ACK at 3 of 3 nodes (w:3).</b> Any node down = the write waits.', '<b>ACK em 3 de 3 nós (w:3).</b> Qualquer nó fora = a escrita espera.') }[wc],
+function archStart(stages, label) {
+  if (S.arch.busy) return;
+  archResetPlayback();
+  archRunLabel = label;
+  // On narrow screens the sidebar is below the diagram. Bring the lesson into view.
+  $('arch-now').closest('.arch-guide').scrollIntoView({ block: 'start', behavior: 'instant' });
+  return archGetPlayer().start(stages).catch(error => {
+    log('ERROR', 'SIMULATION', error.message || String(error));
+  });
+}
+
+function archSimWrite() {
+  if (S.arch.busy) return;
+  archRender();
+  const core = S.arch.mode === 'core';
+  const concern = { w0: 'w:0', w1: 'w:1', wmaj: 'w:"majority"', wnum: core ? 'w:3' : 'w:3 → majority' }[S.wc];
+  return archStart(core ? archCoreWritePlan() : archInfiniteWritePlan(), `${core ? 'Atlas Core' : 'Atlas Infinite'} · ${tx('write', 'escrita')} · ${concern}`);
+}
+
+function archInfiniteWritePlan() {
+  const wc = S.wc, majority = wc === 'wmaj' || wc === 'wnum';
+  const primary = S.ha.nodes.find(n => n.role === 'PRIMARY' && n.state === 'UP');
+  const upAZ = [0, 1, 2].filter(archUpAZ), first = upAZ[0];
+  const pos = primary && AP.nodes[primary.id];
+  const stby = S.ha.nodes.find(n => n.role === 'STANDBY' && n.state === 'UP');
+  return [
+    {
+      title: tx('Application sends the write', 'Aplicação envia a escrita'),
+      detail: tx('The driver routes the operation to the primary compute node.', 'O driver envia a operação ao nó de compute primário.'),
+      run: async play => {
+        if (!pos) return play.block(tx('No primary is available. The driver must wait for an eligible primary.', 'Não há primário disponível. O driver precisa aguardar um primário elegível.'));
+        await archFly(play, [AP.client, [pos[0], pos[1] - 26]]);
+        archHalo(...pos);
+      },
+    },
+    {
+      title: tx('Primary records the operation in storage', 'Primário registra a operação no storage'),
+      detail: tx('Compute executes the write and sends the log entry to the Log Service.', 'O compute executa a escrita e envia a entrada de log ao Log Service.') + ' ' + (wc === 'w1'
+        ? tx('With w:1, the ACK returns earlier than majority; rollback is still possible in rare failures.', 'Com w:1, o ACK retorna antes do majority; ainda pode haver rollback em falhas raras.')
+        : wc === 'w0' ? tx('With w:0, the client requests no ACK.', 'Com w:0, o cliente não solicita ACK.') : tx('The client is still waiting for confirmation.', 'O cliente ainda aguarda a confirmação.')),
+      more: tx('The log entry is encrypted before leaving compute. For w:1, the exact ACK point shown here is illustrative.', 'A entrada é criptografada antes de sair do compute. Para w:1, o ponto exato do ACK mostrado aqui é ilustrativo.'),
+      run: async play => {
+        if (first === undefined) return play.block(tx('No Log Service is reachable.', 'Nenhum Log Service está acessível.'));
+        const [x, y] = AP.log[first];
+        await archFly(play, [[pos[0], pos[1] + 62], [pos[0], 235], [x, y - 22]], 900);
+        archHalo(x, y, 27); archLabel(x, y - 30, '1/3');
+        if (wc === 'w1') await archAck(play, pos, 'ACK (w:1)');
+      },
+    },
+    {
+      title: majority ? tx('Storage replicates and confirms at 2 of 3 AZs', 'Storage replica e confirma em 2 de 3 AZs') : tx('Storage replicates across the AZs', 'Storage replica entre as AZs'),
+      detail: majority
+        ? tx('Once two log replicas hold the entry, the ACK goes to the client. The third replica can finish afterward. A majority write never rolls back.', 'Assim que duas réplicas do log têm a entrada, o ACK segue ao cliente. A terceira pode terminar depois. Uma escrita majority nunca sofre rollback.')
+        : tx('Replication continues in the storage layer. It sends no additional ACK: w:1 was acknowledged earlier; w:0 requests none.', 'A replicação continua na camada de storage. Não há um novo ACK: w:1 já foi confirmado; w:0 não solicita confirmação.'),
+      run: async play => {
+        let count = 1;
+        await Promise.all(upAZ.filter(i => i !== first).map(async (az, i) => {
+          const [x, y] = AP.log[az], [sx, sy] = AP.log[first];
+          await archFly(play, [[sx, sy - 22], [sx, 292], [x, 292], [x, y - 22]], 900 + i * 1100, C.slate);
+          count++; archHalo(x, y, 27); archLabel(x, y - 30, `${count}/3`);
+          if (count === 2 && majority) await archAck(play, pos, 'ACK majority ✓');
+        }));
+        if (count < 2) return play.block(majority
+          ? tx('Fewer than 2 of 3 storage AZs are reachable. No majority ACK is possible; the write waits until recovery or wtimeout.', 'Menos de 2 das 3 AZs de storage estão acessíveis. Não é possível confirmar majority; a escrita aguarda recuperação ou wtimeout.')
+          : tx('There is no storage majority. This demonstration stops here; an earlier w:1 ACK does not guarantee protection against rollback, and w:0 provides no result.', 'Não há maioria no storage. A demonstração para aqui; um ACK anterior com w:1 não garante proteção contra rollback, e w:0 não informa o resultado.'));
+      },
+    },
+    {
+      title: tx('Background work runs in parallel', 'Trabalho em segundo plano acontece em paralelo'),
+      detail: tx('The standby follows the log while Page Materializers update Page Service and object storage. The order shown is educational: these independent tasks do not depend on the ACK.', 'O standby acompanha o log enquanto os Page Materializers atualizam o Page Service e o object storage. A ordem exibida é didática: essas tarefas independentes não dependem do ACK.'),
+      more: tx('Shown in a later stage for clarity; this does not mean background work starts only after the ACK. At checkpoints, compute emits phylog; materializers send phylog to Page Service and oplog + phylog to object storage.', 'Mostrado numa etapa posterior para facilitar a leitura; isso não significa que o trabalho só comece após o ACK. Nos checkpoints, o compute emite phylog; os materializers enviam phylog ao Page Service e oplog + phylog ao object storage.'),
+      run: async play => {
+        const standbyWork = (async () => {
+          if (!stby) return;
+          const az = upAZ.includes(stby.az) ? stby.az : first;
+          const [lx, ly] = AP.log[az], [sx, sy] = AP.nodes[stby.id];
+          await archFly(play, [[lx + 8, ly - 22], [sx, sy + 90], [sx, sy + 59]], 1000, C.forest);
+          archHalo(sx, sy);
+        })();
+        const pagesWork = Promise.all(upAZ.map(async az => {
+          const [lx, ly] = AP.log[az], [mx, my] = AP.materializer[az], [px, py] = AP.page[az];
+          await archFly(play, [[pos[0], pos[1] + 62], [lx, ly - 22]], 700, C.forest);
+          await archFly(play, [[lx, ly + 22], [mx, my - 16]], 600, C.forest);
+          await Promise.all([
+            archFly(play, [[mx + 50, my], [px - 22, py]], 800, C.forest),
+            archFly(play, [[mx, my + 16], AP.s3[az]], 800, C.slate),
+          ]);
+        }));
+        await Promise.all([standbyWork, pagesWork]);
+      },
+    },
   ];
-  renderSteps('arch-steps', steps);
-  $('arch-steps-label').textContent = tx('write · Atlas Core', 'escrita · Atlas Core');
-  archLock(true);
-  const [px, py] = AP.core[0];
-  setStep('arch-steps', 0, 'active');
-  await fly('arch-svg', [AP.client, [px, py - 26]], 650, '#00ED64');
-  setStep('arch-steps', 0, 'done'); setStep('arch-steps', 1, 'active');
-  await fly('arch-svg', [[px, py + 50], [px, 280]], 400, '#001E2B', 5);
-  flash('arch-svg', px, 262, 'journal', '#001E2B');
-  if (wc === 'w1') fly('arch-svg', [[px, py - 26], AP.client], 600, '#00684A').then(() => flash('arch-svg', 400, 62, 'ACK (w:1)', '#B45309'));
-  setStep('arch-steps', 1, 'done'); setStep('arch-steps', 2, 'active');
-  let n = 1;
-  const f = AP.core.slice(1).map(([x, y], i) => fly('arch-svg', [[px + 30, py], [x - 30, y]], 800 + i * 500, 'rgba(0,30,43,.35)').then(() => fly('arch-svg', [[x, y + 50], [x, 280]], 350, '#001E2B', 5)).then(() => { n++; flash('arch-svg', x, y - 34, `${n}/3`, '#001E2B'); }));
-  await f[0];
-  setStep('arch-steps', 2, wc === 'wnum' ? 'active' : 'done');
-  if (wc === 'wmaj') { await fly('arch-svg', [[px, py - 26], AP.client], 600, '#00684A'); flash('arch-svg', 400, 62, 'ACK ✓', '#00684A'); }
-  await f[1];
-  if (wc === 'wnum') { setStep('arch-steps', 2, 'done'); await fly('arch-svg', [[px, py - 26], AP.client], 600, '#00684A'); flash('arch-svg', 400, 62, 'ACK ✓', '#00684A'); }
-  setStep('arch-steps', 3, 'done');
-  archLock(false);
+}
+
+function archCoreWritePlan() {
+  const wc = S.wc, pos = AP.core[0];
+  return [
+    { title: tx('Application sends the write', 'Aplicação envia a escrita'),
+      detail: tx('The driver routes the operation to the primary node.', 'O driver envia a operação ao nó primário.'),
+      run: async play => { await archFly(play, [AP.client, [pos[0], pos[1] - 26]]); archHalo(...pos); } },
+    { title: tx('Primary writes to its own storage', 'Primário grava no seu próprio storage'),
+      detail: tx('The primary applies the operation and records it in its local storage.', 'O primário aplica a operação e a registra no storage local.') + ' ' + (wc === 'w1'
+        ? tx('With w:1, it acknowledges without waiting for the secondaries to replicate. Rollback is possible if it fails too soon.', 'Com w:1, ele confirma sem aguardar a replicação nos secundários. Pode haver rollback se ele falhar antes de replicar.')
+        : wc === 'w0' ? tx('With w:0, the client requests no ACK.', 'Com w:0, o cliente não solicita ACK.') : tx('The client still waits for replication.', 'O cliente ainda aguarda a replicação.')),
+      run: async play => { await archFly(play, [[pos[0], 226], [pos[0], 272]], 700, C.slate); if (wc === 'w1') await archAck(play, pos, 'ACK (w:1)'); } },
+    { title: tx('Secondaries update their own copies', 'Secundários atualizam suas próprias cópias'),
+      detail: tx('Each secondary pulls the oplog and applies the operation to its local storage.', 'Cada secundário puxa o oplog e aplica a operação no seu storage local.') + ' ' + (wc === 'wmaj'
+        ? tx('The primary sends the ACK when 2 of 3 nodes have the write; it need not wait for the third.', 'O primário envia o ACK quando 2 de 3 nós têm a escrita; não precisa aguardar o terceiro.')
+        : wc === 'wnum' ? tx('With w:3, the ACK waits for all three nodes.', 'Com w:3, o ACK espera os três nós.')
+        : tx('Replication continues without another ACK.', 'A replicação continua sem um novo ACK.')),
+      run: async play => {
+        let count = 1;
+        await Promise.all(AP.core.slice(1).map(async ([x, y], i) => {
+          await archFly(play, [[190, 175], [278, 175], [278, 118], [x, 118], [x, 146]], 900 + i * 1100, C.slate);
+          await archFly(play, [[x, 226], [x, 272]], 600, C.slate);
+          count++; archHalo(x, y); archLabel(x, 258, `${count}/3`);
+          if ((count === 2 && wc === 'wmaj') || (count === 3 && wc === 'wnum')) await archAck(play, pos, wc === 'wnum' ? 'ACK w:3 ✓' : 'ACK majority ✓');
+        }));
+      } },
+  ];
 }
 
 function archPickReadNode() {
   const up = [...S.ha.nodes, ...S.extra].filter(n => n.state === 'UP');
-  const prim = up.find(n => n.role === 'PRIMARY');
-  const secs = up.filter(n => n.role !== 'PRIMARY');
+  const primary = up.find(n => n.role === 'PRIMARY'), secondaries = up.filter(n => n.role !== 'PRIMARY');
   const pick = a => a[Math.floor(Math.random() * a.length)];
-  switch (S.rp) {
-    case 'primary': return prim;
-    case 'primaryPreferred': return prim || pick(secs);
-    case 'secondary': return secs.length ? pick(secs) : null;
-    case 'secondaryPreferred': return secs.length ? pick(secs) : prim;
-    case 'nearest': return pick(up);
-  }
+  return { primary: () => primary, primaryPreferred: () => primary || pick(secondaries), secondary: () => pick(secondaries), secondaryPreferred: () => pick(secondaries) || primary, nearest: () => pick(up) }[S.rp]();
 }
 
-async function archSimRead() {
+function archSimRead() {
   if (S.arch.busy) return;
-  const core = S.arch.mode === 'core';
-  const cacheMiss = S.arch.readCache === 'miss';
-  if (S.rc === 'linearizable' && S.rp !== 'primary') {
-    renderSteps('arch-steps', [tx('<b>Rejected.</b> readConcern "linearizable" only works with readPreference primary.', '<b>Rejeitada.</b> readConcern "linearizable" só funciona com readPreference primary.')], ['active']);
-    log('ERROR', 'DRIVER', tx('linearizable read concern requires readPreference primary', 'read concern linearizable exige readPreference primary'));
-    return;
-  }
-  if (core) {
-    renderSteps('arch-steps', [tx('<b>Server selection</b> by readPreference.', '<b>Seleção de servidor</b> pelo readPreference.'), cacheMiss ? tx('<b>Cache miss: fetch from local storage.</b> The node reads its own attached volume.', '<b>Cache miss: busca no storage local.</b> O nó lê seu próprio volume anexado.') : tx('<b>Cache hit: read from memory.</b> The WiredTiger cache serves this read without a storage fetch.', '<b>Cache hit: leitura da memória.</b> O cache WiredTiger atende esta leitura sem buscar no storage.'), tx('<b>Result returned.</b>', '<b>Resultado retornado.</b>')]);
-    $('arch-steps-label').textContent = tx('read · Atlas Core · ', 'leitura · Atlas Core · ') + (cacheMiss ? 'cache miss' : 'cache hit');
-    archLock(true);
-    const idx = { primary: 0, primaryPreferred: 0, secondary: 1 + Math.floor(Math.random() * 2), secondaryPreferred: 1 + Math.floor(Math.random() * 2), nearest: Math.floor(Math.random() * 3) }[S.rp];
-    const [x, y] = AP.core[idx];
-    setStep('arch-steps', 0, 'active');
-    await fly('arch-svg', [AP.client, [x, y - 26]], 600, '#001E2B');
-    setStep('arch-steps', 0, 'done'); setStep('arch-steps', 1, 'active');
-    flash('arch-svg', x, y - 32, cacheMiss ? 'cache miss' : 'cache hit', '#00684A');
-    if (cacheMiss) {
-      await fly('arch-svg', [[x, y + 50], [x, 285]], 350, '#001E2B', 5);
-      await fly('arch-svg', [[x, 285], [x, y + 50]], 350, '#001E2B', 5);
-    }
-    setStep('arch-steps', 1, 'done'); setStep('arch-steps', 2, 'active');
-    await fly('arch-svg', [[x, y - 26], AP.client], 600, '#00684A');
-    setStep('arch-steps', 2, 'done');
-    archLock(false);
-    return;
-  }
-  const node = archPickReadNode();
-  const steps = [
-    tx(`<b>Server selection.</b> readPreference <b>${S.rp}</b> → ${node ? `<b>${node.id}</b> (${node.role || node.type})` : tx('<b>no eligible node</b>', '<b>nenhum nó elegível</b>')}.`, `<b>Seleção de servidor.</b> readPreference <b>${S.rp}</b> → ${node ? `<b>${node.id}</b> (${node.role || node.type})` : '<b>nenhum nó elegível</b>'}.`),
-    cacheMiss ? tx('<b>Cache miss: fetch from Page Service.</b> The compute node fetches the page from the shared, warm storage layer.', '<b>Cache miss: busca no Page Service.</b> O nó de compute busca a página na camada de storage compartilhada e aquecida.') : tx('<b>Cache hit: read from memory.</b> The WiredTiger cache serves this read without a Page Service fetch.', '<b>Cache hit: leitura da memória.</b> O cache WiredTiger atende esta leitura sem buscar no Page Service.'),
-    { local: tx('<b>readConcern local:</b> newest data on that node (may include not-yet-majority writes).', '<b>readConcern local:</b> dado mais novo naquele nó (pode incluir escritas ainda não majority).'), available: tx('<b>readConcern available:</b> lowest latency, no majority guarantee.', '<b>readConcern available:</b> menor latência, sem garantia de maioria.'), majority: tx('<b>readConcern majority:</b> only storage-majority-committed data.', '<b>readConcern majority:</b> apenas dados confirmados pela maioria do storage.'), linearizable: tx('<b>readConcern linearizable:</b> primary confirms it is still primary before returning.', '<b>readConcern linearizable:</b> o primário confirma que ainda é primário antes de retornar.'), snapshot: tx('<b>readConcern snapshot:</b> consistent majority-committed snapshot (transactions).', '<b>readConcern snapshot:</b> snapshot consistente confirmado pela maioria (transações).') }[S.rc],
-    tx('<b>Result returned to the client.</b>', '<b>Resultado retornado ao cliente.</b>'),
+  archRender();
+  return archStart(archReadPlan(), `${S.arch.mode === 'core' ? 'Atlas Core' : 'Atlas Infinite'} · ${tx('read', 'leitura')} · cache ${S.arch.readCache}`);
+}
+
+function archReadPlan() {
+  const core = S.arch.mode === 'core', miss = S.arch.readCache === 'miss', rp = S.rp, rc = S.rc;
+  const idx = ['secondary', 'secondaryPreferred'].includes(rp) ? 1 + Math.floor(Math.random() * 2) : rp === 'nearest' ? Math.floor(Math.random() * 3) : 0;
+  const node = core ? { id: idx === 0 ? tx('primary', 'primário') : tx('secondary', 'secundário') + ` ${idx}` } : archPickReadNode();
+  const pos = node && (core ? AP.core[idx] : AP.nodes[node.id]);
+  const az = node && archUpAZ(node.az) && node.az !== undefined ? node.az : [0, 1, 2].find(archUpAZ);
+  const concern = {
+    local: tx('readConcern local: the node’s latest data, possibly including writes not yet committed by a majority.', 'readConcern local: dados mais recentes do nó, que podem incluir escritas ainda não confirmadas pela maioria.'),
+    available: tx('readConcern available: no majority-commit guarantee.', 'readConcern available: sem garantia de confirmação pela maioria.'),
+    majority: tx('readConcern majority: only majority-committed data.', 'readConcern majority: somente dados confirmados pela maioria.'),
+    snapshot: tx('readConcern snapshot: a consistent, majority-committed snapshot.', 'readConcern snapshot: um snapshot consistente, confirmado pela maioria.'),
+    linearizable: tx('readConcern linearizable: the primary must also confirm it is still primary before returning.', 'readConcern linearizable: o primário também precisa confirmar que continua primário antes de responder.'),
+  }[rc];
+  return [
+    { title: tx('Driver selects the node', 'Driver escolhe o nó'),
+      detail: tx(`The driver uses readPreference ${rp} and sends the query to ${node ? node.id : 'an eligible node'}.`, `O driver usa readPreference ${rp} e envia a consulta para ${node ? node.id : 'um nó elegível'}.`),
+      run: async play => {
+        if (rc === 'linearizable' && rp !== 'primary') return play.block(tx('readConcern linearizable requires readPreference primary. Change the settings in Detailed mode.', 'readConcern linearizable exige readPreference primary. Ajuste a configuração no modo Detalhado.'));
+        if (!pos) return play.block(tx('No eligible node matches this readPreference. The driver waits until server selection times out.', 'Nenhum nó elegível atende a este readPreference. O driver aguarda até o timeout da seleção de servidor.'));
+        await archFly(play, [AP.client, [pos[0], pos[1] - 26]], 800, C.slate); archHalo(...pos);
+      } },
+    { title: miss ? (core ? tx('Cache miss: fetch from the node’s disk', 'Cache miss: busca no disco do nó') : tx('Cache miss: fetch from Page Service', 'Cache miss: busca no Page Service')) : tx('Cache hit: read from memory', 'Cache hit: leitura da memória'),
+      detail: miss ? (core
+        ? tx('The node fetches the page from its own local storage.', 'O nó busca a página no seu próprio storage local.')
+        : tx('Compute fetches the page from the shared storage layer, through Page Service.', 'O compute busca a página na camada de storage compartilhada, pelo Page Service.'))
+        : tx('The requested page is already in the node’s memory. This illustrated read needs no storage fetch.', 'A página solicitada já está na memória do nó. Esta leitura ilustrada não precisa buscar a página no storage.'),
+      more: concern,
+      run: async play => {
+        archHalo(...pos); archLabel(pos[0], pos[1] - 35, miss ? 'cache miss' : 'cache hit');
+        if (!miss) return play.wait(800);
+        if (!core && az === undefined) return play.block(tx('No Page Service is reachable for this cache miss.', 'Nenhum Page Service está acessível para este cache miss.'));
+        const from = [pos[0], core ? 226 : pos[1] + 62];
+        const to = core ? [pos[0], 272] : [AP.page[az][0], AP.page[az][1] - 22];
+        await archFly(play, [from, to], 800, C.slate);
+        await archFly(play, [to, from], 800, C.forest);
+      } },
+    { title: tx('Result returns to the application', 'Resultado volta à aplicação'),
+      detail: tx('The selected node returns the query result through the driver.', 'O nó selecionado devolve o resultado da consulta pelo driver.'),
+      run: async play => { await archFly(play, [[pos[0], pos[1] - 26], AP.client], 800, C.forest); archLabel(400, 61, tx('result ✓', 'resultado ✓')); } },
   ];
-  renderSteps('arch-steps', steps);
-  $('arch-steps-label').textContent = tx('read · ', 'leitura · ') + S.rp + ' · ' + (cacheMiss ? 'cache miss' : 'cache hit');
-  if (!node) {
-    setStep('arch-steps', 0, 'active');
-    log('ERROR', 'DRIVER', tx(`No node matches readPreference ${S.rp} — server selection fails after timeout`, `Nenhum nó atende readPreference ${S.rp} — a seleção de servidor falha após o timeout`));
-    return;
-  }
-  archLock(true);
-  const [x, y] = AP.nodes[node.id];
-  setStep('arch-steps', 0, 'active');
-  await fly('arch-svg', [AP.client, [x, y - 24]], 600, '#001E2B');
-  setStep('arch-steps', 0, 'done'); setStep('arch-steps', 1, 'active');
-  const az = node.az !== undefined && archUpAZ(node.az) ? node.az : [0, 1, 2].find(archUpAZ);
-  if (cacheMiss && az === undefined) {
-    $('arch-steps').children[1].innerHTML = stepHTML(tx('<b>Cache miss: Page Service unavailable.</b> No storage zone is reachable in this simulation, so this fetch cannot complete.', '<b>Cache miss: Page Service indisponível.</b> Nenhuma zona de storage está acessível nesta simulação, então a busca não pode terminar.'));
-    log('ERROR', 'PAGE-SVC', tx('No Page Service available for this cache miss', 'Nenhum Page Service disponível para este cache miss'));
-    archLock(false);
-    return;
-  }
-  if (cacheMiss) {
-    const [pgx, pgy] = AP.page[az];
-    flash('arch-svg', x, y - 32, 'cache miss', '#00684A');
-    await fly('arch-svg', [[x, y + 24], [pgx, pgy - 20]], 550, '#00684A', 5);
-    await fly('arch-svg', [[pgx, pgy - 20], [x, y + 24]], 550, '#00684A', 5);
-    log('INFO', 'PAGE-SVC', tx(`Page fetched from Page Service (${AZ_NAMES[az]}) — no local disk involved`, `Página buscada do Page Service (${AZ_NAMES[az]}) — sem disco local`));
-  } else flash('arch-svg', x, y - 32, 'cache hit', '#00684A');
-  setStep('arch-steps', 1, 'done'); setStep('arch-steps', 2, 'done'); setStep('arch-steps', 3, 'active');
-  await fly('arch-svg', [[x, y - 24], AP.client], 600, '#00684A');
-  setStep('arch-steps', 3, 'done');
-  log('SUCCESS', 'CLIENT', tx(`Read served by ${node.id} (readPreference ${S.rp}, readConcern ${S.rc})`, `Leitura atendida por ${node.id} (readPreference ${S.rp}, readConcern ${S.rc})`));
-  archLock(false);
 }
 
 
@@ -2001,8 +2143,8 @@ function haUpdateInfo() {
   $('ha-bn-q').classList.toggle('show', !q && anyCompute);
   $('ha-bn-down').classList.toggle('show', !anyCompute);
   $('ha-bn-q-d').innerHTML = tx(
-    `Only ${upAZ} of 3 zones are reachable, so the Log Service can't form a majority (2). MongoDB describes the design as surviving the loss of <strong>one</strong> zone; with two zones gone, majority writes wait instead of risking divergence — Consistency is preserved over Availability. Set <strong>wtimeout</strong> so writes don't block indefinitely.${src('B4', 'D2')} <em>Shown here by quorum arithmetic — this scenario isn't described in the public docs.</em>`,
-    `Apenas ${upAZ} de 3 zonas estão acessíveis, então o Log Service não forma maioria (2). A MongoDB descreve o design como resistente à perda de <strong>uma</strong> zona; com duas zonas fora, escritas majority esperam em vez de arriscar divergência — a Consistência é preservada em vez da Disponibilidade. Defina <strong>wtimeout</strong> para as escritas não bloquearem indefinidamente.${src('B4', 'D2')} <em>Mostrado aqui pela aritmética de quórum — este cenário não é descrito na documentação pública.</em>`);
+    `Only ${upAZ} of 3 zones are reachable, so the Log Service can't form a majority (2). MongoDB describes the design as surviving the loss of <strong>one</strong> zone; with two zones gone, majority writes wait until the storage majority is reachable again. Set <strong>wtimeout</strong> so writes don't block indefinitely.${src('B4', 'D2')} <em>Shown here by quorum arithmetic — this scenario isn't described in the public docs.</em>`,
+    `Apenas ${upAZ} de 3 zonas estão acessíveis, então o Log Service não forma maioria (2). A MongoDB descreve o design como resistente à perda de <strong>uma</strong> zona; com duas zonas fora, escritas majority esperam até que a maioria do storage fique acessível novamente. Defina <strong>wtimeout</strong> para as escritas não bloquearem indefinidamente.${src('B4', 'D2')} <em>Mostrado aqui pela aritmética de quórum — este cenário não é descrito na documentação pública.</em>`);
 
   $('ha-status-label').textContent = S.ha.failingOver ? tx('failover in progress', 'failover em andamento')
     : !anyCompute ? tx('no compute available', 'sem compute disponível')
@@ -2035,7 +2177,6 @@ function haUpdateInfo() {
     `<div class="desc lav only-detailed" style="margin-top:8px">${tx('Timings in this animation are illustrative. The public preview docs don\'t publish an Atlas Infinite failover duration.', 'Os tempos desta animação são ilustrativos. A documentação do public preview não publica uma duração de failover para o Atlas Infinite.')}</div>`;
 
   haRenderCmp();
-  updateCAP();
 }
 
 function haRenderCmp() {
@@ -2367,7 +2508,6 @@ async function vsResize(target, auto) {
   vsRender();
   vsRenderLadder();
   log('SUCCESS', 'TIER', tx(`Cluster now ${target} — no data moved, storage unchanged (${fmtTB(S.vs.dataTB)})`, `Cluster agora em ${target} — nenhum dado movido, storage inalterado (${fmtTB(S.vs.dataTB)})`));
-  updateCAP();
 }
 
 // ── Auto-scaling simulation ──────────────────────────────────────────────────
@@ -2665,7 +2805,6 @@ function vsUpdateStorage(announce) {
      • Preview: o Atlas <strong>pode limitar (throttle) escritas antes</strong> do limite para preservar a disponibilidade.${src('D4')}<br>
      • Storage é uma dimensão de cobrança própria, medida pelos dados armazenados; replica sets comportam <strong>10× os dados</strong> de replica sets do Atlas Core (afirmação do fabricante).${src('D4', 'B6', 'B3')}`);
   if (S.tab === 'vs' && !S.vs.resizing) vsRender();
-  updateCAP();
 }
 
 
@@ -3161,22 +3300,6 @@ function footRender() {
 
 const TABS = ['arch', 'ha', 'vs', 'hs', 'bk', 'lim'];
 
-function toggleCAPPanel() {
-  setCAPPanel(!$('cap').classList.contains('cap-visible'));
-}
-function setCAPPanel(open) {
-  open = open && S.view === 'detailed';
-  $('main').classList.toggle('cap-visible', open);
-  $('cap').classList.toggle('cap-visible', open);
-  $('cap-toggle-btn').classList.toggle('active', open);
-  capButtonLabel();
-  if (open) updateCAP();
-}
-function capButtonLabel() {
-  const open = $('cap').classList.contains('cap-visible');
-  $('cap-toggle-btn').textContent = open ? tx('✕ Hide CAP', '✕ Ocultar CAP') : tx('⬡ CAP Positioning', '⬡ Posição no CAP');
-}
-
 function renderTab(name) {
   if (name === 'arch') { archRender(); archUpdateInfo(); }
   if (name === 'ha') haRender();
@@ -3187,6 +3310,7 @@ function renderTab(name) {
 }
 
 function switchTab(name) {
+  archResetPlayback();
   if (!TABS.includes(name)) name = 'arch';
   S.tab = name;
   document.querySelectorAll('.tc').forEach(el => el.classList.toggle('active', el.id === 'tab-' + name));
@@ -3198,13 +3322,12 @@ function switchTab(name) {
   } catch (e) { /* file:// may refuse */ }
   renderTab(name);
   $('viz').scrollTop = 0;
-  updateCAP();
 }
 
-// Shared settings — every tab and the CAP panel read them
-function setWC(v) { S.wc = v; log('INFO', 'CONCERNS', `writeConcern → ${{ w0: 'w:0', w1: 'w:1', wmaj: 'w:"majority"', wnum: 'w:3' }[v]}${v === 'wnum' ? tx(' (mapped to "majority" on Atlas Infinite)', ' (mapeado para "majority" no Atlas Infinite)') : ''}`); syncAll(); }
-function setRC(v) { S.rc = v; log('INFO', 'CONCERNS', `readConcern → ${v}`); syncAll(); }
-function setRP(v) { S.rp = v; log('INFO', 'CONCERNS', `readPreference → ${v}`); syncAll(); }
+// Shared settings — every tab reads them
+function setWC(v) { archResetPlayback(); S.wc = v; log('INFO', 'CONCERNS', `writeConcern → ${{ w0: 'w:0', w1: 'w:1', wmaj: 'w:"majority"', wnum: 'w:3' }[v]}${v === 'wnum' ? tx(' (mapped to "majority" on Atlas Infinite)', ' (mapeado para "majority" no Atlas Infinite)') : ''}`); syncAll(); }
+function setRC(v) { archResetPlayback(); S.rc = v; log('INFO', 'CONCERNS', `readConcern → ${v}`); syncAll(); }
+function setRP(v) { archResetPlayback(); S.rp = v; log('INFO', 'CONCERNS', `readPreference → ${v}`); syncAll(); }
 
 // Keep selects in sync and refresh whatever is visible
 function syncAll() {
@@ -3215,11 +3338,11 @@ function syncAll() {
   if (S.tab === 'arch' && S.arch.busy) archUpdateInfo();
   if (S.tab === 'ha') haRender();
   if (S.tab === 'hs') hsUpdate();
-  updateCAP();
 }
 
 // Language switch — re-render every tab so hidden ones are ready too
 function rerenderAll() {
+  archResetPlayback();
   TABS.forEach(renderTab);
   document.querySelectorAll('.tc').forEach(el => el.classList.toggle('active', el.id === 'tab-' + S.tab));
   renderSteps('arch-steps', []);
@@ -3227,8 +3350,6 @@ function rerenderAll() {
   if (!S.ha.failingOver) { renderSteps('ha-steps', haFoSteps()); haUpdateCapacityStep(); }
   vsSetTimer();
   footRender();
-  capButtonLabel();
-  updateCAP();
 }
 
 window.addEventListener('load', () => {
@@ -3240,7 +3361,6 @@ window.addEventListener('load', () => {
   vsSetTimer();
   renderSteps('ha-steps', haFoSteps());
   footRender();
-  capButtonLabel();
   TABS.forEach(renderTab);
   let tab = 'arch';
   try { tab = new URL(location.href).searchParams.get('tab') || 'arch'; } catch (e) { /* ignore */ }

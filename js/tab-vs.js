@@ -118,7 +118,6 @@ async function vsResize(target, auto) {
   vsRender();
   vsRenderLadder();
   log('SUCCESS', 'TIER', tx(`Cluster now ${target} — no data moved, storage unchanged (${fmtTB(S.vs.dataTB)})`, `Cluster agora em ${target} — nenhum dado movido, storage inalterado (${fmtTB(S.vs.dataTB)})`));
-  updateCAP();
 }
 
 // ── Auto-scaling simulation ──────────────────────────────────────────────────
@@ -416,5 +415,4 @@ function vsUpdateStorage(announce) {
      • Preview: o Atlas <strong>pode limitar (throttle) escritas antes</strong> do limite para preservar a disponibilidade.${src('D4')}<br>
      • Storage é uma dimensão de cobrança própria, medida pelos dados armazenados; replica sets comportam <strong>10× os dados</strong> de replica sets do Atlas Core (afirmação do fabricante).${src('D4', 'B6', 'B3')}`);
   if (S.tab === 'vs' && !S.vs.resizing) vsRender();
-  updateCAP();
 }
