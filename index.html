@@ -476,7 +476,7 @@ body.view-basic .cmp tr.xr{display:none}
             <div class="leg" id="vs-chart-legend"></div>
             <div class="chart-wrap" id="vs-chart-wrap"><div id="vs-chart"></div><div class="chart-tip" id="vs-chart-tip"></div></div>
             <div class="desc only-detailed" id="vs-why" style="margin-top:8px;line-height:1.7"></div>
-            <div class="desc warn only-detailed" style="margin-top:8px" data-i18n="vs.as.note">The rules follow the documented criteria (CPU as a proxy for CPU + memory): <strong>scale up</strong> one tier after &gt;90% for 10 min (20 min on M10/M20) or a 1-hour average &gt;75%; <strong>scale down</strong> only after 4 h below 45%, a 24-hour average below 50%, and at most once per 24 h. <strong>Predictive</strong> (M30+, after 2 weeks of history) scales up to 2 tiers ahead of cyclical peaks and never scales down. Scaling is rolling with no downtime and stays within your min/max tiers and tier class. Atlas may not auto-scale fast enough for sudden bursts such as bulk inserts — scale up ahead of planned spikes. Capacity units and the demand curves are illustrative.<a class="src" data-src="D5"></a></div>
+            <div class="desc warn only-detailed" style="margin-top:8px" data-i18n="vs.as.note">Illustrative model for <strong>operational nodes (primary + standby)</strong>. <strong>Scale up</strong>: &gt;90% for 10 min (20 min on M10/M20) or a 1-hour average &gt;75%. <strong>Scale down</strong>: CPU averages below 45% in both the 10-min and 4-hour windows, projected memory on the lower tier below 60% in both windows, and at most once per 24 h.<br>The simulation uses utilization as a proxy for CPU and memory; WiredTiger cache is assumed below 90%, and recent provisioning/restart guards are not simulated.<br><strong>Predictive</strong>: M30+, after 2 weeks of history, up to 2 tiers ahead of cyclical peaks; never scales down. The minimum must also be M30+ when down-scaling is enabled, as it is here. Scaling is rolling, with no downtime, within the min/max tiers and tier class. For planned bursts such as bulk inserts, scale up ahead of time. Capacity units and demand curves are illustrative.<a class="src" data-src="D5"></a></div>
           </div>
         </div>
         <div>
@@ -627,7 +627,7 @@ body.view-basic .cmp tr.xr{display:none}
                 <option value="project" data-i18n="bk.t.project">Another Infinite cluster — different project, same org</option>
                 <option value="org" data-i18n="bk.t.org">Infinite cluster in a different organization</option>
                 <option value="core" data-i18n="bk.t.core">An Atlas Core cluster</option>
-                <option value="older" data-i18n="bk.t.older">Infinite cluster on an older MongoDB version</option>
+                <option value="older" data-i18n="bk.t.older">CMK restore — Infinite cluster on an older MongoDB version</option>
               </select>
             </label>
             <div id="bk-verdict"></div>
@@ -643,7 +643,7 @@ body.view-basic .cmp tr.xr{display:none}
 
     <!-- ═══════════════ TAB 6: PREVIEW LIMITS & SOURCES ═══════════════ -->
     <div id="tab-lim" class="tc">
-      <div class="tip only-detailed" data-i18n="lim.tip"><strong>Atlas Infinite is in Public Preview</strong> (announced Sept 29–30, 2026 at MongoDB.local NYC). Capabilities and documentation may change before general availability. Below is what is <strong>not yet available</strong> or limited — check the linked official pages before making decisions.</div>
+      <div class="tip only-detailed" data-i18n="lim.tip"><strong>Atlas Infinite is in Public Preview</strong>. Capabilities and documentation may change before general availability. Below is what is <strong>not yet available</strong> or limited — check the linked official pages before making decisions.</div>
       <div class="lim-hero" id="lim-hero"></div>
       <div class="card only-basic" id="lim-basic"></div>
       <div class="lim-grid only-detailed" id="lim-grid"></div>
@@ -663,16 +663,16 @@ body.view-basic .cmp tr.xr{display:none}
 <div id="log"></div>
 
 <script src="js/state.js"></script>
-<script src="js/i18n.js"></script>
+<script src="js/i18n.js?v=9619134cca"></script>
 <script src="js/utils.js"></script>
 <script src="js/arch-playback.js"></script>
-<script src="js/tab-arch.js"></script>
+<script src="js/tab-arch.js?v=e9032f4cbb"></script>
 <script src="js/arch-simulation.js"></script>
 <script src="js/tab-ha.js"></script>
-<script src="js/tab-vs.js"></script>
+<script src="js/tab-vs.js?v=d2952c3e7c"></script>
 <script src="js/tab-hs.js"></script>
-<script src="js/tab-bk.js"></script>
-<script src="js/tab-lim.js"></script>
+<script src="js/tab-bk.js?v=36bd89751f"></script>
+<script src="js/tab-lim.js?v=0c39891007"></script>
 <script src="js/main.js"></script>
 </body>
 </html>

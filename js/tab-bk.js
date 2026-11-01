@@ -97,11 +97,11 @@ function bkVerdict() {
     case 'cloud': return no('✕ Not supported — no restore across cloud providers (and Atlas Infinite runs on AWS only in preview).', '✕ Não suportado — sem restore entre cloud providers (e o Atlas Infinite roda só na AWS no preview).', 'D9', 'D1');
     case 'org': return no('✕ Not supported — MongoDB manages a separate encryption key per Atlas organization, so you restore within the organization that created the snapshot.', '✕ Não suportado — a MongoDB gerencia uma chave de criptografia separada por organização do Atlas, então o restore é feito na organização que criou o snapshot.', 'D1', 'D9');
     case 'project': return {
-      ok: true, html: tx(`✓ Supported with Atlas-managed (default) encryption. With customer-managed keys (AWS KMS) you can restore only within the same project. ⚠ Restores are <strong>destructive</strong>: Atlas removes all existing data on the target cluster first.${src('D9', 'D21')}`,
-        `✓ Suportado com criptografia padrão (gerenciada pelo Atlas). Com chaves do cliente (AWS KMS), o restore só pode ser no mesmo projeto. ⚠ Restores são <strong>destrutivos</strong>: o Atlas remove antes todos os dados do cluster de destino.${src('D9', 'D21')}`),
+      ok: true, html: tx(`✓ Supported with Atlas-managed (default) encryption. <strong>With customer-managed keys (CMK), the docs' table and procedure disagree about cross-project restores; verify target eligibility in Atlas.</strong> ⚠ Restores are <strong>destructive</strong>: Atlas removes all existing data on the target cluster first.${src('D9', 'D21')}`,
+        `✓ Suportado com criptografia padrão (gerenciada pelo Atlas). <strong>Com chaves do cliente (CMK), a tabela e o procedimento da documentação divergem sobre restore entre projetos; confirme a elegibilidade do destino no Atlas.</strong> ⚠ Restores são <strong>destrutivos</strong>: o Atlas remove antes todos os dados do cluster de destino.${src('D9', 'D21')}`),
     };
     case 'core': return no('✕ Not supported — backup/restore between Atlas Core and Atlas Infinite isn\'t available in public preview.', '✕ Não suportado — backup/restore entre Atlas Core e Atlas Infinite não está disponível no public preview.', 'D1', 'D9');
-    case 'older': return no('✕ Not supported — the target must run the same or a greater MongoDB version than the snapshot.', '✕ Não suportado — o destino precisa rodar a mesma versão do MongoDB do snapshot ou uma maior.', 'D9');
+    case 'older': return no('✕ For CMK restores, the documented procedure requires a target MongoDB version equal to or newer than the snapshot\'s.', '✕ Para restores com CMK, o procedimento documentado exige que o destino use versão do MongoDB igual ou mais recente que a do snapshot.', 'D9');
   }
   return {
     ok: true, html: tx(`✓ Supported. ⚠ Restores are <strong>destructive</strong>: Atlas removes all existing data on the target cluster before restoring.${src('D9', 'D21')}`,

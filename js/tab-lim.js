@@ -35,9 +35,9 @@ function limRender() {
       ['no', tx('<b>No uptime SLA</b> during the public preview.', '<b>Sem SLA de uptime</b> durante o public preview.'), ['D1']],
       ['no', tx('<b>Edition is fixed at creation</b> — you can\'t convert a cluster between Atlas Core and Atlas Infinite.', '<b>A edição é definida na criação</b> — não é possível converter um cluster entre Atlas Core e Atlas Infinite.'), ['D1', 'D11']],
       ['lim', tx('<b>MongoDB 9.x</b>, always “Latest Version With Auto Upgrades”.', '<b>MongoDB 9.x</b>, sempre “Latest Version With Auto Upgrades”.'), ['D1', 'D11']],
-      ['no', tx('<b>Default write concern</b> can\'t be changed — it is always <code>w:"majority"</code>.', '<b>Write concern padrão</b> não pode ser alterado — é sempre <code>w:"majority"</code>.'), ['D2', 'D20']],
+      ['lim', tx('<b>Default write concern</b> is <code>w:"majority"</code>; the Atlas UI does not allow changing it.', 'O <b>write concern padrão</b> é <code>w:"majority"</code>; a interface do Atlas não permite alterá-lo.'), ['D2', 'D20']],
       ['no', tx('<b>Locally attached NVMe</b> storage.', 'Storage <b>NVMe local</b>.'), ['D1']],
-      ['lim', tx('Automate with the Atlas UI, Admin API, Terraform or <code>atlas api clusters …</code> — the <code>atlas clusters</code> commands don\'t include Atlas Infinite fields.', 'Automatize com a UI do Atlas, Admin API, Terraform ou <code>atlas api clusters …</code> — os comandos <code>atlas clusters</code> não incluem os campos do Atlas Infinite.'), ['D3', 'D20']],
+      ['lim', tx('Manage through the Atlas UI, Admin API or Terraform. In the CLI, use <code>atlas api clusters createCluster</code> / <code>updateCluster</code>; <code>atlas clusters create</code> / <code>update</code> lack the required Atlas Infinite fields.', 'Gerencie pela UI do Atlas, Admin API ou Terraform. No CLI, use <code>atlas api clusters createCluster</code> / <code>updateCluster</code>; <code>atlas clusters create</code> / <code>update</code> não expõem os campos necessários do Atlas Infinite.'), ['D3', 'D11', 'D20']],
       ['no', tx('<b>Atlas Kubernetes Operator</b>.', '<b>Atlas Kubernetes Operator</b>.'), ['D1', 'D15']],
       ['no', tx('<b>MongoDB logs</b>: no downloads or syncs to external services.', '<b>Logs do MongoDB</b>: sem download nem sync para serviços externos.'), ['D1']],
       ['lim', tx('<b>mongostat</b> reports incomplete metrics; <b>mongotop --locks</b> returns an error.', '<b>mongostat</b> traz métricas incompletas; <b>mongotop --locks</b> retorna erro.'), ['D1']],
@@ -51,7 +51,7 @@ function limRender() {
     ['🗄', tx('Backup', 'Backup'), [
       ['lim', tx('Point-in-time restore within the <b>24-hour</b> continuous window; snapshots retained up to 3 years.', 'Restore point-in-time dentro da janela contínua de <b>24 horas</b>; snapshots retidos por até 3 anos.'), ['D3', 'D20', 'D1']],
       ['no', tx('No collection-level restore, cross-region snapshot copies, snapshot download / local restore, or archived-snapshot import.', 'Sem restore por coleção, cópia de snapshots entre regiões, download de snapshot / restore local ou importação de snapshots arquivados.'), ['D1']],
-      ['no', tx('No <b>cross-organization</b> restores; with customer-managed keys, restore only within the same project.', 'Sem restore <b>entre organizações</b>; com chaves do cliente, restore apenas no mesmo projeto.'), ['D1', 'D9']],
+      ['no', tx('No <b>cross-organization</b> restores. For customer-managed keys (CMK), the docs disagree about cross-project restores; verify target eligibility in Atlas.', 'Sem restore <b>entre organizações</b>. Para chaves do cliente (CMK), a documentação diverge sobre restore entre projetos; confirme a elegibilidade do destino no Atlas.'), ['D1', 'D9']],
       ['no', tx('No backup/restore or live migration <b>between Atlas Core and Atlas Infinite</b>.', 'Sem backup/restore ou live migration <b>entre Atlas Core e Atlas Infinite</b>.'), ['D1']],
     ]],
     ['🔐', tx('Migration & security', 'Migração e segurança'), [

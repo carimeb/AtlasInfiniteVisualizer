@@ -1,13 +1,13 @@
 # MongoDB Atlas Infinite Visualizer
 
-An interactive, browser-based tool that explains **MongoDB Atlas Infinite** — the new deployment option announced at MongoDB.local NYC 2026 (public preview) — and how it handles **high availability, failover, vertical & horizontal scaling and backup**.
+An interactive, browser-based tool that explains **MongoDB Atlas Infinite** — the new deployment option in public preview — and how it handles **high availability, failover, vertical & horizontal scaling and backup**.
 
 **▶ Live:** https://carimeb.github.io/AtlasInfiniteVisualizer/ · Portuguese: add `?lang=pt` · deep-link a tab with `?tab=ha` (`arch`, `ha`, `vs`, `hs`, `bk`, `lim`) · pick the view with `?view=basic` or `?view=detailed`
 
 ### Two views
 
 * **Essentials** (default) — the main diagram and interaction, without introductory banners. No source chips, event log or advanced settings.
-* **Deep dive** — everything: the side-by-side Core vs Infinite comparison, write/read concerns, failover internals, the documented auto-scaling rules with a live "why did/didn't it scale" panel, restore rules, the full official preview-limitations list and every source.
+* **Deep dive** — everything: the side-by-side Core vs Infinite comparison, write/read concerns, failover internals, an illustrative model of documented auto-scaling rules with a live "why did/didn't it scale" panel, restore rules, the full official preview-limitations list and every source.
 
 Companion to the [Data Resilience Visualizer](https://carimeb.github.io/DataResilienceVisualizer/) (replica sets, multi-region, multi-cloud on Atlas Core).
 
@@ -21,7 +21,7 @@ Companion to the [Data Resilience Visualizer](https://carimeb.github.io/DataResi
 |---|---|
 | **① Architecture & Write Path** | Toggle **Atlas Core ↔ Atlas Infinite**. Animate a write: client → primary → **Log Service replicated across 3 AZs** → ACK on storage-layer majority. Background work shows the standby following the log independently of the **Page Materializer**, which feeds phylog to Page Service and oplog + phylog to object storage **in parallel**. Simulations run **step by step only**: the buttons show the total number of steps before starting, each step explains its action, and you click to continue. The last step and completion are explicit. Temporary animation lines and highlights are cleared on completion. Explanations scroll with the page without covering the diagram. Choose **cache hit or cache miss** for repeatable read demonstrations in both views, with labels matching the selected path. This selector affects reads only. Deep dive also exposes `readPreference`/`readConcern`. Side-by-side Core vs Infinite table in Deep dive only. |
 | **② High Availability & Failover** | Pick one of the 10 Infinite-supported AWS regions, then click nodes or whole **Availability Zones** to fail them. Watch the **storage layer coordinate failover** (no votes among compute nodes), the warm standby get promoted, drivers retry, and a replacement node attach to storage without an initial sync. **Acknowledged majority writes never roll back; w:1 can roll back in rare failures.** Lose 2 of 3 AZs to see majority writes wait for the storage quorum. *Test Primary Failover* button. |
-| **③ Vertical Scaling & Storage** | Pick a tier (M10–M60 General, M40–M60 Low-CPU) to watch a resize that **moves no data**. Run an **AI-agent traffic spike** or a **recurring daily peak** against compute auto-scaling that follows the **documented criteria** (scale up after >90% for 10 min or a 1-h average >75%; scale down only after 4 h below 45%, at most once per 24 h; predictive scales up to 2 tiers ahead of cyclical peaks), with a live "why did/didn't it scale" panel. Ingest data against the **max storage limit** (up to 128 TB; writes blocked near the limit, reads still served). |
+| **③ Vertical Scaling & Storage** | Pick a tier (M10–M60 General, M40–M60 Low-CPU) to watch a resize that **moves no data**. Run an **AI-agent traffic spike** or a **recurring daily peak** against an illustrative model of **operational-node auto-scaling** (scale up after >90% for 10 min, or 20 min on M10/M20, or a 1-h average >75%; scale down when the 10-min and 4-h CPU averages are below 45% and projected utilization at the lower tier is below 60% in both windows, at most once per 24 h; predictive scales up to 2 tiers ahead of cyclical peaks). CPU and memory share a utilization proxy, WiredTiger cache is assumed below 90%, and recent provisioning/restart guards are not simulated. A live panel explains each scaling decision. Ingest data against the **max storage limit** (up to 128 TB; writes blocked near the limit, reads still served). |
 | **④ Horizontal Read Scaling** | Add up to **5 read-only / analytics nodes** (7 nodes max) that serve reads in minutes. Change `readPreference` and `readPreferenceTags` (`nodeType`) and watch per-node load. |
 | **⑤ Backup & Restore** | Storage-layer backups, **24-hour continuous (point-in-time) window**, snapshots kept up to 3 years, and allowed restore targets. The animation illustrates the **storage step**: creating a log branch reuses existing data without copying it; the complete restore job includes other steps before the target is ready. General database cloning is identified as a future possibility built on this architecture. |
 | **⑥ Preview Limits & Sources** | The full official list of what isn't available yet — **multi-region, multi-cloud, Atlas Search, Vector Search**, sharding, Global Clusters, Online Archive, live migration, Atlas Charts, MCP Server… — the 10 supported AWS regions, and every official source. |
@@ -60,7 +60,7 @@ Script order matters (globals): `state → i18n → utils → arch-playback → 
 
 ## Regression checks
 
-Run `node --test tests/*.test.js` with Node.js 18 or newer. The tests use simulated timers to cover guided playback, manual advancement, completion cleanup, cancellation, acknowledgment thresholds, read cache paths, consecutive AZ failures and standby recovery. No extra dependencies are required.
+Run `node --test tests/*.test.js` with Node.js 18 or newer. The tests use simulated timers to cover guided playback, manual advancement, completion cleanup, cancellation, acknowledgment thresholds, read cache paths, consecutive AZ failures, standby recovery, and operational-node auto-scaling thresholds and time windows. No extra dependencies are required.
 
 ## Brand
 

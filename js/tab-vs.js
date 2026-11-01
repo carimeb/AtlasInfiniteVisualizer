@@ -165,8 +165,8 @@ function vsDemand(t) {
 const vsUtil = p => p.d / TIER_CAP[p.tier];
 function vsAvg(hist, n, f) { const h = hist.slice(-n); return h.reduce((a, p) => a + f(p), 0) / Math.max(1, h.length); }
 
-// Documented compute auto-scaling rules for Atlas Infinite [D5], with CPU ≈ demand ÷ tier capacity.
-// Memory criteria are folded into the same utilization proxy.
+// Illustrative operational-node rules from [D5], with CPU ≈ demand ÷ tier capacity.
+// Projected memory uses that same proxy at the lower tier; WiredTiger cache <90% is assumed.
 function vsEvaluate(v, d) {
   const tiers = vsTiers(), i = tiers.indexOf(v.tier);
   const lo = tiers.indexOf(v.minTier), hi = tiers.indexOf(v.maxTier);
@@ -177,7 +177,8 @@ function vsEvaluate(v, d) {
   let ev = null;
   if (!v.asOn || i < 0) return { ev, why: [tx('Auto-scaling is off — the tier changes only when you change it.', 'Auto-scaling desligado — o tier só muda quando você muda.')] };
 
-  // Predictive scale-up (M30+, min tier ≥ M30, ≥ 2 weeks of history → 1 simulated day here)
+  // Predictive scale-up: this simulation enables down-scaling, so min tier must also be M30+.
+  // Atlas needs ≥2 weeks of history, compressed to 2 simulated days here.
   const predEligible = v.predOn && vsIdx(v.tier) >= vsIdx('M30') && vsIdx(v.minTier) >= vsIdx('M30');
   const learned = v.t >= 2 * VS_DAY;
   // Forecast = demand seen at the same time on each of the two previous days, only when both days agree (cyclical)
@@ -188,7 +189,7 @@ function vsEvaluate(v, d) {
   }));
   let predSoon = false;
   if (v.predOn) {
-    if (!predEligible) why.push(tx('Predictive: not eligible — needs tier M30+ and a minimum tier of M30+.', 'Preditivo: não elegível — exige tier M30+ e tier mínimo M30+.'));
+    if (!predEligible) why.push(tx('Predictive: needs tier M30+. Down-scaling is enabled in this simulation, so the minimum tier must also be M30+.', 'Preditivo: exige tier M30+. A redução automática está habilitada nesta simulação, então o tier mínimo também deve ser M30+.'));
     else if (!learned) why.push(tx(`Predictive: learning the pattern — ${Math.round(50 * v.t / VS_DAY)}% (Atlas needs 2 weeks of activity; compressed to 2 simulated days here).`, `Preditivo: aprendendo o padrão — ${Math.round(50 * v.t / VS_DAY)}% (o Atlas exige 2 semanas de atividade; aqui comprimido para 2 dias simulados).`));
     else {
       const fc = forecast([6, 8, 10, 12]);
@@ -213,19 +214,17 @@ function vsEvaluate(v, d) {
   why.push(i >= hi ? tx(`Scale-up: already at the maximum tier (${v.maxTier}).`, `Scale-up: já no tier máximo (${v.maxTier}).`)
     : tx(`Scale-up: utilization ${Math.round(100 * vsUtil(cur))}% — triggers above 90% for ${small ? '20' : '10'} min or a 1-hour average above 75%.`, `Scale-up: utilização ${Math.round(100 * vsUtil(cur))}% — dispara acima de 90% por ${small ? '20' : '10'} min ou média de 1 hora acima de 75%.`));
 
-  // Reactive scale-down — all conditions must hold
+  // Operational-node scale-down: 10-minute and 4-hour windows, not the analytics 24-hour rule.
   if (i > lo) {
     const lower = TIER_CAP[tiers[i - 1]];
-    let lowRun = 0;
-    for (let k = hist.length - 1; k >= 0 && vsUtil(hist[k]) < 0.45; k--) lowRun++;
     const sinceDown = v.t - v.lastDown;
-    const avg24 = vsAvg(hist, VS_DAY, vsUtil);
-    const proj = vsAvg(hist, 24, p => p.d / lower);
+    const cpu10 = vsUtil(cur), cpu4h = vsAvg(hist, 24, vsUtil);
+    const proj10 = d / lower, proj4h = vsAvg(hist, 24, p => p.d / lower);
     const block = [];
     if (sinceDown < VS_DAY) block.push(tx(`last scale-down ${Math.floor(sinceDown / 6)}h ago (max 1 per 24 h)`, `último scale-down há ${Math.floor(sinceDown / 6)}h (máx. 1 a cada 24 h)`));
-    if (lowRun < 24) block.push(tx(`CPU below 45% for ${Math.floor(lowRun / 6)}h${String(lowRun % 6 * 10).padStart(2, '0')} of the required 4 h`, `CPU abaixo de 45% há ${Math.floor(lowRun / 6)}h${String(lowRun % 6 * 10).padStart(2, '0')} das 4 h exigidas`));
-    if (avg24 >= 0.5) block.push(tx(`24-hour average ${Math.round(100 * avg24)}% (needs < 50%)`, `média de 24 horas ${Math.round(100 * avg24)}% (precisa < 50%)`));
-    if (proj >= 0.6) block.push(tx(`${tiers[i - 1]} would run at ${Math.round(100 * proj)}% (needs < 60%)`, `${tiers[i - 1]} ficaria em ${Math.round(100 * proj)}% (precisa < 60%)`));
+    if (hist.length < 24) block.push(tx(`only ${hist.length * 10} min of the required 4 h of history`, `somente ${hist.length * 10} min das 4 h de histórico exigidas`));
+    if (cpu10 >= 0.45 || cpu4h >= 0.45) block.push(tx(`average CPU ${Math.round(100 * cpu10)}% / ${Math.round(100 * cpu4h)}% (10 min / 4 h; both need < 45%)`, `CPU média ${Math.round(100 * cpu10)}% / ${Math.round(100 * cpu4h)}% (10 min / 4 h; ambas precisam < 45%)`));
+    if (proj10 >= 0.6 || proj4h >= 0.6) block.push(tx(`projected utilization proxy on ${tiers[i - 1]}: ${Math.round(100 * proj10)}% / ${Math.round(100 * proj4h)}% (10 min / 4 h; both need < 60%)`, `proxy de utilização projetada no ${tiers[i - 1]}: ${Math.round(100 * proj10)}% / ${Math.round(100 * proj4h)}% (10 min / 4 h; ambos precisam < 60%)`));
     if (predSoon) block.push(tx('a predictive scale-up is expected within 1 h', 'um scale-up preditivo é esperado em até 1 h'));
     if (!ev && !block.length) ev = { kind: 'down', to: tiers[i - 1] };
     why.push(block.length ? tx(`Scale-down to ${tiers[i - 1]} waits: ${block.join('; ')}.`, `Scale-down para ${tiers[i - 1]} aguarda: ${block.join('; ')}.`)
@@ -248,7 +247,7 @@ function vsTick(force) {
     const msg = {
       pred: tx(`Predictive scale-up ${from} → ${tier}: forecast from the historical pattern`, `Scale-up preditivo ${from} → ${tier}: previsão a partir do padrão histórico`),
       up: tx(`Reactive scale-up ${from} → ${tier}: sustained high utilization (rolling, no downtime)`, `Scale-up reativo ${from} → ${tier}: utilização alta sustentada (rolling, sem downtime)`),
-      down: tx(`Reactive scale-down ${from} → ${tier}: 4 h of low utilization`, `Scale-down reativo ${from} → ${tier}: 4 h de utilização baixa`),
+      down: tx(`Reactive scale-down ${from} → ${tier}: low CPU averages over 10 min and 4 h`, `Scale-down reativo ${from} → ${tier}: médias de CPU baixas em 10 min e 4 h`),
     }[ev.kind];
     log(ev.kind === 'down' ? 'INFO' : 'SUCCESS', 'AUTOSCALE', msg);
     v.tier = tier;

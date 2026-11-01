@@ -476,7 +476,7 @@ body.view-basic .cmp tr.xr{display:none}
             <div class="leg" id="vs-chart-legend"></div>
             <div class="chart-wrap" id="vs-chart-wrap"><div id="vs-chart"></div><div class="chart-tip" id="vs-chart-tip"></div></div>
             <div class="desc only-detailed" id="vs-why" style="margin-top:8px;line-height:1.7"></div>
-            <div class="desc warn only-detailed" style="margin-top:8px" data-i18n="vs.as.note">The rules follow the documented criteria (CPU as a proxy for CPU + memory): <strong>scale up</strong> one tier after &gt;90% for 10 min (20 min on M10/M20) or a 1-hour average &gt;75%; <strong>scale down</strong> only after 4 h below 45%, a 24-hour average below 50%, and at most once per 24 h. <strong>Predictive</strong> (M30+, after 2 weeks of history) scales up to 2 tiers ahead of cyclical peaks and never scales down. Scaling is rolling with no downtime and stays within your min/max tiers and tier class. Atlas may not auto-scale fast enough for sudden bursts such as bulk inserts — scale up ahead of planned spikes. Capacity units and the demand curves are illustrative.<a class="src" data-src="D5"></a></div>
+            <div class="desc warn only-detailed" style="margin-top:8px" data-i18n="vs.as.note">Illustrative model for <strong>operational nodes (primary + standby)</strong>. <strong>Scale up</strong>: &gt;90% for 10 min (20 min on M10/M20) or a 1-hour average &gt;75%. <strong>Scale down</strong>: CPU averages below 45% in both the 10-min and 4-hour windows, projected memory on the lower tier below 60% in both windows, and at most once per 24 h.<br>The simulation uses utilization as a proxy for CPU and memory; WiredTiger cache is assumed below 90%, and recent provisioning/restart guards are not simulated.<br><strong>Predictive</strong>: M30+, after 2 weeks of history, up to 2 tiers ahead of cyclical peaks; never scales down. The minimum must also be M30+ when down-scaling is enabled, as it is here. Scaling is rolling, with no downtime, within the min/max tiers and tier class. For planned bursts such as bulk inserts, scale up ahead of time. Capacity units and demand curves are illustrative.<a class="src" data-src="D5"></a></div>
           </div>
         </div>
         <div>
@@ -627,7 +627,7 @@ body.view-basic .cmp tr.xr{display:none}
                 <option value="project" data-i18n="bk.t.project">Another Infinite cluster — different project, same org</option>
                 <option value="org" data-i18n="bk.t.org">Infinite cluster in a different organization</option>
                 <option value="core" data-i18n="bk.t.core">An Atlas Core cluster</option>
-                <option value="older" data-i18n="bk.t.older">Infinite cluster on an older MongoDB version</option>
+                <option value="older" data-i18n="bk.t.older">CMK restore — Infinite cluster on an older MongoDB version</option>
               </select>
             </label>
             <div id="bk-verdict"></div>
@@ -643,7 +643,7 @@ body.view-basic .cmp tr.xr{display:none}
 
     <!-- ═══════════════ TAB 6: PREVIEW LIMITS & SOURCES ═══════════════ -->
     <div id="tab-lim" class="tc">
-      <div class="tip only-detailed" data-i18n="lim.tip"><strong>Atlas Infinite is in Public Preview</strong> (announced Sept 29–30, 2026 at MongoDB.local NYC). Capabilities and documentation may change before general availability. Below is what is <strong>not yet available</strong> or limited — check the linked official pages before making decisions.</div>
+      <div class="tip only-detailed" data-i18n="lim.tip"><strong>Atlas Infinite is in Public Preview</strong>. Capabilities and documentation may change before general availability. Below is what is <strong>not yet available</strong> or limited — check the linked official pages before making decisions.</div>
       <div class="lim-hero" id="lim-hero"></div>
       <div class="card only-basic" id="lim-basic"></div>
       <div class="lim-grid only-detailed" id="lim-grid"></div>
@@ -812,7 +812,7 @@ const PT = {
   'vs.bn.block.d': 'O tamanho lógico dos dados se aproximou do limite máximo de storage configurado. O Atlas <strong>bloqueia as escritas, mas continua atendendo leituras</strong>. Aumente o limite (ou apague dados) para retomar as escritas — sem mudar de tier.',
   'vs.compute': 'Tier de compute — escala vertical',
   'vs.as': 'Auto-scaling de compute — demanda vs capacidade provisionada',
-  'vs.as.note': 'As regras seguem os critérios documentados (CPU como proxy de CPU + memória): <strong>scale up</strong> de um tier após &gt;90% por 10 min (20 min no M10/M20) ou média de 1 hora &gt;75%; <strong>scale down</strong> só após 4 h abaixo de 45%, média de 24 horas abaixo de 50% e no máximo uma vez a cada 24 h. O <strong>preditivo</strong> (M30+, após 2 semanas de histórico) escala até 2 tiers antes de picos cíclicos e nunca reduz. O scaling é rolling, sem downtime, e respeita os tiers mín./máx. e a classe de tier. O Atlas pode não escalar a tempo em rajadas repentinas como bulk inserts — escale antes de picos planejados. Unidades de capacidade e curvas de demanda são ilustrativas.<a class="src" data-src="D5"></a>',
+  'vs.as.note': 'Modelo ilustrativo para <strong>nós operacionais (primário + standby)</strong>. <strong>Scale up</strong>: &gt;90% por 10 min (20 min no M10/M20) ou média de 1 hora &gt;75%. <strong>Scale down</strong>: médias de CPU abaixo de 45% nas janelas de 10 min e 4 h, memória projetada no tier menor abaixo de 60% nas duas janelas e no máximo uma redução a cada 24 h.<br>A simulação usa utilização como aproximação de CPU e memória; considera o cache WiredTiger abaixo de 90% e não simula as restrições de provisionamento/reinício recente.<br><strong>Preditivo</strong>: M30+, após 2 semanas de histórico, até 2 tiers antes de picos cíclicos; nunca reduz. O mínimo também precisa ser M30+ quando a redução está habilitada, como aqui. O scaling é rolling, sem downtime, dentro dos tiers mín./máx. e da classe de tier. Para rajadas planejadas, como bulk inserts, escale antecipadamente. Unidades de capacidade e curvas de demanda são ilustrativas.<a class="src" data-src="D5"></a>',
   'vs.tier': 'Tier do cluster',
   'vs.asset': 'Configuração de auto-scaling',
   'vs.as.on': 'Auto-scaling de compute (recomendado)',
@@ -856,11 +856,11 @@ const PT = {
   'bk.t.project': 'Outro cluster Infinite — outro projeto, mesma org',
   'bk.t.org': 'Cluster Infinite em outra organização',
   'bk.t.core': 'Um cluster Atlas Core',
-  'bk.t.older': 'Cluster Infinite com versão mais antiga do MongoDB',
+  'bk.t.older': 'Restore com CMK — cluster Infinite com versão mais antiga do MongoDB',
   'bk.run': '▶ Simular restore',
   'bk.facts': 'Fatos sobre backup',
 
-  'lim.tip': '<strong>O Atlas Infinite está em Public Preview</strong> (anunciado em 29–30 de setembro de 2026 no MongoDB.local NYC). Recursos e documentação podem mudar antes do GA. Abaixo está o que <strong>ainda não está disponível</strong> ou tem limitações — confira as páginas oficiais linkadas antes de tomar decisões.',
+  'lim.tip': '<strong>O Atlas Infinite está em Public Preview</strong>. Recursos e documentação podem mudar antes do GA. Abaixo está o que <strong>ainda não está disponível</strong> ou tem limitações — confira as páginas oficiais linkadas antes de tomar decisões.',
   'lim.sources': 'Fontes oficiais usadas neste visualizador',
   'lim.legend': 'Chips como <a class="src">D2</a> apontam para a documentação da MongoDB; <a class="src blog">B4</a> apontam para posts de blog, press releases ou páginas de produto da MongoDB (afirmações do fabricante). Todo o resto nesta ferramenta é uma ilustração simplificada.',
 
@@ -1582,7 +1582,7 @@ function archUpdateInfo() {
     wmaj: core ? tx('<strong>w:"majority"</strong> — ACK when a majority of voting, data-bearing nodes (2 of 3) have the write.', '<strong>w:"majority"</strong> — ACK quando a maioria dos nós votantes com dados (2 de 3) tem a escrita.')
                : tx(`<strong>w:"majority"</strong> — ACK once a <strong>majority within the storage layer</strong> holds the write (not a majority of compute nodes). Atlas <strong>never rolls back</strong> a majority write. <code>j</code> has no effect: every write is persisted outside node memory before the ACK.${src('D2')}`, `<strong>w:"majority"</strong> — ACK quando a <strong>maioria dentro da camada de storage</strong> tem a escrita (não a maioria dos nós de compute). O Atlas <strong>nunca faz rollback</strong> de uma escrita majority. <code>j</code> não tem efeito: toda escrita é persistida fora da memória do nó antes do ACK.${src('D2')}`),
     wnum: core ? tx('<strong>w:3</strong> — on a 3-node replica set, every node must acknowledge (if one is down, the write waits).', '<strong>w:3</strong> — num replica set de 3 nós, todos precisam confirmar (se um cair, a escrita espera).')
-               : tx(`<strong>w:3</strong> — on Atlas Infinite, <strong>w: 2 or any greater number is applied as "majority"</strong>; you effectively choose between 0, 1 and "majority". You also can't set a cluster-wide default write concern — it's always "majority".${src('D2', 'D20')}`, `<strong>w:3</strong> — no Atlas Infinite, <strong>w: 2 ou qualquer número maior é aplicado como "majority"</strong>; na prática você escolhe entre 0, 1 e "majority". Também não é possível definir um write concern padrão no cluster — é sempre "majority".${src('D2', 'D20')}`),
+               : tx(`<strong>w:3</strong> — on Atlas Infinite, <strong>w: 2 or any greater number is applied as "majority"</strong>; you effectively choose between 0, 1 and "majority". The default is "majority"; the Atlas UI does not allow changing it.${src('D2', 'D20')}`, `<strong>w:3</strong> — no Atlas Infinite, <strong>w: 2 ou qualquer número maior é aplicado como "majority"</strong>; na prática você escolhe entre 0, 1 e "majority". O padrão é "majority"; a interface do Atlas não permite alterá-lo.${src('D2', 'D20')}`),
   };
   $('arch-wc-desc').innerHTML = wcDesc[S.wc] + (S.wc !== 'w0' && !core ? '<br>' + tx(`⏱ Always set <strong>wtimeout</strong>: without it, a write that can't be acknowledged waits indefinitely.${src('D2')}`, `⏱ Sempre defina <strong>wtimeout</strong>: sem ele, uma escrita que não pode ser confirmada espera indefinidamente.${src('D2')}`) : '');
   $('arch-wc-desc').className = 'desc' + (S.wc === 'w0' ? ' bad' : S.wc === 'w1' ? ' warn' : '');
@@ -2545,8 +2545,8 @@ function vsDemand(t) {
 const vsUtil = p => p.d / TIER_CAP[p.tier];
 function vsAvg(hist, n, f) { const h = hist.slice(-n); return h.reduce((a, p) => a + f(p), 0) / Math.max(1, h.length); }
 
-// Documented compute auto-scaling rules for Atlas Infinite [D5], with CPU ≈ demand ÷ tier capacity.
-// Memory criteria are folded into the same utilization proxy.
+// Illustrative operational-node rules from [D5], with CPU ≈ demand ÷ tier capacity.
+// Projected memory uses that same proxy at the lower tier; WiredTiger cache <90% is assumed.
 function vsEvaluate(v, d) {
   const tiers = vsTiers(), i = tiers.indexOf(v.tier);
   const lo = tiers.indexOf(v.minTier), hi = tiers.indexOf(v.maxTier);
@@ -2557,7 +2557,8 @@ function vsEvaluate(v, d) {
   let ev = null;
   if (!v.asOn || i < 0) return { ev, why: [tx('Auto-scaling is off — the tier changes only when you change it.', 'Auto-scaling desligado — o tier só muda quando você muda.')] };
 
-  // Predictive scale-up (M30+, min tier ≥ M30, ≥ 2 weeks of history → 1 simulated day here)
+  // Predictive scale-up: this simulation enables down-scaling, so min tier must also be M30+.
+  // Atlas needs ≥2 weeks of history, compressed to 2 simulated days here.
   const predEligible = v.predOn && vsIdx(v.tier) >= vsIdx('M30') && vsIdx(v.minTier) >= vsIdx('M30');
   const learned = v.t >= 2 * VS_DAY;
   // Forecast = demand seen at the same time on each of the two previous days, only when both days agree (cyclical)
@@ -2568,7 +2569,7 @@ function vsEvaluate(v, d) {
   }));
   let predSoon = false;
   if (v.predOn) {
-    if (!predEligible) why.push(tx('Predictive: not eligible — needs tier M30+ and a minimum tier of M30+.', 'Preditivo: não elegível — exige tier M30+ e tier mínimo M30+.'));
+    if (!predEligible) why.push(tx('Predictive: needs tier M30+. Down-scaling is enabled in this simulation, so the minimum tier must also be M30+.', 'Preditivo: exige tier M30+. A redução automática está habilitada nesta simulação, então o tier mínimo também deve ser M30+.'));
     else if (!learned) why.push(tx(`Predictive: learning the pattern — ${Math.round(50 * v.t / VS_DAY)}% (Atlas needs 2 weeks of activity; compressed to 2 simulated days here).`, `Preditivo: aprendendo o padrão — ${Math.round(50 * v.t / VS_DAY)}% (o Atlas exige 2 semanas de atividade; aqui comprimido para 2 dias simulados).`));
     else {
       const fc = forecast([6, 8, 10, 12]);
@@ -2593,19 +2594,17 @@ function vsEvaluate(v, d) {
   why.push(i >= hi ? tx(`Scale-up: already at the maximum tier (${v.maxTier}).`, `Scale-up: já no tier máximo (${v.maxTier}).`)
     : tx(`Scale-up: utilization ${Math.round(100 * vsUtil(cur))}% — triggers above 90% for ${small ? '20' : '10'} min or a 1-hour average above 75%.`, `Scale-up: utilização ${Math.round(100 * vsUtil(cur))}% — dispara acima de 90% por ${small ? '20' : '10'} min ou média de 1 hora acima de 75%.`));
 
-  // Reactive scale-down — all conditions must hold
+  // Operational-node scale-down: 10-minute and 4-hour windows, not the analytics 24-hour rule.
   if (i > lo) {
     const lower = TIER_CAP[tiers[i - 1]];
-    let lowRun = 0;
-    for (let k = hist.length - 1; k >= 0 && vsUtil(hist[k]) < 0.45; k--) lowRun++;
     const sinceDown = v.t - v.lastDown;
-    const avg24 = vsAvg(hist, VS_DAY, vsUtil);
-    const proj = vsAvg(hist, 24, p => p.d / lower);
+    const cpu10 = vsUtil(cur), cpu4h = vsAvg(hist, 24, vsUtil);
+    const proj10 = d / lower, proj4h = vsAvg(hist, 24, p => p.d / lower);
     const block = [];
     if (sinceDown < VS_DAY) block.push(tx(`last scale-down ${Math.floor(sinceDown / 6)}h ago (max 1 per 24 h)`, `último scale-down há ${Math.floor(sinceDown / 6)}h (máx. 1 a cada 24 h)`));
-    if (lowRun < 24) block.push(tx(`CPU below 45% for ${Math.floor(lowRun / 6)}h${String(lowRun % 6 * 10).padStart(2, '0')} of the required 4 h`, `CPU abaixo de 45% há ${Math.floor(lowRun / 6)}h${String(lowRun % 6 * 10).padStart(2, '0')} das 4 h exigidas`));
-    if (avg24 >= 0.5) block.push(tx(`24-hour average ${Math.round(100 * avg24)}% (needs < 50%)`, `média de 24 horas ${Math.round(100 * avg24)}% (precisa < 50%)`));
-    if (proj >= 0.6) block.push(tx(`${tiers[i - 1]} would run at ${Math.round(100 * proj)}% (needs < 60%)`, `${tiers[i - 1]} ficaria em ${Math.round(100 * proj)}% (precisa < 60%)`));
+    if (hist.length < 24) block.push(tx(`only ${hist.length * 10} min of the required 4 h of history`, `somente ${hist.length * 10} min das 4 h de histórico exigidas`));
+    if (cpu10 >= 0.45 || cpu4h >= 0.45) block.push(tx(`average CPU ${Math.round(100 * cpu10)}% / ${Math.round(100 * cpu4h)}% (10 min / 4 h; both need < 45%)`, `CPU média ${Math.round(100 * cpu10)}% / ${Math.round(100 * cpu4h)}% (10 min / 4 h; ambas precisam < 45%)`));
+    if (proj10 >= 0.6 || proj4h >= 0.6) block.push(tx(`projected utilization proxy on ${tiers[i - 1]}: ${Math.round(100 * proj10)}% / ${Math.round(100 * proj4h)}% (10 min / 4 h; both need < 60%)`, `proxy de utilização projetada no ${tiers[i - 1]}: ${Math.round(100 * proj10)}% / ${Math.round(100 * proj4h)}% (10 min / 4 h; ambos precisam < 60%)`));
     if (predSoon) block.push(tx('a predictive scale-up is expected within 1 h', 'um scale-up preditivo é esperado em até 1 h'));
     if (!ev && !block.length) ev = { kind: 'down', to: tiers[i - 1] };
     why.push(block.length ? tx(`Scale-down to ${tiers[i - 1]} waits: ${block.join('; ')}.`, `Scale-down para ${tiers[i - 1]} aguarda: ${block.join('; ')}.`)
@@ -2628,7 +2627,7 @@ function vsTick(force) {
     const msg = {
       pred: tx(`Predictive scale-up ${from} → ${tier}: forecast from the historical pattern`, `Scale-up preditivo ${from} → ${tier}: previsão a partir do padrão histórico`),
       up: tx(`Reactive scale-up ${from} → ${tier}: sustained high utilization (rolling, no downtime)`, `Scale-up reativo ${from} → ${tier}: utilização alta sustentada (rolling, sem downtime)`),
-      down: tx(`Reactive scale-down ${from} → ${tier}: 4 h of low utilization`, `Scale-down reativo ${from} → ${tier}: 4 h de utilização baixa`),
+      down: tx(`Reactive scale-down ${from} → ${tier}: low CPU averages over 10 min and 4 h`, `Scale-down reativo ${from} → ${tier}: médias de CPU baixas em 10 min e 4 h`),
     }[ev.kind];
     log(ev.kind === 'down' ? 'INFO' : 'SUCCESS', 'AUTOSCALE', msg);
     v.tier = tier;
@@ -3133,11 +3132,11 @@ function bkVerdict() {
     case 'cloud': return no('✕ Not supported — no restore across cloud providers (and Atlas Infinite runs on AWS only in preview).', '✕ Não suportado — sem restore entre cloud providers (e o Atlas Infinite roda só na AWS no preview).', 'D9', 'D1');
     case 'org': return no('✕ Not supported — MongoDB manages a separate encryption key per Atlas organization, so you restore within the organization that created the snapshot.', '✕ Não suportado — a MongoDB gerencia uma chave de criptografia separada por organização do Atlas, então o restore é feito na organização que criou o snapshot.', 'D1', 'D9');
     case 'project': return {
-      ok: true, html: tx(`✓ Supported with Atlas-managed (default) encryption. With customer-managed keys (AWS KMS) you can restore only within the same project. ⚠ Restores are <strong>destructive</strong>: Atlas removes all existing data on the target cluster first.${src('D9', 'D21')}`,
-        `✓ Suportado com criptografia padrão (gerenciada pelo Atlas). Com chaves do cliente (AWS KMS), o restore só pode ser no mesmo projeto. ⚠ Restores são <strong>destrutivos</strong>: o Atlas remove antes todos os dados do cluster de destino.${src('D9', 'D21')}`),
+      ok: true, html: tx(`✓ Supported with Atlas-managed (default) encryption. <strong>With customer-managed keys (CMK), the docs' table and procedure disagree about cross-project restores; verify target eligibility in Atlas.</strong> ⚠ Restores are <strong>destructive</strong>: Atlas removes all existing data on the target cluster first.${src('D9', 'D21')}`,
+        `✓ Suportado com criptografia padrão (gerenciada pelo Atlas). <strong>Com chaves do cliente (CMK), a tabela e o procedimento da documentação divergem sobre restore entre projetos; confirme a elegibilidade do destino no Atlas.</strong> ⚠ Restores são <strong>destrutivos</strong>: o Atlas remove antes todos os dados do cluster de destino.${src('D9', 'D21')}`),
     };
     case 'core': return no('✕ Not supported — backup/restore between Atlas Core and Atlas Infinite isn\'t available in public preview.', '✕ Não suportado — backup/restore entre Atlas Core e Atlas Infinite não está disponível no public preview.', 'D1', 'D9');
-    case 'older': return no('✕ Not supported — the target must run the same or a greater MongoDB version than the snapshot.', '✕ Não suportado — o destino precisa rodar a mesma versão do MongoDB do snapshot ou uma maior.', 'D9');
+    case 'older': return no('✕ For CMK restores, the documented procedure requires a target MongoDB version equal to or newer than the snapshot\'s.', '✕ Para restores com CMK, o procedimento documentado exige que o destino use versão do MongoDB igual ou mais recente que a do snapshot.', 'D9');
   }
   return {
     ok: true, html: tx(`✓ Supported. ⚠ Restores are <strong>destructive</strong>: Atlas removes all existing data on the target cluster before restoring.${src('D9', 'D21')}`,
@@ -3224,9 +3223,9 @@ function limRender() {
       ['no', tx('<b>No uptime SLA</b> during the public preview.', '<b>Sem SLA de uptime</b> durante o public preview.'), ['D1']],
       ['no', tx('<b>Edition is fixed at creation</b> — you can\'t convert a cluster between Atlas Core and Atlas Infinite.', '<b>A edição é definida na criação</b> — não é possível converter um cluster entre Atlas Core e Atlas Infinite.'), ['D1', 'D11']],
       ['lim', tx('<b>MongoDB 9.x</b>, always “Latest Version With Auto Upgrades”.', '<b>MongoDB 9.x</b>, sempre “Latest Version With Auto Upgrades”.'), ['D1', 'D11']],
-      ['no', tx('<b>Default write concern</b> can\'t be changed — it is always <code>w:"majority"</code>.', '<b>Write concern padrão</b> não pode ser alterado — é sempre <code>w:"majority"</code>.'), ['D2', 'D20']],
+      ['lim', tx('<b>Default write concern</b> is <code>w:"majority"</code>; the Atlas UI does not allow changing it.', 'O <b>write concern padrão</b> é <code>w:"majority"</code>; a interface do Atlas não permite alterá-lo.'), ['D2', 'D20']],
       ['no', tx('<b>Locally attached NVMe</b> storage.', 'Storage <b>NVMe local</b>.'), ['D1']],
-      ['lim', tx('Automate with the Atlas UI, Admin API, Terraform or <code>atlas api clusters …</code> — the <code>atlas clusters</code> commands don\'t include Atlas Infinite fields.', 'Automatize com a UI do Atlas, Admin API, Terraform ou <code>atlas api clusters …</code> — os comandos <code>atlas clusters</code> não incluem os campos do Atlas Infinite.'), ['D3', 'D20']],
+      ['lim', tx('Manage through the Atlas UI, Admin API or Terraform. In the CLI, use <code>atlas api clusters createCluster</code> / <code>updateCluster</code>; <code>atlas clusters create</code> / <code>update</code> lack the required Atlas Infinite fields.', 'Gerencie pela UI do Atlas, Admin API ou Terraform. No CLI, use <code>atlas api clusters createCluster</code> / <code>updateCluster</code>; <code>atlas clusters create</code> / <code>update</code> não expõem os campos necessários do Atlas Infinite.'), ['D3', 'D11', 'D20']],
       ['no', tx('<b>Atlas Kubernetes Operator</b>.', '<b>Atlas Kubernetes Operator</b>.'), ['D1', 'D15']],
       ['no', tx('<b>MongoDB logs</b>: no downloads or syncs to external services.', '<b>Logs do MongoDB</b>: sem download nem sync para serviços externos.'), ['D1']],
       ['lim', tx('<b>mongostat</b> reports incomplete metrics; <b>mongotop --locks</b> returns an error.', '<b>mongostat</b> traz métricas incompletas; <b>mongotop --locks</b> retorna erro.'), ['D1']],
@@ -3240,7 +3239,7 @@ function limRender() {
     ['🗄', tx('Backup', 'Backup'), [
       ['lim', tx('Point-in-time restore within the <b>24-hour</b> continuous window; snapshots retained up to 3 years.', 'Restore point-in-time dentro da janela contínua de <b>24 horas</b>; snapshots retidos por até 3 anos.'), ['D3', 'D20', 'D1']],
       ['no', tx('No collection-level restore, cross-region snapshot copies, snapshot download / local restore, or archived-snapshot import.', 'Sem restore por coleção, cópia de snapshots entre regiões, download de snapshot / restore local ou importação de snapshots arquivados.'), ['D1']],
-      ['no', tx('No <b>cross-organization</b> restores; with customer-managed keys, restore only within the same project.', 'Sem restore <b>entre organizações</b>; com chaves do cliente, restore apenas no mesmo projeto.'), ['D1', 'D9']],
+      ['no', tx('No <b>cross-organization</b> restores. For customer-managed keys (CMK), the docs disagree about cross-project restores; verify target eligibility in Atlas.', 'Sem restore <b>entre organizações</b>. Para chaves do cliente (CMK), a documentação diverge sobre restore entre projetos; confirme a elegibilidade do destino no Atlas.'), ['D1', 'D9']],
       ['no', tx('No backup/restore or live migration <b>between Atlas Core and Atlas Infinite</b>.', 'Sem backup/restore ou live migration <b>entre Atlas Core e Atlas Infinite</b>.'), ['D1']],
     ]],
     ['🔐', tx('Migration & security', 'Migração e segurança'), [

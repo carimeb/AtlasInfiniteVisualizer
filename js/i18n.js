@@ -61,7 +61,7 @@ const PT = {
   'vs.bn.block.d': 'O tamanho lógico dos dados se aproximou do limite máximo de storage configurado. O Atlas <strong>bloqueia as escritas, mas continua atendendo leituras</strong>. Aumente o limite (ou apague dados) para retomar as escritas — sem mudar de tier.',
   'vs.compute': 'Tier de compute — escala vertical',
   'vs.as': 'Auto-scaling de compute — demanda vs capacidade provisionada',
-  'vs.as.note': 'As regras seguem os critérios documentados (CPU como proxy de CPU + memória): <strong>scale up</strong> de um tier após &gt;90% por 10 min (20 min no M10/M20) ou média de 1 hora &gt;75%; <strong>scale down</strong> só após 4 h abaixo de 45%, média de 24 horas abaixo de 50% e no máximo uma vez a cada 24 h. O <strong>preditivo</strong> (M30+, após 2 semanas de histórico) escala até 2 tiers antes de picos cíclicos e nunca reduz. O scaling é rolling, sem downtime, e respeita os tiers mín./máx. e a classe de tier. O Atlas pode não escalar a tempo em rajadas repentinas como bulk inserts — escale antes de picos planejados. Unidades de capacidade e curvas de demanda são ilustrativas.<a class="src" data-src="D5"></a>',
+  'vs.as.note': 'Modelo ilustrativo para <strong>nós operacionais (primário + standby)</strong>. <strong>Scale up</strong>: &gt;90% por 10 min (20 min no M10/M20) ou média de 1 hora &gt;75%. <strong>Scale down</strong>: médias de CPU abaixo de 45% nas janelas de 10 min e 4 h, memória projetada no tier menor abaixo de 60% nas duas janelas e no máximo uma redução a cada 24 h.<br>A simulação usa utilização como aproximação de CPU e memória; considera o cache WiredTiger abaixo de 90% e não simula as restrições de provisionamento/reinício recente.<br><strong>Preditivo</strong>: M30+, após 2 semanas de histórico, até 2 tiers antes de picos cíclicos; nunca reduz. O mínimo também precisa ser M30+ quando a redução está habilitada, como aqui. O scaling é rolling, sem downtime, dentro dos tiers mín./máx. e da classe de tier. Para rajadas planejadas, como bulk inserts, escale antecipadamente. Unidades de capacidade e curvas de demanda são ilustrativas.<a class="src" data-src="D5"></a>',
   'vs.tier': 'Tier do cluster',
   'vs.asset': 'Configuração de auto-scaling',
   'vs.as.on': 'Auto-scaling de compute (recomendado)',
@@ -105,11 +105,11 @@ const PT = {
   'bk.t.project': 'Outro cluster Infinite — outro projeto, mesma org',
   'bk.t.org': 'Cluster Infinite em outra organização',
   'bk.t.core': 'Um cluster Atlas Core',
-  'bk.t.older': 'Cluster Infinite com versão mais antiga do MongoDB',
+  'bk.t.older': 'Restore com CMK — cluster Infinite com versão mais antiga do MongoDB',
   'bk.run': '▶ Simular restore',
   'bk.facts': 'Fatos sobre backup',
 
-  'lim.tip': '<strong>O Atlas Infinite está em Public Preview</strong> (anunciado em 29–30 de setembro de 2026 no MongoDB.local NYC). Recursos e documentação podem mudar antes do GA. Abaixo está o que <strong>ainda não está disponível</strong> ou tem limitações — confira as páginas oficiais linkadas antes de tomar decisões.',
+  'lim.tip': '<strong>O Atlas Infinite está em Public Preview</strong>. Recursos e documentação podem mudar antes do GA. Abaixo está o que <strong>ainda não está disponível</strong> ou tem limitações — confira as páginas oficiais linkadas antes de tomar decisões.',
   'lim.sources': 'Fontes oficiais usadas neste visualizador',
   'lim.legend': 'Chips como <a class="src">D2</a> apontam para a documentação da MongoDB; <a class="src blog">B4</a> apontam para posts de blog, press releases ou páginas de produto da MongoDB (afirmações do fabricante). Todo o resto nesta ferramenta é uma ilustração simplificada.',
 
