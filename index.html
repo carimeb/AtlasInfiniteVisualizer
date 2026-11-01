@@ -241,16 +241,10 @@ body.view-basic svg .dt{display:none}
 body.view-basic .steps li .sd{display:none}
 body.view-basic .banner .bt ~ div{display:none}
 body.view-basic .cmp tr.xr{display:none}
-.value{background:var(--slate);color:var(--white);border-radius:10px;padding:13px 16px;margin-bottom:12px;display:flex;gap:14px;align-items:flex-start;font-size:13.5px;line-height:1.6;box-shadow:var(--shadow-sm)}
-.value .vk{color:var(--spring);font-weight:800;text-transform:uppercase;font-size:10px;letter-spacing:1px;white-space:nowrap;margin-top:4px;flex-shrink:0}
-.value strong{color:var(--spring);font-weight:700}
-.value .vh{display:block;font-size:11.5px;color:rgba(255,255,255,.65);margin-top:5px}
-.value .vh b{color:var(--white)}
 .mini-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:4px 18px}
 
 /* GUIDED SIMULATION */
-#tab-arch .two-col{overflow-anchor:none}
-.arch-guide{position:sticky;top:0;scroll-margin-top:16px;z-index:3;background:var(--white);padding:8px 0 10px}
+.arch-guide{scroll-margin-top:16px;background:var(--white);padding:8px 0 10px}
 .sim-controls{display:flex;gap:8px;align-items:end;flex-wrap:wrap;margin-bottom:8px}
 .sim-controls .fld{margin:0;flex:1;min-width:130px}
 .sim-controls .btn{min-height:34px}
@@ -265,7 +259,6 @@ body.view-basic .cmp tr.xr{display:none}
   .two-col{grid-template-columns:minmax(0,1fr)}
 }
 @media (max-width:700px){
-  .value{flex-direction:column;gap:4px}
   #hdr{padding:8px 12px;gap:8px}
   .hdr-sub{display:none}
   #tab-nav{padding:0 8px}
@@ -310,7 +303,6 @@ body.view-basic .cmp tr.xr{display:none}
 
     <!-- ═══════════════ TAB 1: ARCHITECTURE & WRITE PATH ═══════════════ -->
     <div id="tab-arch" class="tc active">
-      <div class="value only-basic"><span class="vk" data-i18n="val.k">Why it matters</span><div><span data-i18n="val.arch">Compute and storage are <strong>separate layers</strong>: each one scales on its own, in minutes, <strong>without moving data</strong> — same MongoDB, same drivers and APIs, no code changes.</span><span class="vh" data-i18n="valh.arch">Try <b>Atlas Core ↔ Atlas Infinite</b> and <b>▶ Simulate Write</b>.</span></div></div>
       <div class="tip only-detailed" data-i18n="arch.tip"><strong>Atlas Infinite separates compute from storage.</strong> Compute nodes run queries and transactions; an independent, multi-AZ <strong>storage layer</strong> keeps data durable and coordinates failover. Toggle <strong>Atlas Core ↔ Atlas Infinite</strong> to compare, then press <strong>▶ Simulate Write</strong> or <strong>▶ Simulate Read</strong> to follow each step.</div>
       <div class="two-col">
         <div>
@@ -400,7 +392,6 @@ body.view-basic .cmp tr.xr{display:none}
 
     <!-- ═══════════════ TAB 2: HIGH AVAILABILITY & FAILOVER ═══════════════ -->
     <div id="tab-ha" class="tc">
-      <div class="value only-basic"><span class="vk" data-i18n="val.k">Why it matters</span><div><span data-i18n="val.ha">The storage layer coordinates failover <strong>without votes among compute nodes</strong>. The warm standby takes over, and writes acknowledged with <strong>w:"majority" never roll back</strong>. Writes with w:1 can roll back in rare failures.</span><span class="vh" data-i18n="valh.ha">Click a node or an <b>Availability Zone</b> to make it fail.</span></div></div>
       <div class="tip only-detailed" data-i18n="ha.tip"><strong>Click any compute node</strong> to make it fail, or <strong>click an Availability Zone header</strong> to take the whole zone down (compute + its storage replicas). Watch how the <strong>storage layer coordinates failover</strong> — no election among compute nodes — and how the <strong>Log Service majority (2 of 3 AZs)</strong> keeps writes durable.</div>
       <div class="banner bn-amber" id="ha-bn-fo"><div class="bt"><span data-i18n="ha.bn.fo.t">⏳ Failover in progress — storage layer is promoting the standby</span><span class="timer" id="ha-fo-timer"></span></div><div data-i18n="ha.bn.fo.d">Drivers detect the primary change and <strong>retry eligible reads and writes</strong> (retryable reads/writes). Acknowledged majority writes are already in the storage layer, so nothing has to be replayed or rolled back.</div></div>
       <div class="banner bn-info" id="ha-bn-az"><div class="bt" data-i18n="ha.bn.az.t">🛡 One Availability Zone is down — the cluster keeps serving</div><div data-i18n="ha.bn.az.d">The Log Service still holds a <strong>majority (2 of 3 zones)</strong>, so writes keep being committed durably. If the primary lived in the failed zone, the standby in another zone took over.</div></div>
@@ -467,7 +458,6 @@ body.view-basic .cmp tr.xr{display:none}
 
     <!-- ═══════════════ TAB 3: VERTICAL SCALING & STORAGE ═══════════════ -->
     <div id="tab-vs" class="tc">
-      <div class="value only-basic"><span class="vk" data-i18n="val.k">Why it matters</span><div><span data-i18n="val.vs">Pay for the <strong>compute you need now</strong> and the <strong>storage you actually use</strong>: tier changes take under a minute and move no data; storage grows on its own up to <strong>128 TB</strong>.</span><span class="vh" data-i18n="valh.vs">Pick a tier, then fire an <b>AI-agent spike</b> at the auto-scaler.</span></div></div>
       <div class="tip only-detailed" data-i18n="vs.tip"><strong>Compute and storage scale independently.</strong> The cluster tier sets compute (plus storage throughput and IOPS) — storage capacity grows on its own up to 128 TB per replica set. Pick a tier to watch a <strong>vertical resize without moving data</strong>, then unleash an <strong>AI-agent traffic spike</strong> on the auto-scaler.</div>
       <div class="banner bn-red" id="vs-bn-block"><div class="bt" data-i18n="vs.bn.block.t">✋ Max storage limit reached — writes blocked, reads still served</div><div data-i18n="vs.bn.block.d">The logical data size approached the max storage limit you set. Atlas <strong>blocks writes but keeps serving reads</strong>. Raise the limit (or delete data) to resume writes — no tier change needed.</div></div>
       <div class="two-col">
@@ -540,7 +530,6 @@ body.view-basic .cmp tr.xr{display:none}
 
     <!-- ═══════════════ TAB 4: HORIZONTAL READ SCALING ═══════════════ -->
     <div id="tab-hs" class="tc">
-      <div class="value only-basic"><span class="vk" data-i18n="val.k">Why it matters</span><div><span data-i18n="val.hs">Need more read capacity? <strong>Add a node and it serves reads in minutes</strong> — it attaches to the shared storage, with no data copy. MongoDB: <strong>&gt;96% less time</strong> to scale reads than Atlas Core.</span><span class="vh" data-i18n="valh.hs">Add <b>read-only nodes</b> and switch readPreference to <b>secondaryPreferred</b>.</span></div></div>
       <div class="tip only-detailed" data-i18n="hs.tip"><strong>Scale reads out in minutes.</strong> Add up to <strong>5 read-only or analytics nodes</strong> (7 nodes max). New nodes read straight from the shared storage layer — <strong>no initial sync, no data copy</strong>. Then change the <strong>read preference</strong> and <strong>tags</strong> to see where every read lands.</div>
       <div class="two-col">
         <div>
@@ -607,7 +596,6 @@ body.view-basic .cmp tr.xr{display:none}
 
     <!-- ═══════════════ TAB 5: BACKUP & RESTORE ═══════════════ -->
     <div id="tab-bk" class="tc">
-      <div class="value only-basic"><span class="vk" data-i18n="val.k">Why it matters</span><div><span data-i18n="val.bk">Backups <strong>never compete with your workload</strong>: they run in the storage layer, with <strong>point-in-time restore over the last 24 h</strong> and snapshots kept for up to <strong>3 years</strong>.</span><span class="vh" data-i18n="valh.bk">Drag the restore point along the timeline.</span></div></div>
       <div class="tip only-detailed" data-i18n="bk.tip"><strong>Backups run in the storage layer</strong> — independent of compute, so they don't compete with your queries. Atlas Infinite includes a <strong>24-hour continuous cloud backup window</strong> for point-in-time restore, plus <strong>Additional Backup Retention</strong> (on by default) to keep snapshots for up to 3 years. Drag the restore point and pick a target.</div>
       <div class="two-col">
         <div>
@@ -650,7 +638,6 @@ body.view-basic .cmp tr.xr{display:none}
 
     <!-- ═══════════════ TAB 6: PREVIEW LIMITS & SOURCES ═══════════════ -->
     <div id="tab-lim" class="tc">
-      <div class="value only-basic"><span class="vk" data-i18n="val.k">Why it matters</span><div><span data-i18n="val.lim">Public preview: <strong>AWS only (10 regions)</strong>, single-region clusters, M10–M60. Not yet: <strong>multi-region, multi-cloud, sharding, Atlas Search and Vector Search</strong> — use Atlas Core where you need them.</span><span class="vh" data-i18n="valh.lim">Switch to <b>Deep dive</b> for the full official list and sources.</span></div></div>
       <div class="tip only-detailed" data-i18n="lim.tip"><strong>Atlas Infinite is in Public Preview</strong> (announced Sept 29–30, 2026 at MongoDB.local NYC). Capabilities and documentation may change before general availability. Below is what is <strong>not yet available</strong> or limited — check the linked official pages before making decisions.</div>
       <div class="lim-hero" id="lim-hero"></div>
       <div class="card only-basic" id="lim-basic"></div>
