@@ -26,6 +26,7 @@ function archPlaybackUI(player = archGetPlayer()) {
   $('arch-speed').value = String(player.speed);
   $('arch-svg').classList.toggle('sim-frozen', player.status !== 'playing');
   const stage = player.stages[player.index];
+  const starting = stage && player.index === 0 && stage !== archDrawnStage;
   if (stage !== archDrawnStage) { archClearMotion(); archDrawnStage = stage; }
   const status = {
     playing: tx('In progress', 'Em andamento'), paused: tx('Paused — resume when ready', 'Pausada — continue quando quiser'),
@@ -38,6 +39,8 @@ function archPlaybackUI(player = archGetPlayer()) {
     : `<div class="sim-kicker">${tx('Follow the path', 'Acompanhe o caminho')}</div><strong>${tx('Choose Simulate Write or Simulate Read', 'Escolha Simular Escrita ou Simular Leitura')}</strong><p>${tx('Start at 0.5×, pause whenever you need, or use Step by step. The current explanation stays here.', 'Comece em 0,5×, pause quando precisar ou use Passo a passo. A explicação da etapa atual fica aqui.')}</p>`;
   renderSteps('arch-steps', player.stages.map(s => `<b>${s.title}</b> ${s.detail}`), player.stages.map((s, i) => i < player.index || player.status === 'completed' ? 'done' : i === player.index ? 'active' : ''));
   $('arch-steps-label').textContent = archRunLabel;
+  // Position the lesson after its first caption has its final height.
+  if (starting) $('arch-now').closest('.arch-guide').scrollIntoView({ block: 'start', behavior: 'instant' });
 }
 
 function archResetPlayback() {
@@ -92,8 +95,6 @@ function archStart(stages, label) {
   if (S.arch.busy) return;
   archResetPlayback();
   archRunLabel = label;
-  // On narrow screens the sidebar is below the diagram. Bring the lesson into view.
-  $('arch-now').closest('.arch-guide').scrollIntoView({ block: 'start', behavior: 'instant' });
   return archGetPlayer().start(stages).catch(error => {
     log('ERROR', 'SIMULATION', error.message || String(error));
   });

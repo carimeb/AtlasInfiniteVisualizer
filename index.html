@@ -248,8 +248,9 @@ body.view-basic .cmp tr.xr{display:none}
 .value .vh b{color:var(--white)}
 .mini-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:4px 18px}
 
-/* RESPONSIVE */
-.arch-guide{position:sticky;top:0;z-index:3;background:var(--white);padding:8px 0 10px}
+/* GUIDED SIMULATION */
+#tab-arch .two-col{overflow-anchor:none}
+.arch-guide{position:sticky;top:0;scroll-margin-top:16px;z-index:3;background:var(--white);padding:8px 0 10px}
 .sim-controls{display:flex;gap:8px;align-items:end;flex-wrap:wrap;margin-bottom:8px}
 .sim-controls .fld{margin:0;flex:1;min-width:130px}
 .sim-controls .btn{min-height:34px}
