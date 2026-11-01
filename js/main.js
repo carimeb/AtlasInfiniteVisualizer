@@ -67,10 +67,5 @@ window.addEventListener('load', () => {
   let tab = 'arch';
   try { tab = new URL(location.href).searchParams.get('tab') || 'arch'; } catch (e) { /* ignore */ }
   switchTab(tab);
-  log('INFO', 'SYSTEM', tx('Atlas Infinite Visualizer ready — every claim links to its official source (lavender/mint chips)', 'Atlas Infinite Visualizer pronto — cada afirmação aponta para a fonte oficial (chips lavanda/menta)'));
   setInterval(hsPulse, 650);
-  setInterval(() => {
-    if (S.tab === 'ha' && !S.ha.failingOver && haPrimary() && Math.random() > 0.6)
-      log('INFO', 'LOG-SVC', tx(`Heartbeat — ${haUpAZ()}/3 log replicas healthy`, `Heartbeat — ${haUpAZ()}/3 réplicas do log saudáveis`));
-  }, 9000);
 });

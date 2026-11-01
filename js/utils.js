@@ -17,19 +17,8 @@ function src(...ids) {
   }).join('');
 }
 
-let logCount = 0;
-function log(level, comp, msg) {
-  const el = $('log');
-  const now = new Date();
-  const ts = [now.getHours(), now.getMinutes(), now.getSeconds()]
-    .map(n => String(n).padStart(2, '0')).join(':');
-  const cls = { INFO: 'li', WARN: 'lw', ERROR: 'le', SUCCESS: 'ls' }[level] || 'li';
-  const row = document.createElement('div');
-  row.className = 'lr';
-  row.innerHTML = `<span class="lt">${ts}</span><span class="${cls}">${level}</span><span class="lc">${comp}</span><span class="lm">${msg}</span>`;
-  el.insertBefore(row, el.firstChild);
-  if (++logCount > 100) el.lastChild && el.removeChild(el.lastChild);
-}
+// Keep simulation event calls compatible after removing the on-screen event feed.
+function log() {}
 
 // Render a list of steps into an <ol class="steps">; states: '', active, done, skip
 function stepHTML(h) {

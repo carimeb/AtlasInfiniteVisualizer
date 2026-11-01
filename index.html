@@ -52,13 +52,8 @@ code{font-family:'SF Mono','Consolas',monospace;font-size:.92em;background:var(-
 #main{flex:1;display:grid;grid-template-columns:minmax(0,1fr);overflow:hidden;min-height:0}
 #viz{overflow-y:auto;padding:16px;background:var(--bg1);min-width:0}
 
-/* LOG */
-#log{height:92px;background:var(--white);border-top:1px solid var(--border);overflow-y:auto;padding:5px 14px;font-family:'SF Mono','Consolas',monospace;font-size:11px;flex-shrink:0}
-.lr{display:grid;grid-template-columns:72px 62px 110px 1fr;gap:8px;padding:1.5px 0;border-bottom:1px solid var(--border);animation:fi .2s ease}
-@keyframes fi{from{opacity:0}to{opacity:1}}
-.lt{color:var(--text3)}.li{color:var(--slate);font-weight:600}.lw{color:var(--warn);font-weight:600}.le{color:var(--bad);font-weight:600}.ls{color:var(--forest);font-weight:600}.lc{color:var(--text3)}.lm{color:var(--text2)}
-
 /* TABS VISIBILITY */
+@keyframes fi{from{opacity:0}to{opacity:1}}
 .tc{display:none}.tc.active{display:block;animation:fi .25s ease}
 
 /* CARDS */
@@ -235,7 +230,6 @@ svg text{font-family:'Lexend Deca',sans-serif}
 body.view-basic .only-detailed{display:none !important}
 body.view-detailed .only-basic{display:none !important}
 body.view-basic a.src{display:none}
-body.view-basic #log{display:none}
 body.view-basic .hdr-sub{display:none}
 body.view-basic svg .dt{display:none}
 body.view-basic .steps li .sd{display:none}
@@ -269,9 +263,6 @@ body.view-basic .cmp tr.xr{display:none}
   .hdr-sub{display:none}
   #tab-nav{padding:0 8px}
   #viz{padding:10px}
-  #log{height:70px}
-  .lr{grid-template-columns:58px 52px 1fr}
-  .lr .lc{display:none}
 }
 </style>
 </head>
@@ -660,19 +651,17 @@ body.view-basic .cmp tr.xr{display:none}
 
 </div>
 
-<div id="log"></div>
-
 <script src="js/state.js"></script>
 <script src="js/i18n.js?v=9619134cca"></script>
-<script src="js/utils.js"></script>
+<script src="js/utils.js?v=e8e6622032"></script>
 <script src="js/arch-playback.js"></script>
-<script src="js/tab-arch.js?v=e9032f4cbb"></script>
+<script src="js/tab-arch.js?v=7bb9653960"></script>
 <script src="js/arch-simulation.js"></script>
 <script src="js/tab-ha.js"></script>
 <script src="js/tab-vs.js?v=d2952c3e7c"></script>
 <script src="js/tab-hs.js"></script>
 <script src="js/tab-bk.js?v=36bd89751f"></script>
 <script src="js/tab-lim.js?v=0c39891007"></script>
-<script src="js/main.js"></script>
+<script src="js/main.js?v=45ab24f875"></script>
 </body>
 </html>

@@ -75,6 +75,11 @@ function archRender() {
   AP.nodes = {};
   const ex = [130, 280];
   nodes.forEach((n, i) => { AP.nodes[n.id] = [ex[i], 140]; });
+  // Essentials: frame each compute node's AZ before drawing its connections.
+  nodes.forEach(n => {
+    const [x] = AP.nodes[n.id], down = !archUpAZ(n.az);
+    s += `<rect class="only-basic" data-compute-az="${AZ_NAMES[n.az]}" x="${x - 55}" y="102" width="110" height="108" rx="9" fill="${down ? '#FDF0EE' : '#fff'}" stroke="${down ? 'rgba(192,57,43,.5)' : 'rgba(0,30,43,.28)'}" stroke-dasharray="5 4" stroke-width="1.3"/>`;
+  });
   // lines: client → primary, primary → log replicas, log → standby
   const prim = nodes.find(n => n.role === 'PRIMARY' && n.state === 'UP');
   const stby = nodes.find(n => n.role === 'STANDBY' && n.state === 'UP');

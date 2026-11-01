@@ -6,8 +6,10 @@ An interactive, browser-based tool that explains **MongoDB Atlas Infinite** — 
 
 ### Two views
 
-* **Essentials** (default) — the main diagram and interaction, without introductory banners. No source chips, event log or advanced settings.
+* **Essentials** (default) — the main diagram and interaction, without introductory banners. No source chips or advanced settings. White dashed frames distinguish the primary and standby compute AZs in the Infinite architecture.
 * **Deep dive** — everything: the side-by-side Core vs Infinite comparison, write/read concerns, failover internals, an illustrative model of documented auto-scaling rules with a live "why did/didn't it scale" panel, restore rules, the full official preview-limitations list and every source.
+
+Neither view has a bottom event-log panel; the available height is reserved for the diagrams and controls.
 
 Companion to the [Data Resilience Visualizer](https://carimeb.github.io/DataResilienceVisualizer/) (replica sets, multi-region, multi-cloud on Atlas Core).
 
