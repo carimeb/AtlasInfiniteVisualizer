@@ -19,7 +19,7 @@ Companion to the [Data Resilience Visualizer](https://carimeb.github.io/DataResi
 
 | Tab | What you can do |
 |---|---|
-| **① Architecture & Write Path** | Toggle **Atlas Core ↔ Atlas Infinite**. Animate a write: client → primary → **Log Service replicated across 3 AZs** → ACK on storage-layer majority. Background work shows the standby following the log independently of the **Page Materializer**, which feeds phylog to Page Service and oplog + phylog to object storage **in parallel**. Use **0.5× playback** by default, **0.25×** for a slower animation, **Pause/Resume**, or **Step by step** with a current-stage explanation that scrolls with the page, without covering the diagram. Choose **cache hit or cache miss** for repeatable read demonstrations in both views, with labels matching the selected path. This selector affects reads only. Deep dive also exposes `readPreference`/`readConcern`. Side-by-side Core vs Infinite table in Deep dive only. |
+| **① Architecture & Write Path** | Toggle **Atlas Core ↔ Atlas Infinite**. Animate a write: client → primary → **Log Service replicated across 3 AZs** → ACK on storage-layer majority. Background work shows the standby following the log independently of the **Page Materializer**, which feeds phylog to Page Service and oplog + phylog to object storage **in parallel**. Simulations run **step by step only**: the buttons show the total number of steps before starting, each step explains its action, and you click to continue. The last step and completion are explicit. Temporary animation lines and highlights are cleared on completion. Explanations scroll with the page without covering the diagram. Choose **cache hit or cache miss** for repeatable read demonstrations in both views, with labels matching the selected path. This selector affects reads only. Deep dive also exposes `readPreference`/`readConcern`. Side-by-side Core vs Infinite table in Deep dive only. |
 | **② High Availability & Failover** | Pick one of the 10 Infinite-supported AWS regions, then click nodes or whole **Availability Zones** to fail them. Watch the **storage layer coordinate failover** (no votes among compute nodes), the warm standby get promoted, drivers retry, and a replacement node attach to storage without an initial sync. **Acknowledged majority writes never roll back; w:1 can roll back in rare failures.** Lose 2 of 3 AZs to see majority writes wait for the storage quorum. *Test Primary Failover* button. |
 | **③ Vertical Scaling & Storage** | Pick a tier (M10–M60 General, M40–M60 Low-CPU) to watch a resize that **moves no data**. Run an **AI-agent traffic spike** or a **recurring daily peak** against compute auto-scaling that follows the **documented criteria** (scale up after >90% for 10 min or a 1-h average >75%; scale down only after 4 h below 45%, at most once per 24 h; predictive scales up to 2 tiers ahead of cyclical peaks), with a live "why did/didn't it scale" panel. Ingest data against the **max storage limit** (up to 128 TB; writes blocked near the limit, reads still served). |
 | **④ Horizontal Read Scaling** | Add up to **5 read-only / analytics nodes** (7 nodes max) that serve reads in minutes. Change `readPreference` and `readPreferenceTags` (`nodeType`) and watch per-node load. |
@@ -42,7 +42,7 @@ AtlasInfiniteVisualizer/
 │   ├── state.js          # global state S, tiers, official SOURCES registry
 │   ├── i18n.js           # EN (in the HTML) + PT-BR dictionary, setLang()
 │   ├── utils.js          # helpers, brand colors, SVG icons, packet animation
-│   ├── arch-playback.js  # pausable active-time clock and stage controller
+│   ├── arch-playback.js  # active-time clock and stage controller
 │   ├── tab-arch.js       # ① architecture diagrams and explanatory text
 │   ├── arch-simulation.js # guided write/read plans and playback controls
 │   ├── tab-ha.js         # ② high availability & failover
@@ -60,7 +60,7 @@ Script order matters (globals): `state → i18n → utils → arch-playback → 
 
 ## Regression checks
 
-Run `node --test tests/*.test.js` with Node.js 18 or newer. The tests use simulated timers to cover guided playback, pause/resume, speed changes, manual advancement, cancellation, acknowledgment thresholds, read cache paths, consecutive AZ failures and standby recovery. No extra dependencies are required.
+Run `node --test tests/*.test.js` with Node.js 18 or newer. The tests use simulated timers to cover guided playback, manual advancement, completion cleanup, cancellation, acknowledgment thresholds, read cache paths, consecutive AZ failures and standby recovery. No extra dependencies are required.
 
 ## Brand
 

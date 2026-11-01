@@ -124,10 +124,10 @@ test('manual Next advances exactly once and the final stage completes without an
   p.setSpeed(1);
   p.setManual(true);
   const seen = [];
-  const done = p.start([stage(async () => { seen.push(1); }), stage(async () => { seen.push(2); })]);
+  const done = p.start([stage(async v => { seen.push(1); await v.wait(100); }), stage(async v => { seen.push(2); await v.wait(100); })]);
   await flush();
   p.next(); // Ignored while the first stage is playing.
-  await time.advance(1200);
+  await time.advance(100);
   assert.equal(p.status, 'waiting');
   await time.advance(5000);
   assert.deepEqual(seen, [1]);

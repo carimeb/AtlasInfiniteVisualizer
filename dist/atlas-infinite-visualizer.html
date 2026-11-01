@@ -245,13 +245,19 @@ body.view-basic .cmp tr.xr{display:none}
 
 /* GUIDED SIMULATION */
 .arch-guide{scroll-margin-top:16px;background:var(--white);padding:8px 0 10px}
-.sim-controls{display:flex;gap:8px;align-items:end;flex-wrap:wrap;margin-bottom:8px}
-.sim-controls .fld{margin:0;flex:1;min-width:130px}
-.sim-controls .btn{min-height:34px}
+.sim-controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.sim-controls .btn{min-height:34px;margin-top:10px}
+.sim-controls [hidden]{display:none}
 .sim-now{border:1px solid var(--forest);border-left:4px solid var(--forest);border-radius:8px;background:var(--mist);padding:10px 12px;line-height:1.5}
 .sim-now .sim-kicker{font-size:10px;font-weight:700;color:var(--forest);letter-spacing:.4px;margin-bottom:3px}
+.sim-status{display:flex;gap:8px 12px;align-items:center;flex-wrap:wrap;margin:5px 0 7px}
+.sim-count{background:var(--white);border:1px solid var(--forest);border-radius:5px;padding:2px 7px;font-size:12px;font-weight:700;white-space:nowrap}
+.sim-state{font-size:13px;font-weight:700;color:var(--forest)}
+.sim-now[data-state="completed"] .sim-state{font-size:15px}
+.sim-now[data-state="blocked"] .sim-state{color:var(--bad)}
 .sim-now strong{display:block;font-size:14px;color:var(--slate)}
 .sim-now p{margin:4px 0 0;font-size:12px;color:var(--text2)}
+.sim-now .sim-controls p{flex:1;min-width:180px;margin-top:10px;font-weight:500}
 .sim-frozen *{animation-play-state:paused!important}
 .sim-read{border-top:1px solid var(--border);margin-top:12px;padding-top:12px}
 .sim-note{font-size:11px;line-height:1.5;color:var(--text3);margin:6px 0 10px}
@@ -310,14 +316,13 @@ body.view-basic .cmp tr.xr{display:none}
             <div class="card-title"><span data-i18n="arch.topo">Deployment Topology</span> <span class="hl" id="arch-mode-label"></span></div>
             <div class="leg" id="arch-legend"></div>
             <div class="arch-guide">
-              <div class="sim-controls">
-                <label class="fld"><span class="lbl" data-i18n="arch.playmode">Playback</span><select id="arch-play-mode" onchange="archSetPlaybackMode(this.value)"><option value="auto" data-i18n="arch.auto">Automatic</option><option value="manual" data-i18n="arch.manual">Step by step</option></select></label>
-                <label class="fld"><span class="lbl" data-i18n="arch.speed">Animation speed</span><select id="arch-speed" onchange="archSetSpeed(this.value)"><option value="0.25" data-i18n="arch.verySlow">0.25× — very slow</option><option value="0.5" selected data-i18n="arch.slow">0.5× — slow</option><option value="1" data-i18n="arch.normal">1× — normal</option></select></label>
-                <button class="btn btn-g btn-sm" id="arch-pause" onclick="archTogglePause()" disabled>Ⅱ Pause</button>
-                <button class="btn btn-p btn-sm" id="arch-next" onclick="archNext()" disabled data-i18n="arch.next">Next step →</button>
-                <button class="btn btn-g btn-sm" id="arch-stop" onclick="archStop()" disabled data-i18n="arch.stop">■ Stop</button>
+              <div class="sim-now">
+                <div id="arch-now" aria-live="polite"></div>
+                <div class="sim-controls">
+                  <p id="arch-next-hint" aria-live="polite" hidden></p>
+                  <button class="btn btn-p btn-sm" id="arch-next" onclick="archNext()" disabled hidden>Next step →</button>
+                </div>
               </div>
-              <div class="sim-now" id="arch-now" aria-live="polite"></div>
             </div>
             <div id="arch-svg"></div>
           </div>
@@ -341,13 +346,13 @@ body.view-basic .cmp tr.xr{display:none}
           </div>
           <div class="card">
             <div class="card-title" data-i18n="arch.simulation">Simulation</div>
-            <button class="btn btn-p" id="arch-btn-w" onclick="archSimWrite()" data-i18n="btn.simw">▶ Simulate Write</button>
+            <button class="btn btn-p" id="arch-btn-w" onclick="archSimWrite()">▶ Simulate Write · 4 steps</button>
             <div class="sim-read">
               <label class="fld"><span class="lbl" data-i18n="arch.cache">Read scenario</span><select id="arch-cache" onchange="archSetReadCache(this.value)"><option value="miss" selected data-i18n="arch.cache.miss">Cache miss — fetch from storage</option><option value="hit" data-i18n="arch.cache.hit">Cache hit — read from memory</option></select></label>
               <p class="sim-note" data-i18n="arch.cacheOnlyRead">This choice applies only to the read simulation. It does not change the write path.</p>
-              <button class="btn btn-g" id="arch-btn-r" onclick="archSimRead()" data-i18n="btn.simr">▶ Simulate Read</button>
+              <button class="btn btn-g" id="arch-btn-r" onclick="archSimRead()">▶ Simulate Read · 3 steps</button>
             </div>
-            <p class="sim-note" data-i18n="arch.timingNote">Illustrative timing. Use Step by step to advance at your own pace.</p>
+            <p class="sim-note" data-i18n="arch.timingNote">One step at a time, at your pace. Animation timing is illustrative.</p>
           </div>
           <div class="card only-detailed">
             <div class="card-title" data-i18n="cc.title">Write &amp; read settings</div>
@@ -749,18 +754,9 @@ const SOURCES = {
 // Dynamic strings use tx(en, pt) next to the code that renders them.
 
 const PT = {
-  'arch.playmode': 'Reprodução',
-  'arch.auto': 'Automática',
-  'arch.manual': 'Passo a passo',
-  'arch.speed': 'Velocidade da animação',
-  'arch.verySlow': '0,25× — muito lenta',
-  'arch.slow': '0,5× — lenta',
-  'arch.normal': '1× — normal',
-  'arch.next': 'Próxima etapa →',
-  'arch.stop': '■ Parar',
   'arch.simulation': 'Simulação',
   'arch.cacheOnlyRead': 'Esta escolha vale somente para a simulação de leitura. Ela não altera o caminho da escrita.',
-  'arch.timingNote': 'Tempos ilustrativos. Use Passo a passo para avançar no seu ritmo.',
+  'arch.timingNote': 'Uma etapa por vez, no seu ritmo. Os tempos da animação são ilustrativos.',
   'hdr.sub': 'HA · Failover · Escala Vertical e Horizontal · Backup — material educativo, não é documentação oficial da MongoDB',
   'hdr.badge': 'Public Preview',
   'view.basic': 'Essencial',
@@ -1130,12 +1126,12 @@ function fmtTB(tb) {
 // Active-time clock shared by every animation in an architecture demonstration.
 // A stage receives a run-scoped view so a cancelled run cannot control its successor.
 class ArchPlayback {
-  constructor({ onChange = () => {}, scheduler = {} } = {}) {
+  constructor({ onChange = () => {}, scheduler = {}, manual = false } = {}) {
     this.status = 'idle';
     this.index = -1;
     this.stages = [];
     this.speed = 0.5;
-    this.manual = false;
+    this.manual = Boolean(manual);
     this.message = '';
     this._onChange = onChange;
     this._clock = {
@@ -1236,7 +1232,8 @@ class ArchPlayback {
           run.abort.promise,
         ]);
         this._check(run);
-        await this._wait(run, 1200);
+        // Manual playback already waits for the user's next click to continue.
+        if (!this.manual) await this._wait(run, 1200);
         await this._resumed(run);
         this._check(run);
         if (index < stages.length - 1 && this.manual) {
@@ -1666,7 +1663,7 @@ let archRunLabel = '';
 let archDrawnStage = null;
 
 function archGetPlayer() {
-  if (!archPlayer) archPlayer = new ArchPlayback({ onChange: archPlaybackUI });
+  if (!archPlayer) archPlayer = new ArchPlayback({ onChange: archPlaybackUI, manual: true });
   return archPlayer;
 }
 
@@ -1675,29 +1672,50 @@ function archClearMotion() {
 }
 
 function archPlaybackUI(player = archGetPlayer()) {
-  const busy = ['playing', 'paused', 'waiting'].includes(player.status);
+  const busy = ['playing', 'waiting'].includes(player.status);
   S.arch.busy = busy;
   ['arch-btn-w', 'arch-btn-r', 'arch-cache'].forEach(id => { $(id).disabled = busy; });
   document.querySelectorAll('#tab-arch .sync-wc, #tab-arch .sync-rc, #tab-arch .sync-rp').forEach(el => { el.disabled = busy; });
-  $('arch-pause').disabled = !['playing', 'paused'].includes(player.status);
-  $('arch-pause').textContent = player.status === 'paused' ? tx('▶ Resume', '▶ Continuar') : tx('Ⅱ Pause', 'Ⅱ Pausar');
-  $('arch-next').disabled = player.status !== 'waiting';
-  $('arch-stop').disabled = !busy;
-  $('arch-play-mode').value = player.manual ? 'manual' : 'auto';
-  $('arch-speed').value = String(player.speed);
+  const writeSteps = S.arch.mode === 'core' ? 3 : 4;
+  $('arch-btn-w').textContent = tx(`▶ Simulate Write · ${writeSteps} steps`, `▶ Simular Escrita · ${writeSteps} etapas`);
+  $('arch-btn-r').textContent = tx('▶ Simulate Read · 3 steps', '▶ Simular Leitura · 3 etapas');
   $('arch-svg').classList.toggle('sim-frozen', player.status !== 'playing');
   const stage = player.stages[player.index];
   const starting = stage && player.index === 0 && stage !== archDrawnStage;
-  if (stage !== archDrawnStage) { archClearMotion(); archDrawnStage = stage; }
+  if (stage !== archDrawnStage || ['completed', 'blocked', 'cancelled'].includes(player.status)) archClearMotion();
+  archDrawnStage = stage;
+  const count = player.stages.length, current = player.index + 1;
+  const last = current === count;
+  const nextStage = player.stages[player.index + 1];
   const status = {
-    playing: tx('In progress', 'Em andamento'), paused: tx('Paused — resume when ready', 'Pausada — continue quando quiser'),
-    waiting: tx('Stage complete — click Next step', 'Etapa concluída — clique em Próxima etapa'),
-    completed: tx('Simulation complete', 'Simulação concluída'), cancelled: tx('Stopped — choose a simulation to restart', 'Interrompida — escolha uma simulação para recomeçar'),
+    playing: last ? tx('Last step in progress', 'Última etapa em andamento') : tx('In progress', 'Em andamento'),
+    waiting: tx('Waiting for your click', 'Aguardando seu clique'),
+    completed: tx('✓ Simulation complete', '✓ Simulação concluída'), cancelled: tx('Simulation interrupted', 'Simulação interrompida'),
     blocked: tx('Cannot continue in this scenario', 'Não é possível continuar neste cenário'),
   }[player.status];
+  $('arch-now').parentElement.dataset.state = player.status;
   $('arch-now').innerHTML = stage
-    ? `<div class="sim-kicker">${archRunLabel} · ${tx('Step', 'Etapa')} ${player.index + 1}/${player.stages.length} · ${status}</div><strong>${stage.title}</strong><p>${player.message || stage.detail}</p>${stage.more && !player.message ? `<p class="only-detailed">${stage.more}</p>` : ''}`
-    : `<div class="sim-kicker">${tx('Follow the path', 'Acompanhe o caminho')}</div><strong>${tx('Choose Simulate Write or Simulate Read', 'Escolha Simular Escrita ou Simular Leitura')}</strong><p>${tx('Start at 0.5×, pause whenever you need, or use Step by step. The current explanation stays here.', 'Comece em 0,5×, pause quando precisar ou use Passo a passo. A explicação da etapa atual fica aqui.')}</p>`;
+    ? `<div class="sim-kicker">${archRunLabel}</div><div class="sim-status"><span class="sim-count">${tx(`Step ${current} of ${count}`, `Etapa ${current} de ${count}`)}</span><span class="sim-state">${status}</span></div><strong>${stage.title}</strong><p>${player.message || stage.detail}</p>${stage.more && !player.message ? `<p class="only-detailed">${stage.more}</p>` : ''}`
+    : `<div class="sim-kicker">${tx('Step-by-step simulation', 'Simulação passo a passo')}</div><strong>${tx('Choose Simulate Write or Simulate Read', 'Escolha Simular Escrita ou Simular Leitura')}</strong><p>${tx(`Write: ${writeSteps} steps. Read: 3 steps. After each animation, you choose when to continue.`, `Escrita: ${writeSteps} etapas. Leitura: 3 etapas. Após cada animação, você escolhe quando continuar.`)}</p>`;
+
+  const next = $('arch-next');
+  next.hidden = !stage || !busy;
+  next.disabled = player.status !== 'waiting';
+  next.textContent = player.status === 'waiting'
+    ? (current + 1 === count
+      ? tx(`View last step (${count} of ${count}) →`, `Ver última etapa (${count} de ${count}) →`)
+      : tx(`Go to step ${current + 1} of ${count} →`, `Ir para etapa ${current + 1} de ${count} →`))
+    : tx('Please wait…', 'Aguarde…');
+  $('arch-next-hint').textContent = !stage ? '' : {
+    playing: last
+      ? tx('This is the last step. The simulation ends when this animation finishes.', 'Esta é a última etapa. A simulação termina quando esta animação acabar.')
+      : tx('Follow this animation. When it finishes, click to see the next step.', 'Acompanhe esta animação. Quando ela terminar, clique para ver a próxima etapa.'),
+    waiting: tx(`This step is complete. Next: ${nextStage?.title || ''}.`, `Esta etapa terminou. A seguir: ${nextStage?.title || ''}.`),
+    completed: tx(`All ${count} steps have been shown. Choose Simulate Write or Simulate Read to start again.`, `As ${count} etapas foram exibidas. Escolha Simular Escrita ou Simular Leitura para começar novamente.`),
+    blocked: tx('The simulation ended before completing all steps. Adjust the scenario and start again.', 'A simulação foi encerrada antes de completar todas as etapas. Ajuste o cenário e comece novamente.'),
+    cancelled: tx('Choose Simulate Write or Simulate Read to start again.', 'Escolha Simular Escrita ou Simular Leitura para começar novamente.'),
+  }[player.status];
+  $('arch-next-hint').hidden = !stage;
   renderSteps('arch-steps', player.stages.map(s => `<b>${s.title}</b> ${s.detail}`), player.stages.map((s, i) => i < player.index || player.status === 'completed' ? 'done' : i === player.index ? 'active' : ''));
   $('arch-steps-label').textContent = archRunLabel;
   // Position the lesson after its first caption has its final height.
@@ -1711,11 +1729,7 @@ function archResetPlayback() {
   archRunLabel = ''; archDrawnStage = null;
   archClearMotion(); archPlaybackUI(player);
 }
-function archSetPlaybackMode(mode) { archGetPlayer().setManual(mode === 'manual'); }
-function archSetSpeed(speed) { archGetPlayer().setSpeed(Number(speed)); }
-function archTogglePause() { const p = archGetPlayer(); p.status === 'paused' ? p.resume() : p.pause(); }
 function archNext() { archGetPlayer().next(); }
-function archStop() { archGetPlayer().cancel(); archClearMotion(); }
 
 function archFx(tag, attrs) {
   const el = document.createElementNS('http://www.w3.org/2000/svg', tag);

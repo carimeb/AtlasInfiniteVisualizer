@@ -5,7 +5,7 @@ let archRunLabel = '';
 let archDrawnStage = null;
 
 function archGetPlayer() {
-  if (!archPlayer) archPlayer = new ArchPlayback({ onChange: archPlaybackUI });
+  if (!archPlayer) archPlayer = new ArchPlayback({ onChange: archPlaybackUI, manual: true });
   return archPlayer;
 }
 
@@ -14,29 +14,50 @@ function archClearMotion() {
 }
 
 function archPlaybackUI(player = archGetPlayer()) {
-  const busy = ['playing', 'paused', 'waiting'].includes(player.status);
+  const busy = ['playing', 'waiting'].includes(player.status);
   S.arch.busy = busy;
   ['arch-btn-w', 'arch-btn-r', 'arch-cache'].forEach(id => { $(id).disabled = busy; });
   document.querySelectorAll('#tab-arch .sync-wc, #tab-arch .sync-rc, #tab-arch .sync-rp').forEach(el => { el.disabled = busy; });
-  $('arch-pause').disabled = !['playing', 'paused'].includes(player.status);
-  $('arch-pause').textContent = player.status === 'paused' ? tx('▶ Resume', '▶ Continuar') : tx('Ⅱ Pause', 'Ⅱ Pausar');
-  $('arch-next').disabled = player.status !== 'waiting';
-  $('arch-stop').disabled = !busy;
-  $('arch-play-mode').value = player.manual ? 'manual' : 'auto';
-  $('arch-speed').value = String(player.speed);
+  const writeSteps = S.arch.mode === 'core' ? 3 : 4;
+  $('arch-btn-w').textContent = tx(`▶ Simulate Write · ${writeSteps} steps`, `▶ Simular Escrita · ${writeSteps} etapas`);
+  $('arch-btn-r').textContent = tx('▶ Simulate Read · 3 steps', '▶ Simular Leitura · 3 etapas');
   $('arch-svg').classList.toggle('sim-frozen', player.status !== 'playing');
   const stage = player.stages[player.index];
   const starting = stage && player.index === 0 && stage !== archDrawnStage;
-  if (stage !== archDrawnStage) { archClearMotion(); archDrawnStage = stage; }
+  if (stage !== archDrawnStage || ['completed', 'blocked', 'cancelled'].includes(player.status)) archClearMotion();
+  archDrawnStage = stage;
+  const count = player.stages.length, current = player.index + 1;
+  const last = current === count;
+  const nextStage = player.stages[player.index + 1];
   const status = {
-    playing: tx('In progress', 'Em andamento'), paused: tx('Paused — resume when ready', 'Pausada — continue quando quiser'),
-    waiting: tx('Stage complete — click Next step', 'Etapa concluída — clique em Próxima etapa'),
-    completed: tx('Simulation complete', 'Simulação concluída'), cancelled: tx('Stopped — choose a simulation to restart', 'Interrompida — escolha uma simulação para recomeçar'),
+    playing: last ? tx('Last step in progress', 'Última etapa em andamento') : tx('In progress', 'Em andamento'),
+    waiting: tx('Waiting for your click', 'Aguardando seu clique'),
+    completed: tx('✓ Simulation complete', '✓ Simulação concluída'), cancelled: tx('Simulation interrupted', 'Simulação interrompida'),
     blocked: tx('Cannot continue in this scenario', 'Não é possível continuar neste cenário'),
   }[player.status];
+  $('arch-now').parentElement.dataset.state = player.status;
   $('arch-now').innerHTML = stage
-    ? `<div class="sim-kicker">${archRunLabel} · ${tx('Step', 'Etapa')} ${player.index + 1}/${player.stages.length} · ${status}</div><strong>${stage.title}</strong><p>${player.message || stage.detail}</p>${stage.more && !player.message ? `<p class="only-detailed">${stage.more}</p>` : ''}`
-    : `<div class="sim-kicker">${tx('Follow the path', 'Acompanhe o caminho')}</div><strong>${tx('Choose Simulate Write or Simulate Read', 'Escolha Simular Escrita ou Simular Leitura')}</strong><p>${tx('Start at 0.5×, pause whenever you need, or use Step by step. The current explanation stays here.', 'Comece em 0,5×, pause quando precisar ou use Passo a passo. A explicação da etapa atual fica aqui.')}</p>`;
+    ? `<div class="sim-kicker">${archRunLabel}</div><div class="sim-status"><span class="sim-count">${tx(`Step ${current} of ${count}`, `Etapa ${current} de ${count}`)}</span><span class="sim-state">${status}</span></div><strong>${stage.title}</strong><p>${player.message || stage.detail}</p>${stage.more && !player.message ? `<p class="only-detailed">${stage.more}</p>` : ''}`
+    : `<div class="sim-kicker">${tx('Step-by-step simulation', 'Simulação passo a passo')}</div><strong>${tx('Choose Simulate Write or Simulate Read', 'Escolha Simular Escrita ou Simular Leitura')}</strong><p>${tx(`Write: ${writeSteps} steps. Read: 3 steps. After each animation, you choose when to continue.`, `Escrita: ${writeSteps} etapas. Leitura: 3 etapas. Após cada animação, você escolhe quando continuar.`)}</p>`;
+
+  const next = $('arch-next');
+  next.hidden = !stage || !busy;
+  next.disabled = player.status !== 'waiting';
+  next.textContent = player.status === 'waiting'
+    ? (current + 1 === count
+      ? tx(`View last step (${count} of ${count}) →`, `Ver última etapa (${count} de ${count}) →`)
+      : tx(`Go to step ${current + 1} of ${count} →`, `Ir para etapa ${current + 1} de ${count} →`))
+    : tx('Please wait…', 'Aguarde…');
+  $('arch-next-hint').textContent = !stage ? '' : {
+    playing: last
+      ? tx('This is the last step. The simulation ends when this animation finishes.', 'Esta é a última etapa. A simulação termina quando esta animação acabar.')
+      : tx('Follow this animation. When it finishes, click to see the next step.', 'Acompanhe esta animação. Quando ela terminar, clique para ver a próxima etapa.'),
+    waiting: tx(`This step is complete. Next: ${nextStage?.title || ''}.`, `Esta etapa terminou. A seguir: ${nextStage?.title || ''}.`),
+    completed: tx(`All ${count} steps have been shown. Choose Simulate Write or Simulate Read to start again.`, `As ${count} etapas foram exibidas. Escolha Simular Escrita ou Simular Leitura para começar novamente.`),
+    blocked: tx('The simulation ended before completing all steps. Adjust the scenario and start again.', 'A simulação foi encerrada antes de completar todas as etapas. Ajuste o cenário e comece novamente.'),
+    cancelled: tx('Choose Simulate Write or Simulate Read to start again.', 'Escolha Simular Escrita ou Simular Leitura para começar novamente.'),
+  }[player.status];
+  $('arch-next-hint').hidden = !stage;
   renderSteps('arch-steps', player.stages.map(s => `<b>${s.title}</b> ${s.detail}`), player.stages.map((s, i) => i < player.index || player.status === 'completed' ? 'done' : i === player.index ? 'active' : ''));
   $('arch-steps-label').textContent = archRunLabel;
   // Position the lesson after its first caption has its final height.
@@ -50,11 +71,7 @@ function archResetPlayback() {
   archRunLabel = ''; archDrawnStage = null;
   archClearMotion(); archPlaybackUI(player);
 }
-function archSetPlaybackMode(mode) { archGetPlayer().setManual(mode === 'manual'); }
-function archSetSpeed(speed) { archGetPlayer().setSpeed(Number(speed)); }
-function archTogglePause() { const p = archGetPlayer(); p.status === 'paused' ? p.resume() : p.pause(); }
 function archNext() { archGetPlayer().next(); }
-function archStop() { archGetPlayer().cancel(); archClearMotion(); }
 
 function archFx(tag, attrs) {
   const el = document.createElementNS('http://www.w3.org/2000/svg', tag);

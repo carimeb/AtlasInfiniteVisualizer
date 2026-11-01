@@ -1,12 +1,12 @@
 // Active-time clock shared by every animation in an architecture demonstration.
 // A stage receives a run-scoped view so a cancelled run cannot control its successor.
 class ArchPlayback {
-  constructor({ onChange = () => {}, scheduler = {} } = {}) {
+  constructor({ onChange = () => {}, scheduler = {}, manual = false } = {}) {
     this.status = 'idle';
     this.index = -1;
     this.stages = [];
     this.speed = 0.5;
-    this.manual = false;
+    this.manual = Boolean(manual);
     this.message = '';
     this._onChange = onChange;
     this._clock = {
@@ -107,7 +107,8 @@ class ArchPlayback {
           run.abort.promise,
         ]);
         this._check(run);
-        await this._wait(run, 1200);
+        // Manual playback already waits for the user's next click to continue.
+        if (!this.manual) await this._wait(run, 1200);
         await this._resumed(run);
         this._check(run);
         if (index < stages.length - 1 && this.manual) {

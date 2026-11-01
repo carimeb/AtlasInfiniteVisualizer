@@ -245,13 +245,19 @@ body.view-basic .cmp tr.xr{display:none}
 
 /* GUIDED SIMULATION */
 .arch-guide{scroll-margin-top:16px;background:var(--white);padding:8px 0 10px}
-.sim-controls{display:flex;gap:8px;align-items:end;flex-wrap:wrap;margin-bottom:8px}
-.sim-controls .fld{margin:0;flex:1;min-width:130px}
-.sim-controls .btn{min-height:34px}
+.sim-controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.sim-controls .btn{min-height:34px;margin-top:10px}
+.sim-controls [hidden]{display:none}
 .sim-now{border:1px solid var(--forest);border-left:4px solid var(--forest);border-radius:8px;background:var(--mist);padding:10px 12px;line-height:1.5}
 .sim-now .sim-kicker{font-size:10px;font-weight:700;color:var(--forest);letter-spacing:.4px;margin-bottom:3px}
+.sim-status{display:flex;gap:8px 12px;align-items:center;flex-wrap:wrap;margin:5px 0 7px}
+.sim-count{background:var(--white);border:1px solid var(--forest);border-radius:5px;padding:2px 7px;font-size:12px;font-weight:700;white-space:nowrap}
+.sim-state{font-size:13px;font-weight:700;color:var(--forest)}
+.sim-now[data-state="completed"] .sim-state{font-size:15px}
+.sim-now[data-state="blocked"] .sim-state{color:var(--bad)}
 .sim-now strong{display:block;font-size:14px;color:var(--slate)}
 .sim-now p{margin:4px 0 0;font-size:12px;color:var(--text2)}
+.sim-now .sim-controls p{flex:1;min-width:180px;margin-top:10px;font-weight:500}
 .sim-frozen *{animation-play-state:paused!important}
 .sim-read{border-top:1px solid var(--border);margin-top:12px;padding-top:12px}
 .sim-note{font-size:11px;line-height:1.5;color:var(--text3);margin:6px 0 10px}
@@ -310,14 +316,13 @@ body.view-basic .cmp tr.xr{display:none}
             <div class="card-title"><span data-i18n="arch.topo">Deployment Topology</span> <span class="hl" id="arch-mode-label"></span></div>
             <div class="leg" id="arch-legend"></div>
             <div class="arch-guide">
-              <div class="sim-controls">
-                <label class="fld"><span class="lbl" data-i18n="arch.playmode">Playback</span><select id="arch-play-mode" onchange="archSetPlaybackMode(this.value)"><option value="auto" data-i18n="arch.auto">Automatic</option><option value="manual" data-i18n="arch.manual">Step by step</option></select></label>
-                <label class="fld"><span class="lbl" data-i18n="arch.speed">Animation speed</span><select id="arch-speed" onchange="archSetSpeed(this.value)"><option value="0.25" data-i18n="arch.verySlow">0.25× — very slow</option><option value="0.5" selected data-i18n="arch.slow">0.5× — slow</option><option value="1" data-i18n="arch.normal">1× — normal</option></select></label>
-                <button class="btn btn-g btn-sm" id="arch-pause" onclick="archTogglePause()" disabled>Ⅱ Pause</button>
-                <button class="btn btn-p btn-sm" id="arch-next" onclick="archNext()" disabled data-i18n="arch.next">Next step →</button>
-                <button class="btn btn-g btn-sm" id="arch-stop" onclick="archStop()" disabled data-i18n="arch.stop">■ Stop</button>
+              <div class="sim-now">
+                <div id="arch-now" aria-live="polite"></div>
+                <div class="sim-controls">
+                  <p id="arch-next-hint" aria-live="polite" hidden></p>
+                  <button class="btn btn-p btn-sm" id="arch-next" onclick="archNext()" disabled hidden>Next step →</button>
+                </div>
               </div>
-              <div class="sim-now" id="arch-now" aria-live="polite"></div>
             </div>
             <div id="arch-svg"></div>
           </div>
@@ -341,13 +346,13 @@ body.view-basic .cmp tr.xr{display:none}
           </div>
           <div class="card">
             <div class="card-title" data-i18n="arch.simulation">Simulation</div>
-            <button class="btn btn-p" id="arch-btn-w" onclick="archSimWrite()" data-i18n="btn.simw">▶ Simulate Write</button>
+            <button class="btn btn-p" id="arch-btn-w" onclick="archSimWrite()">▶ Simulate Write · 4 steps</button>
             <div class="sim-read">
               <label class="fld"><span class="lbl" data-i18n="arch.cache">Read scenario</span><select id="arch-cache" onchange="archSetReadCache(this.value)"><option value="miss" selected data-i18n="arch.cache.miss">Cache miss — fetch from storage</option><option value="hit" data-i18n="arch.cache.hit">Cache hit — read from memory</option></select></label>
               <p class="sim-note" data-i18n="arch.cacheOnlyRead">This choice applies only to the read simulation. It does not change the write path.</p>
-              <button class="btn btn-g" id="arch-btn-r" onclick="archSimRead()" data-i18n="btn.simr">▶ Simulate Read</button>
+              <button class="btn btn-g" id="arch-btn-r" onclick="archSimRead()">▶ Simulate Read · 3 steps</button>
             </div>
-            <p class="sim-note" data-i18n="arch.timingNote">Illustrative timing. Use Step by step to advance at your own pace.</p>
+            <p class="sim-note" data-i18n="arch.timingNote">One step at a time, at your pace. Animation timing is illustrative.</p>
           </div>
           <div class="card only-detailed">
             <div class="card-title" data-i18n="cc.title">Write &amp; read settings</div>

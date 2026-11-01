@@ -3,18 +3,9 @@
 // Dynamic strings use tx(en, pt) next to the code that renders them.
 
 const PT = {
-  'arch.playmode': 'Reprodução',
-  'arch.auto': 'Automática',
-  'arch.manual': 'Passo a passo',
-  'arch.speed': 'Velocidade da animação',
-  'arch.verySlow': '0,25× — muito lenta',
-  'arch.slow': '0,5× — lenta',
-  'arch.normal': '1× — normal',
-  'arch.next': 'Próxima etapa →',
-  'arch.stop': '■ Parar',
   'arch.simulation': 'Simulação',
   'arch.cacheOnlyRead': 'Esta escolha vale somente para a simulação de leitura. Ela não altera o caminho da escrita.',
-  'arch.timingNote': 'Tempos ilustrativos. Use Passo a passo para avançar no seu ritmo.',
+  'arch.timingNote': 'Uma etapa por vez, no seu ritmo. Os tempos da animação são ilustrativos.',
   'hdr.sub': 'HA · Failover · Escala Vertical e Horizontal · Backup — material educativo, não é documentação oficial da MongoDB',
   'hdr.badge': 'Public Preview',
   'view.basic': 'Essencial',
