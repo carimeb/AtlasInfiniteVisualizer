@@ -45,8 +45,9 @@ html = re.sub(r'\n?[ \t]*<script src="js/[^"]*"></script>', '', html)
 import base64
 def _inline(m):
     data = open(m.group(2), 'rb').read()
-    return m.group(1) + '="data:image/svg+xml;base64,' + base64.b64encode(data).decode() + '"'
-html = re.sub(r'(src|href)="(assets/[^"]+\.svg)"', _inline, html)
+    mime = 'image/svg+xml' if m.group(2).endswith('.svg') else 'image/png'
+    return m.group(1) + '="data:' + mime + ';base64,' + base64.b64encode(data).decode() + '"'
+html = re.sub(r'(src|href)="(assets/[^"]+\.(?:svg|png))"', _inline, html)
 # Inject the inlined block just before </body>
 html = html.replace("</body>", js + "\n</body>", 1)
 
