@@ -152,7 +152,7 @@ function haRender() {
     <div class="li-leg"><div class="ld" style="background:#fff;border:2.5px solid ${C.slate}"></div> Read-only</div>
     <div class="li-leg"><div class="ld" style="background:#fff;border:3px solid ${C.spring}"></div> Analytics</div>
     <div class="li-leg"><div class="ld" style="background:${C.badBg};border:2px solid ${C.bad}"></div> ${tx('Down', 'Fora')}</div>
-    <div class="li-leg" style="margin-left:auto;color:${C.t3}">${tx('Add read-only/analytics nodes in tab ④', 'Adicione nós read-only/analytics na aba ④')}</div>`;
+    <div class="li-leg" style="margin-left:auto;color:${C.t3}">${tx('Add read-only/analytics nodes in tab 4', 'Adicione nós read-only/analytics na aba 4')}</div>`;
   haUpdateInfo();
 }
 
@@ -183,7 +183,6 @@ function haReadTargets() {
 function haUpdateInfo() {
   const prim = haPrimary(), q = haQuorum(), upAZ = haUpAZ();
   const anyCompute = [...S.ha.nodes, ...S.extra].some(n => n.state === 'UP');
-  $('ha-bn-fo').classList.toggle('show', S.ha.failingOver);
   $('ha-bn-az').classList.toggle('show', upAZ === 2 && !S.ha.failingOver);
   $('ha-bn-q').classList.toggle('show', !q && anyCompute);
   $('ha-bn-down').classList.toggle('show', !anyCompute);
@@ -218,7 +217,7 @@ function haUpdateInfo() {
     row(tx('Writes', 'Escritas'), w.ok ? '✓ OK' : (w.pause ? tx('⏳ retrying', '⏳ refazendo') : tx('✕ blocked', '✕ bloqueadas')), w.ok ? true : (w.pause ? null : false)) +
     row(tx('Reads', 'Leituras') + ` (${S.rp})`, reads.length ? '✓ ' + reads.map(n => n.id).join(', ') : tx('✕ no eligible node', '✕ nenhum nó elegível'), reads.length > 0) +
     row(tx('Acknowledged writes', 'Escritas confirmadas'), wcRisk, S.wc === 'wmaj' || S.wc === 'wnum' ? true : (S.wc === 'w1' ? null : false)) +
-    row(tx('Read-only nodes', 'Nós read-only'), S.extra.length ? tx('keep serving reads; never become primary', 'seguem atendendo leituras; nunca viram primário') : tx('none (add in tab ④)', 'nenhum (adicione na aba ④)'), true) +
+    row(tx('Read-only nodes', 'Nós read-only'), S.extra.length ? tx('keep serving reads; never become primary', 'seguem atendendo leituras; nunca viram primário') : tx('none (add in tab 4)', 'nenhum (adicione na aba 4)'), true) +
     `<div class="desc lav only-detailed" style="margin-top:8px">${tx('Timings in this animation are illustrative. The public preview docs don\'t publish an Atlas Infinite failover duration.', 'Os tempos desta animação são ilustrativos. A documentação do public preview não publica uma duração de failover para o Atlas Infinite.')}</div>`;
 
   haRenderCmp();
@@ -350,7 +349,7 @@ function haSetAutoHeal(enabled) {
 
 // ── Failover sequence ────────────────────────────────────────────────────────
 
-const HA_TIMELINE_STEP_MS = 4000; // Reading pace for the illustration, not a failover duration.
+const HA_TIMELINE_STEP_MS = 2500; // Reading pace for the illustration, not a failover duration.
 
 function haFailover(reason) {
   if (S.ha.failingOver) return;
@@ -373,19 +372,11 @@ function haFailover(reason) {
   const old = S.ha.nodes.find(n => n.role === 'PRIMARY');
   log('WARN', 'STORAGE', tx('Primary unreachable — storage layer coordinates failover (no election among compute nodes)', 'Primário inacessível — a camada de storage coordena o failover (sem eleição entre nós de compute)'));
   haRender(); syncAll();
-  let t = 0;
-  const tick = () => {
-    const elapsed = (++t * 0.5).toFixed(1);
-    $('ha-fo-timer').textContent = tx(`Animation: ${elapsed}s`, `Animação: ${elapsed}s`);
-  };
-  $('ha-fo-timer').textContent = tx('Animation: 0.0s', 'Animação: 0.0s');
-  const iv = setInterval(tick, 500); S.ha.timers.push(iv);
   later(() => { setStep('ha-steps', 0, 'done'); setStep('ha-steps', 1, 'active'); }, HA_TIMELINE_STEP_MS);
   later(() => {
     if (!S.ha.nodes.includes(sb) || sb.state !== 'UP' || S.ha.azDown[sb.az]) {
       ++haFailoverSeq;
       S.ha.failingOver = false;
-      clearInterval(iv);
       haReplaceStandby(); haRender(); syncAll();
       return;
     }
@@ -398,7 +389,6 @@ function haFailover(reason) {
   later(() => {
     setStep('ha-steps', 2, 'done'); setStep('ha-steps', 3, 'active');
     S.ha.failingOver = false;
-    clearInterval(iv);
     log('INFO', 'DRIVER', tx(`Driver discovered new primary ${sb.id}; retryable writes resumed`, `Driver descobriu o novo primário ${sb.id}; retryable writes retomados`));
     haRender(); syncAll();
   }, HA_TIMELINE_STEP_MS * 3);

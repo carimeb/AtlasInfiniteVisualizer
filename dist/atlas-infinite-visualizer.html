@@ -120,11 +120,9 @@ svg text{font-family:'Lexend Deca',sans-serif}
 .banner{display:none;border-radius:8px;padding:10px 14px;font-size:12px;margin-bottom:12px;line-height:1.6;border:1.5px solid}
 .banner.show{display:block;animation:fi .25s ease}
 .banner .bt{font-weight:700;font-size:13px;margin-bottom:3px;display:flex;align-items:center;gap:6px}
-.bn-amber{background:var(--warn-bg);border-color:var(--warn);color:#78350F}
 .bn-info{background:var(--lavender);border-color:rgba(0,30,43,.35);color:var(--slate)}
 .bn-red{background:var(--bad-bg);border-color:var(--bad);color:#7F1D1D}
 .bn-green{background:var(--mist);border-color:var(--forest);color:var(--evergreen)}
-.timer{font-size:20px;font-weight:800;font-family:monospace;color:var(--warn);margin-left:auto}
 
 /* INFO TABLE */
 .irow{display:flex;justify-content:space-between;gap:10px;padding:5px 0;border-bottom:1px solid var(--border);font-size:12px}
@@ -389,7 +387,6 @@ body.view-basic .cmp tr.xr{display:none}
     <!-- ═══════════════ TAB 2: HIGH AVAILABILITY & FAILOVER ═══════════════ -->
     <div id="tab-ha" class="tc">
       <div class="tip only-detailed" data-i18n="ha.tip"><strong>Click any compute node</strong> to make it fail, or <strong>click an Availability Zone header</strong> to take the whole zone down (compute + its storage replicas). Watch how the <strong>storage layer coordinates failover</strong> — no election among compute nodes — and how the <strong>Log Service majority (2 of 3 AZs)</strong> keeps writes durable.</div>
-      <div class="banner bn-amber" id="ha-bn-fo"><div class="bt"><span data-i18n="ha.bn.fo.t">⏳ Failover in progress — storage layer is promoting the standby</span><span class="timer" id="ha-fo-timer"></span></div><div data-i18n="ha.bn.fo.d">Drivers detect the primary change and <strong>retry eligible reads and writes</strong> (retryable reads/writes). Acknowledged majority writes are already in the storage layer, so nothing has to be replayed or rolled back.</div></div>
       <div class="banner bn-info" id="ha-bn-az"><div class="bt" data-i18n="ha.bn.az.t">🛡 One Availability Zone is down — the cluster keeps serving</div><div data-i18n="ha.bn.az.d">The Log Service still holds a <strong>majority (2 of 3 zones)</strong>, so writes keep being committed durably. If the primary lived in the failed zone, the standby in another zone took over.</div></div>
       <div class="banner bn-red" id="ha-bn-q"><div class="bt" data-i18n="ha.bn.q.t">⛔ Storage-layer majority lost — writes cannot be acknowledged</div><div id="ha-bn-q-d"></div></div>
       <div class="banner bn-red" id="ha-bn-down"><div class="bt" data-i18n="ha.bn.down.t">🔴 No compute node available</div><div data-i18n="ha.bn.down.d">No compute node can serve reads or writes right now. Data stays durable in the storage layer; service resumes as soon as a compute node is available again.</div></div>
@@ -779,8 +776,6 @@ const PT = {
   'arch.cache.hit': 'Cache hit — ler da memória',
 
   'ha.tip': '<strong>Clique em qualquer nó de compute</strong> para simular uma falha, ou <strong>clique no cabeçalho de uma Availability Zone</strong> para derrubar a zona inteira (compute + réplicas de storage). Veja como a <strong>camada de storage coordena o failover</strong> — sem eleição entre os nós de compute — e como a <strong>maioria do Log Service (2 de 3 AZs)</strong> mantém as escritas duráveis.',
-  'ha.bn.fo.t': '⏳ Failover em andamento — a camada de storage está promovendo o standby',
-  'ha.bn.fo.d': 'Os drivers detectam a troca de primário e <strong>refazem leituras e escritas elegíveis</strong> (retryable reads/writes). As escritas confirmadas com majority já estão na camada de storage — nada precisa ser reaplicado nem sofrer rollback.',
   'ha.bn.az.t': '🛡 Uma Availability Zone caiu — o cluster continua atendendo',
   'ha.bn.az.d': 'O Log Service ainda tem <strong>maioria (2 de 3 zonas)</strong>, então as escritas continuam sendo confirmadas de forma durável. Se o primário estava na zona que caiu, o standby em outra zona assumiu.',
   'ha.bn.q.t': '⛔ Maioria da camada de storage perdida — escritas não podem ser confirmadas',
@@ -2075,7 +2070,7 @@ function haRender() {
     <div class="li-leg"><div class="ld" style="background:#fff;border:2.5px solid ${C.slate}"></div> Read-only</div>
     <div class="li-leg"><div class="ld" style="background:#fff;border:3px solid ${C.spring}"></div> Analytics</div>
     <div class="li-leg"><div class="ld" style="background:${C.badBg};border:2px solid ${C.bad}"></div> ${tx('Down', 'Fora')}</div>
-    <div class="li-leg" style="margin-left:auto;color:${C.t3}">${tx('Add read-only/analytics nodes in tab ④', 'Adicione nós read-only/analytics na aba ④')}</div>`;
+    <div class="li-leg" style="margin-left:auto;color:${C.t3}">${tx('Add read-only/analytics nodes in tab 4', 'Adicione nós read-only/analytics na aba 4')}</div>`;
   haUpdateInfo();
 }
 
@@ -2106,7 +2101,6 @@ function haReadTargets() {
 function haUpdateInfo() {
   const prim = haPrimary(), q = haQuorum(), upAZ = haUpAZ();
   const anyCompute = [...S.ha.nodes, ...S.extra].some(n => n.state === 'UP');
-  $('ha-bn-fo').classList.toggle('show', S.ha.failingOver);
   $('ha-bn-az').classList.toggle('show', upAZ === 2 && !S.ha.failingOver);
   $('ha-bn-q').classList.toggle('show', !q && anyCompute);
   $('ha-bn-down').classList.toggle('show', !anyCompute);
@@ -2141,7 +2135,7 @@ function haUpdateInfo() {
     row(tx('Writes', 'Escritas'), w.ok ? '✓ OK' : (w.pause ? tx('⏳ retrying', '⏳ refazendo') : tx('✕ blocked', '✕ bloqueadas')), w.ok ? true : (w.pause ? null : false)) +
     row(tx('Reads', 'Leituras') + ` (${S.rp})`, reads.length ? '✓ ' + reads.map(n => n.id).join(', ') : tx('✕ no eligible node', '✕ nenhum nó elegível'), reads.length > 0) +
     row(tx('Acknowledged writes', 'Escritas confirmadas'), wcRisk, S.wc === 'wmaj' || S.wc === 'wnum' ? true : (S.wc === 'w1' ? null : false)) +
-    row(tx('Read-only nodes', 'Nós read-only'), S.extra.length ? tx('keep serving reads; never become primary', 'seguem atendendo leituras; nunca viram primário') : tx('none (add in tab ④)', 'nenhum (adicione na aba ④)'), true) +
+    row(tx('Read-only nodes', 'Nós read-only'), S.extra.length ? tx('keep serving reads; never become primary', 'seguem atendendo leituras; nunca viram primário') : tx('none (add in tab 4)', 'nenhum (adicione na aba 4)'), true) +
     `<div class="desc lav only-detailed" style="margin-top:8px">${tx('Timings in this animation are illustrative. The public preview docs don\'t publish an Atlas Infinite failover duration.', 'Os tempos desta animação são ilustrativos. A documentação do public preview não publica uma duração de failover para o Atlas Infinite.')}</div>`;
 
   haRenderCmp();
@@ -2273,7 +2267,7 @@ function haSetAutoHeal(enabled) {
 
 // ── Failover sequence ────────────────────────────────────────────────────────
 
-const HA_TIMELINE_STEP_MS = 4000; // Reading pace for the illustration, not a failover duration.
+const HA_TIMELINE_STEP_MS = 2500; // Reading pace for the illustration, not a failover duration.
 
 function haFailover(reason) {
   if (S.ha.failingOver) return;
@@ -2296,19 +2290,11 @@ function haFailover(reason) {
   const old = S.ha.nodes.find(n => n.role === 'PRIMARY');
   log('WARN', 'STORAGE', tx('Primary unreachable — storage layer coordinates failover (no election among compute nodes)', 'Primário inacessível — a camada de storage coordena o failover (sem eleição entre nós de compute)'));
   haRender(); syncAll();
-  let t = 0;
-  const tick = () => {
-    const elapsed = (++t * 0.5).toFixed(1);
-    $('ha-fo-timer').textContent = tx(`Animation: ${elapsed}s`, `Animação: ${elapsed}s`);
-  };
-  $('ha-fo-timer').textContent = tx('Animation: 0.0s', 'Animação: 0.0s');
-  const iv = setInterval(tick, 500); S.ha.timers.push(iv);
   later(() => { setStep('ha-steps', 0, 'done'); setStep('ha-steps', 1, 'active'); }, HA_TIMELINE_STEP_MS);
   later(() => {
     if (!S.ha.nodes.includes(sb) || sb.state !== 'UP' || S.ha.azDown[sb.az]) {
       ++haFailoverSeq;
       S.ha.failingOver = false;
-      clearInterval(iv);
       haReplaceStandby(); haRender(); syncAll();
       return;
     }
@@ -2321,7 +2307,6 @@ function haFailover(reason) {
   later(() => {
     setStep('ha-steps', 2, 'done'); setStep('ha-steps', 3, 'active');
     S.ha.failingOver = false;
-    clearInterval(iv);
     log('INFO', 'DRIVER', tx(`Driver discovered new primary ${sb.id}; retryable writes resumed`, `Driver descobriu o novo primário ${sb.id}; retryable writes retomados`));
     haRender(); syncAll();
   }, HA_TIMELINE_STEP_MS * 3);

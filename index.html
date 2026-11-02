@@ -120,11 +120,9 @@ svg text{font-family:'Lexend Deca',sans-serif}
 .banner{display:none;border-radius:8px;padding:10px 14px;font-size:12px;margin-bottom:12px;line-height:1.6;border:1.5px solid}
 .banner.show{display:block;animation:fi .25s ease}
 .banner .bt{font-weight:700;font-size:13px;margin-bottom:3px;display:flex;align-items:center;gap:6px}
-.bn-amber{background:var(--warn-bg);border-color:var(--warn);color:#78350F}
 .bn-info{background:var(--lavender);border-color:rgba(0,30,43,.35);color:var(--slate)}
 .bn-red{background:var(--bad-bg);border-color:var(--bad);color:#7F1D1D}
 .bn-green{background:var(--mist);border-color:var(--forest);color:var(--evergreen)}
-.timer{font-size:20px;font-weight:800;font-family:monospace;color:var(--warn);margin-left:auto}
 
 /* INFO TABLE */
 .irow{display:flex;justify-content:space-between;gap:10px;padding:5px 0;border-bottom:1px solid var(--border);font-size:12px}
@@ -389,7 +387,6 @@ body.view-basic .cmp tr.xr{display:none}
     <!-- ═══════════════ TAB 2: HIGH AVAILABILITY & FAILOVER ═══════════════ -->
     <div id="tab-ha" class="tc">
       <div class="tip only-detailed" data-i18n="ha.tip"><strong>Click any compute node</strong> to make it fail, or <strong>click an Availability Zone header</strong> to take the whole zone down (compute + its storage replicas). Watch how the <strong>storage layer coordinates failover</strong> — no election among compute nodes — and how the <strong>Log Service majority (2 of 3 AZs)</strong> keeps writes durable.</div>
-      <div class="banner bn-amber" id="ha-bn-fo"><div class="bt"><span data-i18n="ha.bn.fo.t">⏳ Failover in progress — storage layer is promoting the standby</span><span class="timer" id="ha-fo-timer"></span></div><div data-i18n="ha.bn.fo.d">Drivers detect the primary change and <strong>retry eligible reads and writes</strong> (retryable reads/writes). Acknowledged majority writes are already in the storage layer, so nothing has to be replayed or rolled back.</div></div>
       <div class="banner bn-info" id="ha-bn-az"><div class="bt" data-i18n="ha.bn.az.t">🛡 One Availability Zone is down — the cluster keeps serving</div><div data-i18n="ha.bn.az.d">The Log Service still holds a <strong>majority (2 of 3 zones)</strong>, so writes keep being committed durably. If the primary lived in the failed zone, the standby in another zone took over.</div></div>
       <div class="banner bn-red" id="ha-bn-q"><div class="bt" data-i18n="ha.bn.q.t">⛔ Storage-layer majority lost — writes cannot be acknowledged</div><div id="ha-bn-q-d"></div></div>
       <div class="banner bn-red" id="ha-bn-down"><div class="bt" data-i18n="ha.bn.down.t">🔴 No compute node available</div><div data-i18n="ha.bn.down.d">No compute node can serve reads or writes right now. Data stays durable in the storage layer; service resumes as soon as a compute node is available again.</div></div>
@@ -652,12 +649,12 @@ body.view-basic .cmp tr.xr{display:none}
 </div>
 
 <script src="js/state.js?v=0e69431abc"></script>
-<script src="js/i18n.js?v=3dee4cbc1d"></script>
+<script src="js/i18n.js?v=5ee0ff9667"></script>
 <script src="js/utils.js?v=e8e6622032"></script>
 <script src="js/arch-playback.js"></script>
 <script src="js/tab-arch.js?v=ce0463137f"></script>
 <script src="js/arch-simulation.js"></script>
-<script src="js/tab-ha.js?v=e1d2399f80"></script>
+<script src="js/tab-ha.js?v=7641c0e9f6"></script>
 <script src="js/tab-vs.js?v=d2952c3e7c"></script>
 <script src="js/tab-hs.js"></script>
 <script src="js/tab-bk.js?v=36bd89751f"></script>

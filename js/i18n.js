@@ -39,8 +39,6 @@ const PT = {
   'arch.cache.hit': 'Cache hit — ler da memória',
 
   'ha.tip': '<strong>Clique em qualquer nó de compute</strong> para simular uma falha, ou <strong>clique no cabeçalho de uma Availability Zone</strong> para derrubar a zona inteira (compute + réplicas de storage). Veja como a <strong>camada de storage coordena o failover</strong> — sem eleição entre os nós de compute — e como a <strong>maioria do Log Service (2 de 3 AZs)</strong> mantém as escritas duráveis.',
-  'ha.bn.fo.t': '⏳ Failover em andamento — a camada de storage está promovendo o standby',
-  'ha.bn.fo.d': 'Os drivers detectam a troca de primário e <strong>refazem leituras e escritas elegíveis</strong> (retryable reads/writes). As escritas confirmadas com majority já estão na camada de storage — nada precisa ser reaplicado nem sofrer rollback.',
   'ha.bn.az.t': '🛡 Uma Availability Zone caiu — o cluster continua atendendo',
   'ha.bn.az.d': 'O Log Service ainda tem <strong>maioria (2 de 3 zonas)</strong>, então as escritas continuam sendo confirmadas de forma durável. Se o primário estava na zona que caiu, o standby em outra zona assumiu.',
   'ha.bn.q.t': '⛔ Maioria da camada de storage perdida — escritas não podem ser confirmadas',
