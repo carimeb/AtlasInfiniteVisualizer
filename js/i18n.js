@@ -16,6 +16,8 @@ const PT = {
   'tab.hs': '④ Escala Horizontal de Leitura',
   'tab.bk': '⑤ Backup e Restore',
   'tab.lim': '⑥ Limitações do Preview e Fontes',
+  'extra.jump': 'Adicione nós read-only ou analytics na aba 4',
+  'extra.az': 'As AZs mostradas para os nós extras são ilustrativas. A documentação pública do Atlas Infinite descreve a escolha da quantidade de nós, mas não de uma AZ específica.<a class="src" data-src="D6"></a>',
 
   'arch.tip': '<strong>O Atlas Infinite separa compute de storage.</strong> Os nós de compute executam queries e transações; uma <strong>camada de storage</strong> independente e multi-AZ mantém os dados duráveis e coordena o failover. Alterne <strong>Atlas Core ↔ Atlas Infinite</strong> para comparar e clique em <strong>▶ Simular Escrita</strong> ou <strong>▶ Simular Leitura</strong> para acompanhar cada etapa.',
   'arch.topo': 'Topologia do deployment',

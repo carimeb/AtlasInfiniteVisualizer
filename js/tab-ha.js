@@ -151,8 +151,7 @@ function haRender() {
     <div class="li-leg"><div class="ld" style="background:${C.slate}"></div> Standby</div>
     <div class="li-leg"><div class="ld" style="background:#fff;border:2.5px solid ${C.slate}"></div> Read-only</div>
     <div class="li-leg"><div class="ld" style="background:#fff;border:3px solid ${C.spring}"></div> Analytics</div>
-    <div class="li-leg"><div class="ld" style="background:${C.badBg};border:2px solid ${C.bad}"></div> ${tx('Down', 'Fora')}</div>
-    <div class="li-leg" style="margin-left:auto;color:${C.t3}">${tx('Add read-only/analytics nodes in tab 4', 'Adicione nós read-only/analytics na aba 4')}</div>`;
+    <div class="li-leg"><div class="ld" style="background:${C.badBg};border:2px solid ${C.bad}"></div> ${tx('Down', 'Fora')}</div>`;
   haUpdateInfo();
 }
 

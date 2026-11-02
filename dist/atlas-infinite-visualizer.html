@@ -107,6 +107,13 @@ svg text{font-family:'Lexend Deca',sans-serif}
 .ld{width:11px;height:11px;border-radius:50%;display:inline-block;flex-shrink:0}
 .ls-sq{width:11px;height:11px;border-radius:3px;display:inline-block;flex-shrink:0}
 .ln-sw{width:16px;height:3px;border-radius:2px;display:inline-block;flex-shrink:0}
+.feature-prompt{margin:0 0 12px;padding:10px 12px;background:var(--mist);border:1px solid rgba(0,104,74,.3);border-left:4px solid var(--forest);border-radius:8px}
+.feature-prompt[hidden]{display:none}
+.feature-jump{width:100%;display:flex;justify-content:space-between;align-items:center;gap:10px;padding:0;border:0;background:none;color:var(--evergreen);font:700 14px/1.4 'Lexend Deca',sans-serif;text-align:left;cursor:pointer}
+.feature-jump:hover{text-decoration:underline}
+.feature-jump:focus-visible{outline:2px solid var(--forest);outline-offset:3px}
+.feature-arrow{font-size:18px;line-height:1}
+.feature-note{margin-top:4px;font-size:11px;line-height:1.5;color:var(--text2)}
 
 /* TIP */
 .tip{background:var(--mist);border:1px solid rgba(0,104,74,.25);border-radius:8px;padding:10px 14px;font-size:12px;color:var(--evergreen);line-height:1.7;margin-bottom:12px}
@@ -298,6 +305,10 @@ body.view-basic .cmp tr.xr{display:none}
           <div class="card">
             <div class="card-title"><span data-i18n="arch.topo">Deployment Topology</span> <span class="hl" id="arch-mode-label"></span></div>
             <div class="leg" id="arch-legend"></div>
+            <div class="feature-prompt" id="arch-extra-prompt" hidden>
+              <button class="feature-jump" type="button" onclick="switchTab('hs')"><span data-i18n="extra.jump">Add read-only or analytics nodes in tab 4</span><span class="feature-arrow" aria-hidden="true">→</span></button>
+              <div class="feature-note" data-i18n="extra.az">The AZs shown for added nodes are illustrative. Public Atlas Infinite docs describe choosing the node count, but not an individual AZ.<a class="src" data-src="D6"></a></div>
+            </div>
             <div class="arch-guide">
               <div class="sim-now">
                 <div id="arch-now" aria-live="polite"></div>
@@ -389,6 +400,10 @@ body.view-basic .cmp tr.xr{display:none}
           <div class="card">
             <div class="card-title"><span data-i18n="ha.topo">Single-region cluster across 3 Availability Zones</span> <span class="hl" id="ha-status-label"></span></div>
             <div class="leg" id="ha-legend"></div>
+            <div class="feature-prompt">
+              <button class="feature-jump" type="button" onclick="switchTab('hs')"><span data-i18n="extra.jump">Add read-only or analytics nodes in tab 4</span><span class="feature-arrow" aria-hidden="true">→</span></button>
+              <div class="feature-note" data-i18n="extra.az">The AZs shown for added nodes are illustrative. Public Atlas Infinite docs describe choosing the node count, but not an individual AZ.<a class="src" data-src="D6"></a></div>
+            </div>
             <div id="ha-svg"></div>
           </div>
           <div class="card only-detailed">
@@ -545,6 +560,7 @@ body.view-basic .cmp tr.xr{display:none}
             <div class="btn-row">
               <button class="btn btn-g btn-sm" id="hs-rm" onclick="hsRemove()" data-i18n="hs.rm">− Remove last</button>
             </div>
+            <div class="feature-note" style="margin-top:10px" data-i18n="extra.az">The AZs shown for added nodes are illustrative. Public Atlas Infinite docs describe choosing the node count, but not an individual AZ.<a class="src" data-src="D6"></a></div>
             <div class="desc only-detailed" id="hs-count-desc" style="margin-top:10px"></div>
           </div>
           <div class="card">
@@ -747,6 +763,8 @@ const PT = {
   'tab.hs': '④ Escala Horizontal de Leitura',
   'tab.bk': '⑤ Backup e Restore',
   'tab.lim': '⑥ Limitações do Preview e Fontes',
+  'extra.jump': 'Adicione nós read-only ou analytics na aba 4',
+  'extra.az': 'As AZs mostradas para os nós extras são ilustrativas. A documentação pública do Atlas Infinite descreve a escolha da quantidade de nós, mas não de uma AZ específica.<a class="src" data-src="D6"></a>',
 
   'arch.tip': '<strong>O Atlas Infinite separa compute de storage.</strong> Os nós de compute executam queries e transações; uma <strong>camada de storage</strong> independente e multi-AZ mantém os dados duráveis e coordena o failover. Alterne <strong>Atlas Core ↔ Atlas Infinite</strong> para comparar e clique em <strong>▶ Simular Escrita</strong> ou <strong>▶ Simular Leitura</strong> para acompanhar cada etapa.',
   'arch.topo': 'Topologia do deployment',
@@ -1374,6 +1392,7 @@ function archSetReadCache(value) {
 }
 
 function archRender() {
+  $('arch-extra-prompt').hidden = S.arch.mode === 'core';
   if (S.arch.mode === 'core') return archRenderCore();
   const nodes = archElectable();
   const extra = S.extra;
@@ -1460,14 +1479,14 @@ function archRender() {
   if (!extra.length) {
     s += `<rect x="400" y="108" width="362" height="66" rx="10" fill="none" stroke="rgba(0,30,43,.4)" stroke-dasharray="5 4"/>
       <text x="581" y="136" text-anchor="middle" font-size="10" font-weight="600" fill="rgba(0,30,43,.5)">${tx('+ up to 5 read-only / analytics nodes', '+ até 5 nós read-only / analytics')}</text>
-      <text class="dt" x="581" y="152" text-anchor="middle" font-size="8.5" fill="rgba(0,30,43,.4)">${tx('add them in tab ④ — they attach to storage, no initial sync', 'adicione na aba ④ — conectam no storage, sem initial sync')}</text>`;
+      <text class="dt" x="581" y="152" text-anchor="middle" font-size="8.5" fill="rgba(0,30,43,.4)">${tx('attach to storage without initial sync', 'conectam ao storage sem initial sync')}</text>`;
   } else {
     extra.forEach((n, i) => {
       const x = 440 + i * 72, y = 140;
       AP.nodes[n.id] = [x, y];
       const lbl = n.state === 'PROVISIONING' ? tx('ATTACHING', 'CONECTANDO') : n.state === 'DOWN' ? tx('DOWN', 'FORA') : (n.type === 'READ_ONLY' ? 'READ-ONLY' : 'ANALYTICS');
       s += `<g class="${n.state === 'PROVISIONING' ? 'prov' : ''}">${mdbNodeIcon(x, y, 40, n.state, n.type)}</g>
-        <text x="${x}" y="${y + 31}" text-anchor="middle" font-size="8" fill="rgba(0,30,43,.72)">${n.id}</text>
+        <text x="${x}" y="${y + 31}" text-anchor="middle" font-size="9" fill="rgba(0,30,43,.72)">${n.id} · ${AZ_NAMES[n.az]}</text>
         ${roleBadge(x, y + 36, n.type, n.state, lbl)}`;
     });
     s += `<text class="dt" x="${440 + (extra.length - 1) * 36}" y="${206}" text-anchor="middle" font-size="8" fill="#00684A">${tx('↓ read pages straight from the Page Service', '↓ leem páginas direto do Page Service')}</text>`;
@@ -2062,8 +2081,7 @@ function haRender() {
     <div class="li-leg"><div class="ld" style="background:${C.slate}"></div> Standby</div>
     <div class="li-leg"><div class="ld" style="background:#fff;border:2.5px solid ${C.slate}"></div> Read-only</div>
     <div class="li-leg"><div class="ld" style="background:#fff;border:3px solid ${C.spring}"></div> Analytics</div>
-    <div class="li-leg"><div class="ld" style="background:${C.badBg};border:2px solid ${C.bad}"></div> ${tx('Down', 'Fora')}</div>
-    <div class="li-leg" style="margin-left:auto;color:${C.t3}">${tx('Add read-only/analytics nodes in tab 4', 'Adicione nós read-only/analytics na aba 4')}</div>`;
+    <div class="li-leg"><div class="ld" style="background:${C.badBg};border:2px solid ${C.bad}"></div> ${tx('Down', 'Fora')}</div>`;
   haUpdateInfo();
 }
 
