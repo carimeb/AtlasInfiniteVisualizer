@@ -1,6 +1,6 @@
 // ─── I18N ────────────────────────────────────────────────────────────────────
-// English lives in index.html (captured on first run); Portuguese (pt-BR) below.
-// Dynamic strings use tx(en, pt) next to the code that renders them.
+// English lives in index.html (captured on first run); Portuguese and Spanish below.
+// Dynamic strings use tx(en, pt, es) next to the code that renders them.
 
 const PT = {
   'arch.simulation': 'Simulação',
@@ -47,7 +47,7 @@ const PT = {
   'ha.topo': 'Cluster single-region em 3 Availability Zones',
   'ha.cmp': 'Failover: Atlas Core vs Atlas Infinite',
   'ha.sim': 'Simular falhas',
-  'ha.btn.test': '⚡ Test Primary Failover',
+  'ha.btn.test': '⚡ Testar failover do primário',
   'btn.reset': '↺ Restaurar tudo',
   'ha.region': 'Região AWS (com suporte ao Atlas Infinite)',
   'ha.autoheal': 'O Atlas recupera nós de compute com falha (sem cópia de dados)',
@@ -113,11 +113,122 @@ const PT = {
 
 };
 
+const ES = {
+  'arch.simulation': 'Simulación',
+  'arch.cacheOnlyRead': 'Esta opción solo afecta a la simulación de lectura. No altera el recorrido de la escritura.',
+  'arch.timingNote': 'Una etapa a la vez, a tu ritmo. Los tiempos de la animación son ilustrativos.',
+  'hdr.sub': 'Material educativo, no es documentación oficial de MongoDB',
+  'hdr.badge': 'Public Preview',
+  'view.basic': 'Esencial',
+  'view.detailed': 'Detallado',
+  'tab.arch': '① Arquitectura y Recorrido de la Escritura',
+  'tab.ha': '② Alta Disponibilidad y Failover',
+  'tab.vs': '③ Escalado Vertical y Storage',
+  'tab.hs': '④ Escalado Horizontal de Lectura',
+  'tab.bk': '⑤ Backup y Restauración',
+  'tab.lim': '⑥ Limitaciones del Preview y Fuentes',
+  'extra.az': 'Las AZ mostradas para los nodos adicionales son ilustrativas. La documentación pública de Atlas Infinite describe la selección de la cantidad de nodos, pero no de una AZ específica.<a class="src" data-src="D6"></a>',
+
+  'arch.tip': '<strong>Atlas Infinite separa compute de storage.</strong> Los nodos de compute ejecutan consultas y transacciones; una <strong>capa de storage</strong> independiente y multi-AZ mantiene los datos duraderos y coordina el failover. Alterna entre <strong>Atlas Core ↔ Atlas Infinite</strong> para comparar y haz clic en <strong>▶ Simular Escritura</strong> o <strong>▶ Simular Lectura</strong> para seguir cada etapa.',
+  'arch.topo': 'Topología del despliegue',
+  'arch.ideas': 'Ideas clave',
+  'arch.cmp': 'Atlas Core vs Atlas Infinite — en paralelo',
+  'arch.edition': 'Edición de la base de datos',
+  'cc.try': 'Prueba',
+  'cc.title': 'Configuración de escritura y lectura',
+  'opt.w0': 'w: 0 — sin confirmación',
+  'opt.w1': 'w: 1 — solo el primario',
+  'opt.wmaj': 'w: "majority" (predeterminado)',
+  'opt.wnum': 'w: 3 (cualquier número ≥ 2)',
+  'opt.rclocal': 'local (predeterminado)',
+  'opt.rcsnap': 'snapshot (transacciones)',
+  'btn.simw': '▶ Simular Escritura',
+  'btn.simr': '▶ Simular Lectura',
+  'arch.steps': 'Paso a paso',
+  'arch.cache': 'Escenario de lectura',
+  'arch.cache.miss': 'Cache miss — buscar en storage',
+  'arch.cache.hit': 'Cache hit — leer de la memoria',
+
+  'ha.tip': '<strong>Haz clic en cualquier nodo de compute</strong> para simular un fallo, o <strong>en el encabezado de una Availability Zone</strong> para provocar la caída de toda la zona (compute + réplicas de storage). Observa cómo la <strong>capa de storage coordina el failover</strong> — sin elección entre los nodos de compute — y cómo la <strong>mayoría del Log Service (2 de 3 AZ)</strong> mantiene las escrituras duraderas.',
+  'ha.bn.az.t': '🛡 Una Availability Zone cayó — el clúster sigue atendiendo solicitudes',
+  'ha.bn.az.d': 'El Log Service aún tiene <strong>mayoría (2 de 3 zonas)</strong>, por lo que las escrituras siguen confirmándose de forma duradera. Si el primario estaba en la zona caída, el standby de otra zona asumió su función.',
+  'ha.bn.q.t': '⛔ Se perdió la mayoría de la capa de storage — no se pueden confirmar escrituras',
+  'ha.bn.down.t': '🔴 No hay ningún nodo de compute disponible',
+  'ha.bn.down.d': 'Ningún nodo de compute puede atender lecturas ni escrituras ahora. Los datos siguen siendo duraderos en la capa de storage; el servicio se recupera en cuanto un nodo de compute esté disponible.',
+  'ha.topo': 'Clúster en una sola región y 3 Availability Zones',
+  'ha.cmp': 'Failover: Atlas Core vs Atlas Infinite',
+  'ha.sim': 'Simular fallos',
+  'ha.btn.test': '⚡ Probar failover del primario',
+  'btn.reset': '↺ Restaurar todo',
+  'ha.region': 'Región de AWS (compatible con Atlas Infinite)',
+  'ha.autoheal': 'Atlas recupera los nodos de compute con fallos (sin copiar datos)',
+  'ha.timeline': 'Línea de tiempo del failover',
+  'ha.client': 'Lo que ve la aplicación',
+
+  'vs.tip': '<strong>Compute y storage escalan de forma independiente.</strong> El tier del clúster define el compute (y el throughput/IOPS de storage) — la capacidad de storage crece automáticamente hasta 128 TB por replica set. Elige un tier para ver un <strong>escalado vertical sin mover datos</strong> y luego genera un <strong>pico de tráfico de agentes de IA</strong> en el auto-scaler.',
+  'vs.bn.block.t': '✋ Se alcanzó el límite máximo de storage — escrituras bloqueadas, las lecturas continúan',
+  'vs.bn.block.d': 'El tamaño lógico de los datos se acercó al límite máximo de storage configurado. Atlas <strong>bloquea las escrituras, pero sigue atendiendo lecturas</strong>. Aumenta el límite (o elimina datos) para reanudar las escrituras — sin cambiar de tier.',
+  'vs.compute': 'Tier de compute — escalado vertical',
+  'vs.as': 'Auto-scaling de compute — demanda vs capacidad aprovisionada',
+  'vs.as.note': 'Modelo ilustrativo para <strong>nodos operativos (primario + standby)</strong>. <strong>Scale up</strong>: &gt;90% durante 10 min (20 min en M10/M20) o promedio de 1 hora &gt;75%. <strong>Scale down</strong>: promedios de CPU inferiores al 45% en las ventanas de 10 min y 4 h, memoria proyectada en el tier inferior por debajo del 60% en ambas ventanas y como máximo una reducción cada 24 h.<br>La simulación usa la utilización como aproximación de CPU y memoria; supone que la caché WiredTiger está por debajo del 90% y no simula las restricciones por aprovisionamiento o reinicio reciente.<br><strong>Predictivo</strong>: M30+, tras 2 semanas de historial, hasta 2 tiers antes de picos cíclicos; nunca reduce. El mínimo también debe ser M30+ cuando la reducción está habilitada, como aquí. El escalado es gradual, sin interrupciones, dentro de los tiers mín./máx. y de la clase de tier. Para ráfagas planificadas, como inserciones masivas, escala con anticipación. Las unidades de capacidad y las curvas de demanda son ilustrativas.<a class="src" data-src="D5"></a>',
+  'vs.tier': 'Tier del clúster',
+  'vs.asset': 'Configuración de auto-scaling',
+  'vs.as.on': 'Auto-scaling de compute (recomendado)',
+  'vs.as.pred': 'Scale-up predictivo',
+  'vs.min': 'Tier mínimo',
+  'vs.max': 'Tier máximo',
+  'vs.pattern': 'Patrón de tráfico',
+  'vs.p.steady': '〰 Estable',
+  'vs.p.spike': '🚀 Pico de agentes de IA',
+  'vs.p.daily': '📅 Pico diario recurrente',
+  'btn.restart': '↺ Reiniciar',
+  'vs.storage': 'Storage — crece con tus datos',
+  'vs.maxlim': 'Límite máximo de storage',
+  'vs.lim.unset': 'Sin definir → 128 TB (lógico)',
+  'vs.ingest': '＋ Ingerir datos',
+  'vs.delete': '− Eliminar datos',
+
+  'hs.tip': '<strong>Escala las lecturas en minutos.</strong> Añade hasta <strong>5 nodos read-only o analytics</strong> (máx. 7 nodos). Los nuevos nodos leen directamente de la capa de storage compartida — <strong>sin initial sync, sin copiar datos</strong>. Después cambia el <strong>read preference</strong> y las <strong>tags</strong> para ver a dónde va cada lectura.',
+  'hs.topo': 'Enrutamiento de lecturas y carga por nodo',
+  'hs.time': 'Tiempo para añadir capacidad de lectura',
+  'hs.nodes': 'Nodos read-only y analytics',
+  'hs.addro': '＋ Nodo read-only',
+  'hs.addan': '＋ Nodo analytics',
+  'hs.rm': '− Eliminar el último',
+  'hs.ops': 'App operativa',
+  'hs.tag.none': '(ninguna — cualquier nodo elegible)',
+  'hs.rps': 'Tráfico de lectura',
+  'hs.bi': 'App de Analytics / BI',
+  'hs.chart': 'Lecturas atendidas por nodo',
+  'hs.bi.on': 'Ejecutar consultas analíticas — readPreference: secondary, tags { nodeType: "ANALYTICS" }',
+
+  'bk.tip': '<strong>Los backups se ejecutan en la capa de storage</strong> — independientes del compute, por lo que no compiten con tus consultas. Atlas Infinite incluye una <strong>ventana de 24 horas de continuous cloud backup</strong> para restaurar a un punto en el tiempo, además de <strong>Additional Backup Retention</strong> (activado por defecto) para conservar snapshots hasta 3 años. Arrastra el punto de restauración y elige un destino.',
+  'bk.where': 'Dónde se realiza el backup',
+  'bk.timeline': 'Línea de tiempo de recuperación',
+  'bk.target': 'Destino de la restauración',
+  'bk.target.l': 'Restaurar en…',
+  'bk.t.same': 'El mismo clúster Atlas Infinite',
+  'bk.t.other': 'Otro clúster Infinite — misma región y organización',
+  'bk.t.region': 'Clúster Infinite en otra región',
+  'bk.t.cloud': 'Clúster en otro proveedor de nube',
+  'bk.t.project': 'Otro clúster Infinite — otro proyecto, misma organización',
+  'bk.t.org': 'Clúster en otra organización',
+  'bk.t.core': 'Un clúster Atlas Core',
+  'bk.t.older': 'Restauración con CMK — clúster Infinite con una versión anterior de MongoDB',
+  'bk.run': '▶ Simular restauración',
+  'bk.facts': 'Datos sobre backup',
+
+  'lim.tip': '<strong>Atlas Infinite está en Public Preview</strong>. Las funciones y la documentación pueden cambiar antes de GA. A continuación se muestra lo que <strong>aún no está disponible</strong> o tiene limitaciones — consulta las páginas oficiales enlazadas antes de tomar decisiones.',
+  'lim.sources': 'Fuentes oficiales usadas en este visualizador',
+  'lim.legend': 'Las etiquetas como <a class="src">D2</a> enlazan a la documentación de MongoDB; <a class="src blog">B4</a> enlazan a publicaciones de blog, comunicados de prensa o páginas de producto de MongoDB (afirmaciones del fabricante). Todo lo demás en esta herramienta es una ilustración simplificada.',
+};
+
 function applyStaticLang() {
+  const catalog = S.lang === 'pt' ? PT : S.lang === 'es' ? ES : {};
   document.querySelectorAll('[data-i18n]').forEach(el => {
     if (el.dataset.en === undefined) el.dataset.en = el.innerHTML;
     const k = el.getAttribute('data-i18n');
-    el.innerHTML = (S.lang === 'pt' && PT[k] !== undefined) ? PT[k] : el.dataset.en;
+    el.innerHTML = catalog[k] !== undefined ? catalog[k] : el.dataset.en;
   });
   // Source chips written in static HTML: <a class="src" data-src="D5"></a>
   document.querySelectorAll('a.src[data-src]').forEach(a => {
@@ -126,17 +237,23 @@ function applyStaticLang() {
     a.href = s.url; a.target = '_blank'; a.rel = 'noopener'; a.title = s.t; a.textContent = id;
     if (id[0] === 'B') a.classList.add('blog');
   });
-  document.documentElement.lang = S.lang === 'pt' ? 'pt-BR' : 'en';
-  document.querySelectorAll('.lang button').forEach(b => b.classList.toggle('on', b.dataset.lang === S.lang));
+  document.documentElement.lang = S.lang === 'pt' ? 'pt-BR' : S.lang;
+  document.querySelectorAll('.lang button').forEach(b => {
+    const selected = b.dataset.lang === S.lang;
+    b.classList.toggle('on', selected);
+    b.setAttribute('aria-pressed', String(selected));
+  });
+  document.querySelectorAll('.lang').forEach(el => el.setAttribute('aria-label', tx('Language', 'Idioma', 'Idioma')));
+  document.querySelectorAll('.view-toggle').forEach(el => el.setAttribute('aria-label', tx('View', 'Visualização', 'Vista')));
 }
 
 function setLang(lang) {
-  S.lang = lang === 'pt' ? 'pt' : 'en';
+  S.lang = ['en', 'pt', 'es'].includes(lang) ? lang : 'pt';
   const u = new URL(location.href);
   u.searchParams.set('lang', S.lang);
   try { history.replaceState(null, '', u); } catch (e) { /* file:// may refuse */ }
   applyStaticLang();
-  if (typeof rerenderAll === 'function') rerenderAll();
+  if (typeof rerenderAll === 'function') rerenderAll({ preservePlayback: true });
 }
 
 function applyView() {
@@ -164,6 +281,6 @@ function initView() {
 function initLang() {
   let lang = null;
   try { lang = new URL(location.href).searchParams.get('lang'); } catch (e) { /* ignore */ }
-  S.lang = lang === 'en' ? 'en' : 'pt';
+  S.lang = ['en', 'pt', 'es'].includes(lang) ? lang : 'pt';
   applyStaticLang();
 }

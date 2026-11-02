@@ -25,22 +25,22 @@ function vsRender(extra) {
   const e = extra || {};
   let s = `<svg viewBox="0 0 760 296" width="100%" xmlns="http://www.w3.org/2000/svg">
     <rect x="10" y="8" width="740" height="186" rx="12" fill="${C.mist}" stroke="rgba(0,104,74,.35)" stroke-width="1.4"/>
-    <text x="24" y="27" font-size="10" font-weight="800" fill="${C.forest}" letter-spacing="1">${tx('COMPUTE LAYER — SIZED BY THE CLUSTER TIER', 'CAMADA DE COMPUTE — DIMENSIONADA PELO TIER')}</text>
-    <text class="dt" x="736" y="27" text-anchor="end" font-size="9" fill="${C.t2}">${tx('tier = compute + storage throughput', 'tier = compute + throughput de storage')}</text>
+    <text x="24" y="27" font-size="10" font-weight="800" fill="${C.forest}" letter-spacing="1">${tx('COMPUTE LAYER — SIZED BY THE CLUSTER TIER', 'CAMADA DE COMPUTE — DIMENSIONADA PELO TIER', "CAPA DE COMPUTE — DIMENSIONADA POR EL NIVEL DEL CLÚSTER")}</text>
+    <text class="dt" x="736" y="27" text-anchor="end" font-size="9" fill="${C.t2}">${tx('tier = compute + storage throughput', 'tier = compute + throughput de storage', "nivel = rendimiento de compute + storage")}</text>
     <rect x="10" y="206" width="740" height="84" rx="12" fill="${C.lavender}" stroke="${C.line}" stroke-width="1.4"/>
-    <text x="24" y="225" font-size="10" font-weight="800" fill="${C.slate}" letter-spacing="1">${tx('STORAGE CAPACITY — INDEPENDENT OF THE TIER', 'CAPACIDADE DE STORAGE — INDEPENDENTE DO TIER')}</text>`;
+    <text x="24" y="225" font-size="10" font-weight="800" fill="${C.slate}" letter-spacing="1">${tx('STORAGE CAPACITY — INDEPENDENT OF THE TIER', 'CAPACIDADE DE STORAGE — INDEPENDENTE DO TIER', "CAPACIDAD DE STORAGE — INDEPENDIENTE DEL NIVEL")}</text>`;
   VP.log = [190, 256]; VP.page = [250, 256];
   s += logIcon(190, 256, false) + pageIcon(250, 256, false);
-  s += `<text x="300" y="240" font-size="11" font-weight="700" fill="${C.slate}">${fmtTB(S.vs.dataTB)} ${tx('of data', 'de dados')} · ${tx('capacity up to', 'capacidade até')} 128 TB</text>
-    <text x="300" y="257" font-size="9.5" fill="${C.t2}">${tx('Same storage capacity at every tier — changing the tier never moves data', 'Mesma capacidade de storage em todos os tiers — mudar o tier nunca move dados')}</text>
-    <text x="300" y="273" font-size="9.5" fill="${e.noMove ? C.forest : C.t3}" font-weight="${e.noMove ? 700 : 400}">${e.noMove ? tx('✓ resize in progress — 0 bytes copied', '✓ resize em andamento — 0 bytes copiados') : tx('billed by consumption', 'cobrado por consumo')}</text>`;
+  s += `<text x="300" y="240" font-size="11" font-weight="700" fill="${C.slate}">${fmtTB(S.vs.dataTB)} ${tx('of data', 'de dados', "de datos")} · ${tx('capacity up to', 'capacidade até', "capacidad de hasta")} 128 TB</text>
+    <text x="300" y="257" font-size="9.5" fill="${C.t2}">${tx('Same storage capacity at every tier — changing the tier never moves data', 'Mesma capacidade de storage em todos os tiers — mudar o tier nunca move dados', "Misma capacidad de storage en todos los niveles; cambiar de nivel nunca mueve datos")}</text>
+    <text x="300" y="273" font-size="9.5" fill="${e.noMove ? C.forest : C.t3}" font-weight="${e.noMove ? 700 : 400}">${e.noMove ? tx('✓ resize in progress — 0 bytes copied', '✓ resize em andamento — 0 bytes copiados', "✓ cambio de tamaño en curso — 0 bytes copiados") : tx('billed by consumption', 'cobrado por consumo', "facturado por consumo")}</text>`;
   const pt = e.primTier || S.vs.tier, st = e.stbyTier || S.vs.tier;
   VP.prim = [170, 100]; VP.stby = [370, 100]; VP.ghost = [600, 100];
-  s += vsBox(170, 100, pt, 'PRIMARY', 'UP', e.primLabel || tx('PRIMARY', 'PRIMÁRIO'));
+  s += vsBox(170, 100, pt, 'PRIMARY', 'UP', e.primLabel || tx('PRIMARY', 'PRIMÁRIO', "PRIMARIO"));
   s += vsBox(370, 100, st, 'STANDBY', e.stbyState || 'UP', e.stbyLabel || 'STANDBY');
-  if (e.ghost) s += vsBox(600, 100, e.ghost, 'PRIMARY', e.ghostState || 'PROVISIONING', e.ghostLabel || tx('NEW NODE', 'NOVO NÓ'));
-  else s += `<text x="600" y="96" text-anchor="middle" font-size="9.5" fill="${C.t3}">${tx('pick a tier to resize →', 'escolha um tier para redimensionar →')}</text>
-    <text x="600" y="110" text-anchor="middle" font-size="8.5" fill="${C.t3}">${tx('(ladder on the right)', '(escada à direita)')}</text>`;
+  if (e.ghost) s += vsBox(600, 100, e.ghost, 'PRIMARY', e.ghostState || 'PROVISIONING', e.ghostLabel || tx('NEW NODE', 'NOVO NÓ', "NODO NUEVO"));
+  else s += `<text x="600" y="96" text-anchor="middle" font-size="9.5" fill="${C.t3}">${tx('pick a tier to resize →', 'escolha um tier para redimensionar →', "elige un nivel para cambiar el tamaño →")}</text>
+    <text x="600" y="110" text-anchor="middle" font-size="8.5" fill="${C.t3}">${tx('(ladder on the right)', '(escada à direita)', "(escala a la derecha)")}</text>`;
   s += `</svg>`;
   $('vs-svg').innerHTML = s;
   $('vs-tier-label').textContent = `${S.vs.tier} · ${S.vs.cls === 'general' ? 'General' : 'Low-CPU'}`;
@@ -50,7 +50,7 @@ function vsRenderLadder() {
   $('vs-ladder').innerHTML = TIERS.general.map(t => {
     const allowed = vsTiers().includes(t);
     return `<button class="${t === S.vs.tier ? 'on' : ''}" ${allowed && !S.vs.resizing ? '' : 'disabled'} onclick="vsResize('${t}')">${t}</button>`;
-  }).join('') + `<button disabled title="${tx('Not available in public preview', 'Não disponível no public preview')}">M80+</button>`;
+  }).join('') + `<button disabled title="${tx('Not available in public preview', 'Não disponível no public preview', "No disponible en la vista previa pública")}">M80+</button>`;
   const opts = sel => vsTiers().map(t => `<option ${t === sel ? 'selected' : ''}>${t}</option>`).join('');
   $('vs-min').innerHTML = opts(S.vs.minTier);
   $('vs-max').innerHTML = opts(S.vs.maxTier);
@@ -59,9 +59,9 @@ function vsRenderLadder() {
 }
 
 function vsTierDesc() {
-  $('vs-tier-desc').innerHTML = `<span class="only-basic">${tx('The tier sets compute and storage throughput. Your data stays where it is, and storage capacity is the same at every tier. Resizes take under a minute.', 'O tier define o compute e o throughput de storage. Os dados ficam onde estão, e a capacidade de storage é a mesma em todos os tiers. Resizes levam menos de um minuto.')}</span><span class="only-detailed">` + tx(
+  $('vs-tier-desc').innerHTML = `<span class="only-basic">${tx('The tier sets compute and storage throughput. Your data stays where it is, and storage capacity is the same at every tier. Resizes take under a minute.', 'O tier define o compute e o throughput de storage. Os dados ficam onde estão, e a capacidade de storage é a mesma em todos os tiers. Resizes levam menos de um minuto.', "El nivel determina el rendimiento de compute y storage. Tus datos permanecen donde están y la capacidad de storage es la misma en todos los niveles. Los cambios de tamaño tardan menos de un minuto.")}</span><span class="only-detailed">` + tx(
     `Public preview tiers: <strong>General M10–M60</strong> and <strong>Low-CPU M40–M60</strong>; M80+ not available yet.${src('D1', 'D3')} The tier sets compute and storage throughput. Storage <em>capacity</em> is the same at every tier. M10/M20 have limited compute; for large datasets or many collections, pick a higher tier.${src('D4', 'D5')}<br>Resize mechanism (engineering blog): a new node launches, tails the committed oplog from the Log Service, reads pages from the already-warm Page Service, then takes over as primary while the old node steps aside — <strong>in under a minute</strong>.${src('B4')}</span>`,
-    `Tiers do public preview: <strong>General M10–M60</strong> e <strong>Low-CPU M40–M60</strong>; M80+ ainda não disponível.${src('D1', 'D3')} O tier define o compute e o throughput de storage. A <em>capacidade</em> de storage é a mesma em todos os tiers. M10/M20 têm compute limitado; para datasets grandes ou muitas coleções, use um tier maior.${src('D4', 'D5')}<br>Mecanismo de resize (blog de engenharia): um novo nó sobe, acompanha o oplog confirmado no Log Service, lê páginas do Page Service já aquecido e assume como primário enquanto o nó antigo sai — <strong>em menos de um minuto</strong>.${src('B4')}</span>`);
+    `Tiers do public preview: <strong>General M10–M60</strong> e <strong>Low-CPU M40–M60</strong>; M80+ ainda não disponível.${src('D1', 'D3')} O tier define o compute e o throughput de storage. A <em>capacidade</em> de storage é a mesma em todos os tiers. M10/M20 têm compute limitado; para datasets grandes ou muitas coleções, use um tier maior.${src('D4', 'D5')}<br>Mecanismo de resize (blog de engenharia): um novo nó sobe, acompanha o oplog confirmado no Log Service, lê páginas do Page Service já aquecido e assume como primário enquanto o nó antigo sai — <strong>em menos de um minuto</strong>.${src('B4')}</span>`, `Niveles de la vista previa pública: <strong>General M10–M60</strong> y <strong>Low-CPU M40–M60</strong>; M80 y superiores aún no están disponibles.${src('D1', 'D3')} El nivel determina el rendimiento de compute y storage. La <em>capacidad</em> de storage es la misma en todos los niveles. M10/M20 tienen compute limitado; para muchos datos o colecciones, elige un nivel superior.${src('D4', 'D5')}<br>Mecanismo de cambio de tamaño (blog de ingeniería): se inicia un nodo nuevo, sigue el oplog confirmado del Log Service, lee páginas del Page Service ya preparado y asume como primario mientras el nodo anterior se retira, <strong>en menos de un minuto</strong>.${src('B4')}</span>`);
 }
 
 function vsSetClass(cls) {
@@ -72,7 +72,7 @@ function vsSetClass(cls) {
   if (!t.includes(S.vs.minTier)) S.vs.minTier = t[0];
   if (!t.includes(S.vs.maxTier)) S.vs.maxTier = t[t.length - 1];
   if (vsIdx(S.vs.minTier) > vsIdx(S.vs.tier)) S.vs.minTier = S.vs.tier;
-  log('INFO', 'TIER', tx(`Tier class: ${cls === 'general' ? 'General (M10–M60)' : 'Low-CPU (M40–M60)'} — auto-scaling stays within one class`, `Classe de tier: ${cls === 'general' ? 'General (M10–M60)' : 'Low-CPU (M40–M60)'} — o auto-scaling fica dentro de uma classe`));
+  log('INFO', 'TIER', tx(`Tier class: ${cls === 'general' ? 'General (M10–M60)' : 'Low-CPU (M40–M60)'} — auto-scaling stays within one class`, `Classe de tier: ${cls === 'general' ? 'General (M10–M60)' : 'Low-CPU (M40–M60)'} — o auto-scaling fica dentro de uma classe`, `Clase de nivel: ${cls === 'general' ? 'General (M10–M60)' : 'Low-CPU (M40–M60)'} — el escalado automático se mantiene dentro de una misma clase`));
   vsRenderLadder(); vsRender(); vsDrawChart();
 }
 
@@ -80,21 +80,21 @@ async function vsResize(target, auto) {
   if (S.vs.resizing || target === S.vs.tier) return;
   if (!auto && S.vs.running && S.vs.asOn) {
     S.vs.running = false; vsSetTimer();
-    log('INFO', 'AUTOSCALE', tx('Simulation paused so the manual resize isn\'t overridden — press ▶ Run to resume', 'Simulação pausada para o resize manual não ser sobrescrito — clique em ▶ Rodar para retomar'));
+    log('INFO', 'AUTOSCALE', tx('Simulation paused so the manual resize isn\'t overridden — press ▶ Run to resume', 'Simulação pausada para o resize manual não ser sobrescrito — clique em ▶ Rodar para retomar', "Simulación en pausa para conservar el cambio manual de tamaño; pulsa ▶ Ejecutar para continuar"));
   }
   const from = S.vs.tier, up = vsIdx(target) > vsIdx(from);
   S.vs.resizing = true;
   vsRenderLadder();
   const steps = [
-    tx(`<b>New ${target} node launches.</b> No data to copy — it starts empty.`, `<b>Novo nó ${target} sobe.</b> Nenhum dado a copiar — começa vazio.`),
-    tx('<b>Catches up from the Log Service.</b> Tails the committed oplog to reach the present.', '<b>Atualiza-se pelo Log Service.</b> Acompanha o oplog confirmado até chegar ao presente.'),
-    tx('<b>Reads pages from the warm Page Service.</b> No cold cache, no disk restore.', '<b>Lê páginas do Page Service aquecido.</b> Sem cache frio, sem restore de disco.'),
-    tx(`<b>Takes over as primary.</b> The old ${from} node steps aside; drivers follow the new primary.`, `<b>Assume como primário.</b> O nó ${from} antigo sai; os drivers seguem o novo primário.`),
-    tx(`<b>Standby at ${target} too.</b> The tier applies to every node in the cluster.`, `<b>Standby também em ${target}.</b> O tier vale para todos os nós do cluster.`),
+    tx(`<b>New ${target} node launches.</b> No data to copy — it starts empty.`, `<b>Novo nó ${target} sobe.</b> Nenhum dado a copiar — começa vazio.`, `<b>Se inicia un nodo ${target} nuevo.</b> No hay datos que copiar: empieza vacío.`),
+    tx('<b>Catches up from the Log Service.</b> Tails the committed oplog to reach the present.', '<b>Atualiza-se pelo Log Service.</b> Acompanha o oplog confirmado até chegar ao presente.', "<b>Se pone al día desde el Log Service.</b> Sigue el oplog confirmado hasta alcanzar el estado actual."),
+    tx('<b>Reads pages from the warm Page Service.</b> No cold cache, no disk restore.', '<b>Lê páginas do Page Service aquecido.</b> Sem cache frio, sem restore de disco.', "<b>Lee páginas del Page Service ya preparado.</b> Sin caché fría ni restauración de disco."),
+    tx(`<b>Takes over as primary.</b> The old ${from} node steps aside; drivers follow the new primary.`, `<b>Assume como primário.</b> O nó ${from} antigo sai; os drivers seguem o novo primário.`, `<b>Asume como primario.</b> El nodo ${from} anterior se retira; los drivers siguen al nuevo primario.`),
+    tx(`<b>Standby at ${target} too.</b> The tier applies to every node in the cluster.`, `<b>Standby também em ${target}.</b> O tier vale para todos os nós do cluster.`, `<b>Standby también en ${target}.</b> El nivel se aplica a todos los nodos del clúster.`),
   ];
-  $('vs-tier-desc').innerHTML = `<ol class="steps" id="vs-steps"></ol><div style="margin-top:6px;font-size:10.5px;color:var(--text3)">${tx('Sequence per the MongoDB engineering blog; animation speed is illustrative.', 'Sequência conforme o blog de engenharia da MongoDB; a velocidade da animação é ilustrativa.')}${src('B4')}</div>`;
+  $('vs-tier-desc').innerHTML = `<ol class="steps" id="vs-steps"></ol><div style="margin-top:6px;font-size:10.5px;color:var(--text3)">${tx('Sequence per the MongoDB engineering blog; animation speed is illustrative.', 'Sequência conforme o blog de engenharia da MongoDB; a velocidade da animação é ilustrativa.', "Secuencia según el blog de ingeniería de MongoDB; la velocidad de animación es ilustrativa.")}${src('B4')}</div>`;
   renderSteps('vs-steps', steps);
-  log('INFO', 'TIER', tx(`${auto ? 'Auto-scaling' : 'Manual'} resize ${from} → ${target} (${up ? 'scale up' : 'scale down'}) — compute only, storage untouched`, `Resize ${auto ? 'automático' : 'manual'} ${from} → ${target} (${up ? 'scale up' : 'scale down'}) — só compute, storage intocado`));
+  log('INFO', 'TIER', tx(`${auto ? 'Auto-scaling' : 'Manual'} resize ${from} → ${target} (${up ? 'scale up' : 'scale down'}) — compute only, storage untouched`, `Resize ${auto ? 'automático' : 'manual'} ${from} → ${target} (${up ? 'scale up' : 'scale down'}) — só compute, storage intocado`, `Cambio de tamaño ${auto ? 'automático' : 'manual'} ${from} → ${target} (${up ? 'aumentar' : 'reducir'}) — solo compute, sin cambios en el storage`));
   const sp = auto ? 0.5 : 1;
   setStep('vs-steps', 0, 'active');
   vsRender({ ghost: target, noMove: true, stbyTier: from });
@@ -104,20 +104,20 @@ async function vsResize(target, auto) {
   setStep('vs-steps', 1, 'done'); setStep('vs-steps', 2, 'active');
   await Promise.all([0, 1, 2].map(i => sleep(i * 140).then(() => fly('vs-svg', [[VP.page[0], VP.page[1] - 20], [VP.page[0], 170], [VP.ghost[0], 150], VP.ghost], 850 * sp, C.forest, 5))));
   setStep('vs-steps', 2, 'done'); setStep('vs-steps', 3, 'active');
-  vsRender({ ghost: target, ghostState: 'UP', ghostLabel: tx('READY', 'PRONTO'), noMove: true, stbyTier: from });
+  vsRender({ ghost: target, ghostState: 'UP', ghostLabel: tx('READY', 'PRONTO', "LISTO"), noMove: true, stbyTier: from });
   await sleep(500 * sp);
   S.vs.tier = target;
-  vsRender({ primTier: target, stbyTier: from, ghost: from, ghostState: 'PROVISIONING', ghostLabel: tx('STEPPING ASIDE', 'SAINDO'), noMove: true });
-  flash('vs-svg', VP.prim[0] + 100, 62, tx('new primary', 'novo primário'), C.forest);
+  vsRender({ primTier: target, stbyTier: from, ghost: from, ghostState: 'PROVISIONING', ghostLabel: tx('STEPPING ASIDE', 'SAINDO', "RETIRÁNDOSE"), noMove: true });
+  flash('vs-svg', VP.prim[0] + 100, 62, tx('new primary', 'novo primário', "nuevo primario"), C.forest);
   await sleep(900 * sp);
   setStep('vs-steps', 3, 'done'); setStep('vs-steps', 4, 'active');
-  vsRender({ primTier: target, stbyTier: target, stbyState: 'PROVISIONING', stbyLabel: tx('RESIZING', 'REDIMENSIONANDO'), noMove: true });
+  vsRender({ primTier: target, stbyTier: target, stbyState: 'PROVISIONING', stbyLabel: tx('RESIZING', 'REDIMENSIONANDO', "CAMBIANDO TAMAÑO"), noMove: true });
   await sleep(900 * sp);
   setStep('vs-steps', 4, 'done');
   S.vs.resizing = false;
   vsRender();
   vsRenderLadder();
-  log('SUCCESS', 'TIER', tx(`Cluster now ${target} — no data moved, storage unchanged (${fmtTB(S.vs.dataTB)})`, `Cluster agora em ${target} — nenhum dado movido, storage inalterado (${fmtTB(S.vs.dataTB)})`));
+  log('SUCCESS', 'TIER', tx(`Cluster now ${target} — no data moved, storage unchanged (${fmtTB(S.vs.dataTB)})`, `Cluster agora em ${target} — nenhum dado movido, storage inalterado (${fmtTB(S.vs.dataTB)})`, `Clúster ahora en ${target}: sin mover datos, storage sin cambios (${fmtTB(S.vs.dataTB)})`));
 }
 
 // ── Auto-scaling simulation ──────────────────────────────────────────────────
@@ -131,15 +131,15 @@ function vsSetAS() {
   $('vs-pred-on').disabled = !S.vs.asOn;
   vsRenderLadder();
   log('INFO', 'AUTOSCALE', S.vs.asOn
-    ? tx(`Compute auto-scaling ON · ${mn} ↔ ${mx} · predictive ${S.vs.predOn ? 'ON' : 'OFF'}`, `Auto-scaling de compute ATIVO · ${mn} ↔ ${mx} · preditivo ${S.vs.predOn ? 'ATIVO' : 'DESATIVADO'}`)
-    : tx('Compute auto-scaling OFF — the tier only changes when you change it', 'Auto-scaling de compute DESATIVADO — o tier só muda quando você muda'));
+    ? tx(`Compute auto-scaling ON · ${mn} ↔ ${mx} · predictive ${S.vs.predOn ? 'ON' : 'OFF'}`, `Auto-scaling de compute ATIVO · ${mn} ↔ ${mx} · preditivo ${S.vs.predOn ? 'ATIVO' : 'DESATIVADO'}`, `Escalado automático de compute ACTIVADO · ${mn} ↔ ${mx} · predictivo ${S.vs.predOn ? 'ACTIVADO' : 'DESACTIVADO'}`)
+    : tx('Compute auto-scaling OFF — the tier only changes when you change it', 'Auto-scaling de compute DESATIVADO — o tier só muda quando você muda', "Escalado automático de compute DESACTIVADO: el nivel solo cambia cuando tú lo cambias"));
   vsDrawChart();
 }
 
 function vsPattern(p) {
   S.vs.pattern = p;
   S.vs.spikeAt = S.vs.t + 3;
-  log('INFO', 'WORKLOAD', { steady: tx('Steady workload', 'Workload estável'), spike: tx('AI agents burst — sudden, unpredictable spikes', 'Rajada de agentes de IA — picos repentinos e imprevisíveis'), daily: tx('Recurring daily peak — a cyclical pattern predictive auto-scaling can learn', 'Pico diário recorrente — padrão cíclico que o auto-scaling preditivo aprende') }[p]);
+  log('INFO', 'WORKLOAD', { steady: tx('Steady workload', 'Workload estável', "Carga estable"), spike: tx('AI agents burst — sudden, unpredictable spikes', 'Rajada de agentes de IA — picos repentinos e imprevisíveis', "Ráfaga de agentes de IA: picos repentinos e impredecibles"), daily: tx('Recurring daily peak — a cyclical pattern predictive auto-scaling can learn', 'Pico diário recorrente — padrão cíclico que o auto-scaling preditivo aprende', "Pico diario recurrente: un patrón cíclico que el escalado automático predictivo puede aprender") }[p]);
 }
 
 // Demand in relative capacity units (illustrative). 1 tick = 10 simulated minutes.
@@ -175,7 +175,7 @@ function vsEvaluate(v, d) {
   const small = vsIdx(v.tier) < vsIdx('M30');
   const why = [];
   let ev = null;
-  if (!v.asOn || i < 0) return { ev, why: [tx('Auto-scaling is off — the tier changes only when you change it.', 'Auto-scaling desligado — o tier só muda quando você muda.')] };
+  if (!v.asOn || i < 0) return { ev, why: [tx('Auto-scaling is off — the tier changes only when you change it.', 'Auto-scaling desligado — o tier só muda quando você muda.', "El escalado automático está desactivado: el nivel solo cambia cuando tú lo cambias.")] };
 
   // Predictive scale-up: this simulation enables down-scaling, so min tier must also be M30+.
   // Atlas needs ≥2 weeks of history, compressed to 2 simulated days here.
@@ -189,8 +189,8 @@ function vsEvaluate(v, d) {
   }));
   let predSoon = false;
   if (v.predOn) {
-    if (!predEligible) why.push(tx('Predictive: needs tier M30+. Down-scaling is enabled in this simulation, so the minimum tier must also be M30+.', 'Preditivo: exige tier M30+. A redução automática está habilitada nesta simulação, então o tier mínimo também deve ser M30+.'));
-    else if (!learned) why.push(tx(`Predictive: learning the pattern — ${Math.round(50 * v.t / VS_DAY)}% (Atlas needs 2 weeks of activity; compressed to 2 simulated days here).`, `Preditivo: aprendendo o padrão — ${Math.round(50 * v.t / VS_DAY)}% (o Atlas exige 2 semanas de atividade; aqui comprimido para 2 dias simulados).`));
+    if (!predEligible) why.push(tx('Predictive: needs tier M30+. Down-scaling is enabled in this simulation, so the minimum tier must also be M30+.', 'Preditivo: exige tier M30+. A redução automática está habilitada nesta simulação, então o tier mínimo também deve ser M30+.', "Predictivo: necesita nivel M30 o superior. La reducción está habilitada en esta simulación, por lo que el nivel mínimo también debe ser M30 o superior."));
+    else if (!learned) why.push(tx(`Predictive: learning the pattern — ${Math.round(50 * v.t / VS_DAY)}% (Atlas needs 2 weeks of activity; compressed to 2 simulated days here).`, `Preditivo: aprendendo o padrão — ${Math.round(50 * v.t / VS_DAY)}% (o Atlas exige 2 semanas de atividade; aqui comprimido para 2 dias simulados).`, `Predictivo: aprendiendo el patrón — ${Math.round(50 * v.t / VS_DAY)}% (Atlas necesita 2 semanas de actividad; aquí se comprimen en 2 días simulados).`));
     else {
       const fc = forecast([6, 8, 10, 12]);
       const upNow = fc / TIER_CAP[v.tier] > 0.75 && i < hi;
@@ -201,8 +201,8 @@ function vsEvaluate(v, d) {
         while (j < hi && j < i + 2 && fc / TIER_CAP[tiers[j]] > 0.75) j++;
         if (j > i) ev = { kind: 'pred', to: tiers[j] };
       }
-      why.push(upNow ? tx(`Predictive: yesterday's pattern forecasts ${Math.round(100 * fc / TIER_CAP[v.tier])}% in 1–2 h → scale up ahead of it (max 2 tiers).`, `Preditivo: o padrão de ontem prevê ${Math.round(100 * fc / TIER_CAP[v.tier])}% em 1–2 h → escala antes (máx. 2 tiers).`)
-        : tx('Predictive: no forecast spike in the next 1–2 h.', 'Preditivo: nenhum pico previsto nas próximas 1–2 h.'));
+      why.push(upNow ? tx(`Predictive: yesterday's pattern forecasts ${Math.round(100 * fc / TIER_CAP[v.tier])}% in 1–2 h → scale up ahead of it (max 2 tiers).`, `Preditivo: o padrão de ontem prevê ${Math.round(100 * fc / TIER_CAP[v.tier])}% em 1–2 h → escala antes (máx. 2 tiers).`, `Predictivo: el patrón de ayer prevé un ${Math.round(100 * fc / TIER_CAP[v.tier])}% en 1–2 h → aumentar por adelantado (máximo 2 niveles).`)
+        : tx('Predictive: no forecast spike in the next 1–2 h.', 'Preditivo: nenhum pico previsto nas próximas 1–2 h.', "Predictivo: no se prevén picos en las próximas 1–2 h."));
     }
   }
 
@@ -211,8 +211,8 @@ function vsEvaluate(v, d) {
   const fast = small ? hist.slice(-2).every(p => vsUtil(p) > 0.9) && hist.length >= 2 && sinceUp >= 2 : vsUtil(cur) > 0.9 && sinceUp >= 1;
   const slow = hist.length >= 6 && vsAvg(hist, 6, vsUtil) > 0.75 && sinceUp >= 6;
   if (!ev && i < hi && (fast || slow)) ev = { kind: 'up', to: tiers[i + 1] };
-  why.push(i >= hi ? tx(`Scale-up: already at the maximum tier (${v.maxTier}).`, `Scale-up: já no tier máximo (${v.maxTier}).`)
-    : tx(`Scale-up: utilization ${Math.round(100 * vsUtil(cur))}% — triggers above 90% for ${small ? '20' : '10'} min or a 1-hour average above 75%.`, `Scale-up: utilização ${Math.round(100 * vsUtil(cur))}% — dispara acima de 90% por ${small ? '20' : '10'} min ou média de 1 hora acima de 75%.`));
+  why.push(i >= hi ? tx(`Scale-up: already at the maximum tier (${v.maxTier}).`, `Scale-up: já no tier máximo (${v.maxTier}).`, `Aumento: ya está en el nivel máximo (${v.maxTier}).`)
+    : tx(`Scale-up: utilization ${Math.round(100 * vsUtil(cur))}% — triggers above 90% for ${small ? '20' : '10'} min or a 1-hour average above 75%.`, `Scale-up: utilização ${Math.round(100 * vsUtil(cur))}% — dispara acima de 90% por ${small ? '20' : '10'} min ou média de 1 hora acima de 75%.`, `Aumento: utilización del ${Math.round(100 * vsUtil(cur))}% — se activa por encima del 90% durante ${small ? '20' : '10'} min o con un promedio de 1 hora superior al 75%.`));
 
   // Operational-node scale-down: 10-minute and 4-hour windows, not the analytics 24-hour rule.
   if (i > lo) {
@@ -221,15 +221,15 @@ function vsEvaluate(v, d) {
     const cpu10 = vsUtil(cur), cpu4h = vsAvg(hist, 24, vsUtil);
     const proj10 = d / lower, proj4h = vsAvg(hist, 24, p => p.d / lower);
     const block = [];
-    if (sinceDown < VS_DAY) block.push(tx(`last scale-down ${Math.floor(sinceDown / 6)}h ago (max 1 per 24 h)`, `último scale-down há ${Math.floor(sinceDown / 6)}h (máx. 1 a cada 24 h)`));
-    if (hist.length < 24) block.push(tx(`only ${hist.length * 10} min of the required 4 h of history`, `somente ${hist.length * 10} min das 4 h de histórico exigidas`));
-    if (cpu10 >= 0.45 || cpu4h >= 0.45) block.push(tx(`average CPU ${Math.round(100 * cpu10)}% / ${Math.round(100 * cpu4h)}% (10 min / 4 h; both need < 45%)`, `CPU média ${Math.round(100 * cpu10)}% / ${Math.round(100 * cpu4h)}% (10 min / 4 h; ambas precisam < 45%)`));
-    if (proj10 >= 0.6 || proj4h >= 0.6) block.push(tx(`projected utilization proxy on ${tiers[i - 1]}: ${Math.round(100 * proj10)}% / ${Math.round(100 * proj4h)}% (10 min / 4 h; both need < 60%)`, `proxy de utilização projetada no ${tiers[i - 1]}: ${Math.round(100 * proj10)}% / ${Math.round(100 * proj4h)}% (10 min / 4 h; ambos precisam < 60%)`));
-    if (predSoon) block.push(tx('a predictive scale-up is expected within 1 h', 'um scale-up preditivo é esperado em até 1 h'));
+    if (sinceDown < VS_DAY) block.push(tx(`last scale-down ${Math.floor(sinceDown / 6)}h ago (max 1 per 24 h)`, `último scale-down há ${Math.floor(sinceDown / 6)}h (máx. 1 a cada 24 h)`, `última reducción hace ${Math.floor(sinceDown / 6)} h (máximo 1 cada 24 h)`));
+    if (hist.length < 24) block.push(tx(`only ${hist.length * 10} min of the required 4 h of history`, `somente ${hist.length * 10} min das 4 h de histórico exigidas`, `solo ${hist.length * 10} min de las 4 h de historial necesarias`));
+    if (cpu10 >= 0.45 || cpu4h >= 0.45) block.push(tx(`average CPU ${Math.round(100 * cpu10)}% / ${Math.round(100 * cpu4h)}% (10 min / 4 h; both need < 45%)`, `CPU média ${Math.round(100 * cpu10)}% / ${Math.round(100 * cpu4h)}% (10 min / 4 h; ambas precisam < 45%)`, `CPU media ${Math.round(100 * cpu10)}% / ${Math.round(100 * cpu4h)}% (10 min / 4 h; ambas deben ser < 45%)`));
+    if (proj10 >= 0.6 || proj4h >= 0.6) block.push(tx(`projected utilization proxy on ${tiers[i - 1]}: ${Math.round(100 * proj10)}% / ${Math.round(100 * proj4h)}% (10 min / 4 h; both need < 60%)`, `proxy de utilização projetada no ${tiers[i - 1]}: ${Math.round(100 * proj10)}% / ${Math.round(100 * proj4h)}% (10 min / 4 h; ambos precisam < 60%)`, `estimación de utilización en ${tiers[i - 1]}: ${Math.round(100 * proj10)}% / ${Math.round(100 * proj4h)}% (10 min / 4 h; ambas deben ser < 60%)`));
+    if (predSoon) block.push(tx('a predictive scale-up is expected within 1 h', 'um scale-up preditivo é esperado em até 1 h', "se prevé un aumento predictivo en menos de 1 h"));
     if (!ev && !block.length) ev = { kind: 'down', to: tiers[i - 1] };
-    why.push(block.length ? tx(`Scale-down to ${tiers[i - 1]} waits: ${block.join('; ')}.`, `Scale-down para ${tiers[i - 1]} aguarda: ${block.join('; ')}.`)
-      : tx(`Scale-down: all conditions met → ${tiers[i - 1]}.`, `Scale-down: todas as condições atendidas → ${tiers[i - 1]}.`));
-  } else why.push(tx(`Scale-down: already at the minimum tier (${v.minTier}).`, `Scale-down: já no tier mínimo (${v.minTier}).`));
+    why.push(block.length ? tx(`Scale-down to ${tiers[i - 1]} waits: ${block.join('; ')}.`, `Scale-down para ${tiers[i - 1]} aguarda: ${block.join('; ')}.`, `La reducción a ${tiers[i - 1]} espera: ${block.join('; ')}.`)
+      : tx(`Scale-down: all conditions met → ${tiers[i - 1]}.`, `Scale-down: todas as condições atendidas → ${tiers[i - 1]}.`, `Reducción: se cumplen todas las condiciones → ${tiers[i - 1]}.`));
+  } else why.push(tx(`Scale-down: already at the minimum tier (${v.minTier}).`, `Scale-down: já no tier mínimo (${v.minTier}).`, `Reducción: ya está en el nivel mínimo (${v.minTier}).`));
   return { ev, why };
 }
 
@@ -245,9 +245,9 @@ function vsTick(force) {
     const from = v.tier, tier = ev.to;
     if (ev.kind === 'down') v.lastDown = v.t; else v.lastUp = v.t;
     const msg = {
-      pred: tx(`Predictive scale-up ${from} → ${tier}: forecast from the historical pattern`, `Scale-up preditivo ${from} → ${tier}: previsão a partir do padrão histórico`),
-      up: tx(`Reactive scale-up ${from} → ${tier}: sustained high utilization (rolling, no downtime)`, `Scale-up reativo ${from} → ${tier}: utilização alta sustentada (rolling, sem downtime)`),
-      down: tx(`Reactive scale-down ${from} → ${tier}: low CPU averages over 10 min and 4 h`, `Scale-down reativo ${from} → ${tier}: médias de CPU baixas em 10 min e 4 h`),
+      pred: tx(`Predictive scale-up ${from} → ${tier}: forecast from the historical pattern`, `Scale-up preditivo ${from} → ${tier}: previsão a partir do padrão histórico`, `Aumento predictivo ${from} → ${tier}: previsión a partir del patrón histórico`),
+      up: tx(`Reactive scale-up ${from} → ${tier}: sustained high utilization (rolling, no downtime)`, `Scale-up reativo ${from} → ${tier}: utilização alta sustentada (rolling, sem downtime)`, `Aumento reactivo ${from} → ${tier}: utilización alta sostenida (gradual, sin interrupciones)`),
+      down: tx(`Reactive scale-down ${from} → ${tier}: low CPU averages over 10 min and 4 h`, `Scale-down reativo ${from} → ${tier}: médias de CPU baixas em 10 min e 4 h`, `Reducción reactiva ${from} → ${tier}: promedios de CPU bajos durante 10 min y 4 h`),
     }[ev.kind];
     log(ev.kind === 'down' ? 'INFO' : 'SUCCESS', 'AUTOSCALE', msg);
     v.tier = tier;
@@ -266,7 +266,7 @@ function vsToggleRun() {
 function vsSetTimer() {
   clearInterval(vsTimer);
   if (S.vs.running) vsTimer = setInterval(vsTick, 150);
-  $('vs-run').textContent = S.vs.running ? tx('⏸ Pause', '⏸ Pausar') : tx('▶ Run', '▶ Rodar');
+  $('vs-run').textContent = S.vs.running ? tx('⏸ Pause', '⏸ Pausar', "⏸ Pausar") : tx('▶ Run', '▶ Rodar', "▶ Ejecutar");
 }
 function vsResetSim() {
   Object.assign(S.vs, { series: [], hist: [], t: 0, lastUp: -999, lastDown: -999, spikeAt: 9, why: [] });
@@ -292,9 +292,9 @@ function vsDrawChart() {
   });
   [24, 18, 12, 6, 0].forEach(h => {
     const xx = L + (1 - h / 24) * (W - L - R);
-    s += `<text x="${xx}" y="${H - 12}" text-anchor="${h === 24 ? 'start' : h === 0 ? 'end' : 'middle'}" font-size="9" fill="rgba(255,255,255,.55)">${h ? '−' + h + 'h' : tx('now', 'agora')}</text>`;
+    s += `<text x="${xx}" y="${H - 12}" text-anchor="${h === 24 ? 'start' : h === 0 ? 'end' : 'middle'}" font-size="9" fill="rgba(255,255,255,.55)">${h ? '−' + h + 'h' : tx('now', 'agora', "ahora")}</text>`;
   });
-  s += `<text x="${(L + W - R) / 2}" y="${H - 1}" text-anchor="middle" font-size="8.5" fill="rgba(255,255,255,.4)">${tx('simulated time (1 day ≈ 22 s) · relative capacity units (illustrative)', 'tempo simulado (1 dia ≈ 22 s) · unidades relativas de capacidade (ilustrativo)')}</text>`;
+  s += `<text x="${(L + W - R) / 2}" y="${H - 1}" text-anchor="middle" font-size="8.5" fill="rgba(255,255,255,.4)">${tx('simulated time (1 day ≈ 22 s) · relative capacity units (illustrative)', 'tempo simulado (1 dia ≈ 22 s) · unidades relativas de capacidade (ilustrativo)', "tiempo simulado (1 día ≈ 22 s) · unidades de capacidad relativa (ilustrativas)")}</text>`;
   if (ser.length > 1) {
     const off = VS_WIN - ser.length;
     // saturation band (demand above capacity)
@@ -327,7 +327,7 @@ function vsDrawChart() {
     let ly1 = y(lp.d), ly2 = y(TIER_CAP[lp.tier]);
     if (Math.abs(ly1 - ly2) < 14) { if (ly1 < ly2) { ly1 -= 7; ly2 += 7; } else { ly1 += 7; ly2 -= 7; } }
     s += `<circle cx="${x(VS_WIN - 1)}" cy="${y(lp.d)}" r="4" fill="${C.sky}" stroke="${C.slate}" stroke-width="2"/>
-      <text x="${W - R + 10}" y="${ly1 + 3}" font-size="10" font-weight="700" fill="${C.white}">${tx('Demand', 'Demanda')} ${lp.d.toFixed(1)}</text>
+      <text x="${W - R + 10}" y="${ly1 + 3}" font-size="10" font-weight="700" fill="${C.white}">${tx('Demand', 'Demanda', "Demanda")} ${lp.d.toFixed(1)}</text>
       <text x="${W - R + 10}" y="${ly2 + 3}" font-size="10" font-weight="700" fill="${C.white}">${lp.tier} · ${TIER_CAP[lp.tier]}</text>`;
     VP.chart = { ser, off, x, y, L, R, W, H, T, B };
   }
@@ -336,13 +336,13 @@ function vsDrawChart() {
   $('vs-chart').innerHTML = s;
   const cur = ser[ser.length - 1];
   const util = cur ? Math.round(100 * cur.d / TIER_CAP[cur.tier]) : 0;
-  $('vs-as-label').textContent = cur ? `${S.vs.tier} · ${tx('utilization', 'utilização')} ${util}%` : '';
+  $('vs-as-label').textContent = cur ? `${S.vs.tier} · ${tx('utilization', 'utilização', "utilización")} ${util}%` : '';
   $('vs-why').innerHTML = (S.vs.why || []).map(w => `<div>• ${w}</div>`).join('');
   $('vs-chart-legend').innerHTML = `
-    <div class="li-leg"><span class="ln-sw" style="background:${C.sky}"></span> ${tx('Demand (AI agents & apps)', 'Demanda (agentes de IA e apps)')}</div>
-    <div class="li-leg"><span class="ln-sw" style="background:${C.spring}"></span> ${tx('Provisioned compute (tier)', 'Compute provisionado (tier)')}</div>
-    <div class="li-leg"><span class="ls-sq" style="background:rgba(0,210,255,.35)"></span> ${tx('Demand above capacity', 'Demanda acima da capacidade')}</div>
-    <div class="li-leg">▲ ${tx('scale event', 'evento de scaling')} · ⚡ ${tx('predictive', 'preditivo')}</div>`;
+    <div class="li-leg"><span class="ln-sw" style="background:${C.sky}"></span> ${tx('Demand (AI agents & apps)', 'Demanda (agentes de IA e apps)', "Demanda (agentes de IA y aplicaciones)")}</div>
+    <div class="li-leg"><span class="ln-sw" style="background:${C.spring}"></span> ${tx('Provisioned compute (tier)', 'Compute provisionado (tier)', "Compute aprovisionado (nivel)")}</div>
+    <div class="li-leg"><span class="ls-sq" style="background:rgba(0,210,255,.35)"></span> ${tx('Demand above capacity', 'Demanda acima da capacidade', "Demanda superior a la capacidad")}</div>
+    <div class="li-leg">▲ ${tx('scale event', 'evento de scaling', "evento de escalado")} · ⚡ ${tx('predictive', 'preditivo', "predictivo")}</div>`;
 }
 
 function vsHover(evt) {
@@ -356,8 +356,8 @@ function vsHover(evt) {
   const cr = $('vs-cross'); cr.setAttribute('x1', px); cr.setAttribute('x2', px); cr.style.display = '';
   const tip = $('vs-chart-tip');
   const mins = (c.ser.length - 1 - c.ser.indexOf(p)) * 10;
-  tip.innerHTML = `<b>${mins ? '−' + (mins >= 60 ? Math.floor(mins / 60) + 'h' + (mins % 60 ? String(mins % 60).padStart(2, '0') : '') : mins + 'min') : tx('now', 'agora')}</b><br>
-    ${tx('Demand', 'Demanda')}: <b>${p.d.toFixed(1)}</b><br>${tx('Tier', 'Tier')}: <b>${p.tier}</b> (${TIER_CAP[p.tier]})<br>${tx('Utilization', 'Utilização')}: <b>${Math.round(100 * p.d / TIER_CAP[p.tier])}%</b>${p.ev ? `<br>${p.ev.kind === 'pred' ? tx('⚡ predictive scale-up', '⚡ scale-up preditivo') : p.ev.kind === 'up' ? tx('▲ reactive scale-up', '▲ scale-up reativo') : tx('▼ reactive scale-down', '▼ scale-down reativo')} → ${p.ev.to}` : ''}`;
+  tip.innerHTML = `<b>${mins ? '−' + (mins >= 60 ? Math.floor(mins / 60) + 'h' + (mins % 60 ? String(mins % 60).padStart(2, '0') : '') : mins + 'min') : tx('now', 'agora', "ahora")}</b><br>
+    ${tx('Demand', 'Demanda', "Demanda")}: <b>${p.d.toFixed(1)}</b><br>${tx('Tier', 'Tier', "Nivel")}: <b>${p.tier}</b> (${TIER_CAP[p.tier]})<br>${tx('Utilization', 'Utilização', "Utilización")}: <b>${Math.round(100 * p.d / TIER_CAP[p.tier])}%</b>${p.ev ? `<br>${p.ev.kind === 'pred' ? tx('⚡ predictive scale-up', '⚡ scale-up preditivo', "⚡ aumento predictivo") : p.ev.kind === 'up' ? tx('▲ reactive scale-up', '▲ scale-up reativo', "▲ aumento reactivo") : tx('▼ reactive scale-down', '▼ scale-down reativo', "▼ reducción reactiva")} → ${p.ev.to}` : ''}`;
   tip.style.display = 'block';
   const wrap = $('vs-chart-wrap').getBoundingClientRect();
   let left = evt.clientX - wrap.left + 14;
@@ -375,17 +375,17 @@ function vsStorageState() {
 
 function vsSetLimit(v) {
   S.vs.limitTB = +v;
-  log('INFO', 'STORAGE', tx(`Max storage limit set to ${fmtTB(S.vs.limitTB)} (can be raised or lowered any time)`, `Limite máximo de storage definido em ${fmtTB(S.vs.limitTB)} (pode subir ou descer a qualquer momento)`));
+  log('INFO', 'STORAGE', tx(`Max storage limit set to ${fmtTB(S.vs.limitTB)} (can be raised or lowered any time)`, `Limite máximo de storage definido em ${fmtTB(S.vs.limitTB)} (pode subir ou descer a qualquer momento)`, `Límite máximo de storage establecido en ${fmtTB(S.vs.limitTB)} (se puede aumentar o reducir en cualquier momento)`));
   vsUpdateStorage(true);
 }
 
 function vsIngest(dir) {
   const before = vsStorageState();
-  if (dir > 0 && before.blocked) { log('ERROR', 'STORAGE', tx('Write rejected — cluster is at its max storage limit (reads still served)', 'Escrita rejeitada — cluster no limite máximo de storage (leituras seguem atendidas)')); return; }
+  if (dir > 0 && before.blocked) { log('ERROR', 'STORAGE', tx('Write rejected — cluster is at its max storage limit (reads still served)', 'Escrita rejeitada — cluster no limite máximo de storage (leituras seguem atendidas)', "Escritura rechazada: el clúster alcanzó su límite máximo de storage (las lecturas siguen)")); return; }
   const step = Math.max(S.vs.limitTB * 0.09, 0.05);
   S.vs.dataTB = clamp(S.vs.dataTB + dir * step, 0.05, S.vs.limitTB * 0.975);
-  log('INFO', 'STORAGE', dir > 0 ? tx(`Ingested data — logical size ${fmtTB(S.vs.dataTB)}; storage grew automatically, no tier change`, `Dados ingeridos — tamanho lógico ${fmtTB(S.vs.dataTB)}; storage cresceu sozinho, sem mudar de tier`)
-    : tx(`Deleted data — logical size ${fmtTB(S.vs.dataTB)}`, `Dados apagados — tamanho lógico ${fmtTB(S.vs.dataTB)}`));
+  log('INFO', 'STORAGE', dir > 0 ? tx(`Ingested data — logical size ${fmtTB(S.vs.dataTB)}; storage grew automatically, no tier change`, `Dados ingeridos — tamanho lógico ${fmtTB(S.vs.dataTB)}; storage cresceu sozinho, sem mudar de tier`, `Datos incorporados: tamaño lógico ${fmtTB(S.vs.dataTB)}; el storage creció automáticamente, sin cambiar de nivel`)
+    : tx(`Deleted data — logical size ${fmtTB(S.vs.dataTB)}`, `Dados apagados — tamanho lógico ${fmtTB(S.vs.dataTB)}`, `Datos eliminados: tamaño lógico ${fmtTB(S.vs.dataTB)}`));
   vsUpdateStorage(true);
 }
 
@@ -395,12 +395,12 @@ function vsUpdateStorage(announce) {
   $('vs-gauge-fill').style.width = Math.min(100, st.r * 100) + '%';
   $('vs-gauge-fill').style.background = st.blocked ? C.bad : st.alert ? C.warn : C.forest;
   $('vs-gauge-90').style.left = '90%';
-  $('vs-gauge-lbl').textContent = st.r > 1 ? `${fmtTB(S.vs.dataTB)} / ${fmtTB(S.vs.limitTB)} — ${tx('over the limit', 'acima do limite')}` : `${fmtTB(S.vs.dataTB)} / ${fmtTB(S.vs.limitTB)} (${Math.round(st.r * 100)}%)`;
-  $('vs-gauge-max').textContent = tx(`90% alert ▲ · max ${fmtTB(S.vs.limitTB)}`, `alerta 90% ▲ · máx ${fmtTB(S.vs.limitTB)}`);
+  $('vs-gauge-lbl').textContent = st.r > 1 ? `${fmtTB(S.vs.dataTB)} / ${fmtTB(S.vs.limitTB)} — ${tx('over the limit', 'acima do limite', "por encima del límite")}` : `${fmtTB(S.vs.dataTB)} / ${fmtTB(S.vs.limitTB)} (${Math.round(st.r * 100)}%)`;
+  $('vs-gauge-max').textContent = tx(`90% alert ▲ · max ${fmtTB(S.vs.limitTB)}`, `alerta 90% ▲ · máx ${fmtTB(S.vs.limitTB)}`, `alerta del 90% ▲ · máximo ${fmtTB(S.vs.limitTB)}`);
   $('vs-bn-block').classList.toggle('show', st.blocked);
-  if (announce && st.alert && !prevA) log('WARN', 'ALERT', tx('Atlas alert: logical data size exceeded 90% of the max storage limit', 'Alerta do Atlas: tamanho lógico dos dados passou de 90% do limite máximo de storage'));
-  if (announce && st.blocked && !prevB) log('ERROR', 'STORAGE', tx('Approaching max storage limit — writes blocked, reads still served', 'Aproximando do limite máximo de storage — escritas bloqueadas, leituras seguem atendidas'));
-  if (announce && !st.blocked && prevB) log('SUCCESS', 'STORAGE', tx('Below the limit again — writes resume', 'Abaixo do limite novamente — escritas retomadas'));
+  if (announce && st.alert && !prevA) log('WARN', 'ALERT', tx('Atlas alert: logical data size exceeded 90% of the max storage limit', 'Alerta do Atlas: tamanho lógico dos dados passou de 90% do limite máximo de storage', "Alerta de Atlas: el tamaño lógico de los datos superó el 90% del límite máximo de storage"));
+  if (announce && st.blocked && !prevB) log('ERROR', 'STORAGE', tx('Approaching max storage limit — writes blocked, reads still served', 'Aproximando do limite máximo de storage — escritas bloqueadas, leituras seguem atendidas', "Cerca del límite máximo de storage: escrituras bloqueadas, las lecturas siguen"));
+  if (announce && !st.blocked && prevB) log('SUCCESS', 'STORAGE', tx('Below the limit again — writes resume', 'Abaixo do limite novamente — escritas retomadas', "Por debajo del límite otra vez: se reanudan las escrituras"));
   S.vs.wasAlert = st.alert; S.vs.wasBlocked = st.blocked;
   $('vs-storage-desc').innerHTML = tx(
     `• Atlas <strong>expands storage as data grows</strong> — no disk size to pick, no storage auto-scaling to configure.${src('D4')}<br>
@@ -412,6 +412,6 @@ function vsUpdateStorage(announce) {
      • <strong>Limite máximo de storage</strong> opcional: 1 GB – 128 TB de dados <em>lógicos</em> (tamanho descomprimido de coleções + índices); sem definir = até 128 TB. Ajustável a qualquer momento.${src('D4', 'D3')}<br>
      • Alerta padrão acima de <strong>90%</strong>; perto do limite o Atlas <strong>bloqueia escritas mas continua atendendo leituras</strong>.${src('D4')}<br>
      • Preview: o Atlas <strong>pode limitar (throttle) escritas antes</strong> do limite para preservar a disponibilidade.${src('D4')}<br>
-     • Storage é uma dimensão de cobrança própria, medida pelos dados armazenados; replica sets comportam <strong>10× os dados</strong> de replica sets do Atlas Core (afirmação do fabricante).${src('D4', 'B6', 'B3')}`);
+     • Storage é uma dimensão de cobrança própria, medida pelos dados armazenados; replica sets comportam <strong>10× os dados</strong> de replica sets do Atlas Core (afirmação do fabricante).${src('D4', 'B6', 'B3')}`, `• Atlas <strong>amplía el storage a medida que crecen los datos</strong>: no hay tamaño de disco que elegir ni escalado automático de storage que configurar.${src('D4')}<br> • <strong>Límite máximo de storage</strong> opcional: 1 GB–128 TB de datos <em>lógicos</em> (tamaño sin comprimir de colecciones + índices); sin configurar = hasta 128 TB. Se puede ajustar en cualquier momento.${src('D4', 'D3')}<br> • Alerta predeterminada por encima del <strong>90%</strong>; cerca del límite, Atlas <strong>bloquea las escrituras pero sigue atendiendo lecturas</strong>.${src('D4')}<br> • Vista previa: Atlas <strong>puede limitar la velocidad de las escrituras antes</strong> del límite para preservar la disponibilidad.${src('D4')}<br> • El storage se factura por separado, según los datos almacenados; los replica sets admiten <strong>10 veces más datos</strong> que los de Atlas Core (afirmación del proveedor).${src('D4', 'B6', 'B3')}`);
   if (S.tab === 'vs' && !S.vs.resizing) vsRender();
 }

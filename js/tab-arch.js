@@ -11,8 +11,8 @@ function archSetMode(mode) {
   renderSteps('arch-steps', []);
   $('arch-steps-label').textContent = '';
   log('INFO', 'ARCH', mode === 'core'
-    ? tx('Showing Atlas Core — compute and storage coupled on every node', 'Exibindo Atlas Core — compute e storage acoplados em cada nó')
-    : tx('Showing Atlas Infinite — compute and storage as independent layers', 'Exibindo Atlas Infinite — compute e storage como camadas independentes'));
+    ? tx('Showing Atlas Core — compute and storage coupled on every node', 'Exibindo Atlas Core — compute e storage acoplados em cada nó', "Mostrando Atlas Core — compute y storage unidos en cada nodo")
+    : tx('Showing Atlas Infinite — compute and storage as independent layers', 'Exibindo Atlas Infinite — compute e storage como camadas independentes', "Mostrando Atlas Infinite — compute y storage como capas independientes"));
 }
 
 function archElectable() { return S.ha.nodes; }
@@ -33,18 +33,18 @@ function archRender() {
 
   // Bands
   s += `<rect x="20" y="64" width="760" height="156" rx="12" fill="#E3FCF7" stroke="rgba(0,104,74,.35)" stroke-width="1.5"/>
-    <text x="34" y="83" font-size="10" font-weight="800" fill="#00684A" letter-spacing="1">${tx('COMPUTE LAYER', 'CAMADA DE COMPUTE')}</text>
-    <text class="dt" x="766" y="83" text-anchor="end" font-size="9" fill="rgba(0,30,43,.72)">${tx('queries & transactions · scales by tier and by node count', 'queries e transações · escala por tier e por número de nós')}</text>
+    <text x="34" y="83" font-size="10" font-weight="800" fill="#00684A" letter-spacing="1">${tx('COMPUTE LAYER', 'CAMADA DE COMPUTE', "CAPA DE COMPUTE")}</text>
+    <text class="dt" x="766" y="83" text-anchor="end" font-size="9" fill="rgba(0,30,43,.72)">${tx('queries & transactions · scales by tier and by node count', 'queries e transações · escala por tier e por número de nós', "consultas y transacciones · escala por nivel y por cantidad de nodos")}</text>
     <rect x="20" y="238" width="760" height="332" rx="12" fill="#F9EBFF" stroke="rgba(0,30,43,.16)" stroke-width="1.5"/>
-    <text x="34" y="257" font-size="10" font-weight="800" fill="#001E2B" letter-spacing="1">${tx('STORAGE LAYER', 'CAMADA DE STORAGE')}</text>
-    <text class="dt" x="766" y="257" text-anchor="end" font-size="9" fill="rgba(0,30,43,.72)">${tx('durability · replication · failover coordination · backup', 'durabilidade · replicação · coordenação de failover · backup')}</text>`;
+    <text x="34" y="257" font-size="10" font-weight="800" fill="#001E2B" letter-spacing="1">${tx('STORAGE LAYER', 'CAMADA DE STORAGE', "CAPA DE STORAGE")}</text>
+    <text class="dt" x="766" y="257" text-anchor="end" font-size="9" fill="rgba(0,30,43,.72)">${tx('durability · replication · failover coordination · backup', 'durabilidade · replicação · coordenação de failover · backup', "durabilidad · replicación · coordinación del failover · backup")}</text>`;
 
   // AZ columns
   AP.log = []; AP.materializer = []; AP.page = []; AP.s3 = [];
   for (let i = 0; i < 3; i++) {
     const x0 = 40 + i * 250, down = !archUpAZ(i);
     s += `<rect x="${x0}" y="266" width="220" height="210" rx="9" fill="${down ? '#FDF0EE' : '#fff'}" stroke="${down ? 'rgba(192,57,43,.5)' : 'rgba(0,30,43,.28)'}" stroke-dasharray="5 4" stroke-width="1.3"/>
-      <text x="${x0 + 110}" y="283" text-anchor="middle" font-size="9.5" font-weight="700" fill="${down ? '#C0392B' : '#001E2B'}">${AZ_NAMES[i]}${down ? ' — ' + tx('DOWN', 'FORA') : ''}</text>`;
+      <text x="${x0 + 110}" y="283" text-anchor="middle" font-size="9.5" font-weight="700" fill="${down ? '#C0392B' : '#001E2B'}">${AZ_NAMES[i]}${down ? ' — ' + tx('DOWN', 'FORA', "CAÍDO") : ''}</text>`;
     const lx = x0 + 56, px = x0 + 164, ly = 327, my = 405;
     AP.log.push([lx, ly]); AP.materializer.push([lx, my]); AP.page.push([px, my]); AP.s3.push([lx, 501]);
     s += `<line data-flow="log-materializer" x1="${lx}" y1="${ly + 22}" x2="${lx}" y2="${my - 17}" stroke="#00684A" stroke-width="1.5" class="repl-slow" marker-end="url(#arch-async-arrow)"/>
@@ -55,23 +55,23 @@ function archRender() {
       <text x="${lx}" y="${my + 10}" text-anchor="middle" font-size="9" font-weight="700" fill="#001E2B">Materializer</text>`;
     s += logIcon(lx, ly, down) + pageIcon(px, my, down);
     s += `<text x="${lx + 29}" y="323" font-size="9" font-weight="700" fill="#001E2B">Log Service</text>
-      <text class="dt" x="${lx + 29}" y="337" font-size="8" fill="rgba(0,30,43,.5)">${tx('consensus replica', 'réplica de consenso')}</text>
-      <text class="dt" x="${lx + 8}" y="373" font-size="8" fill="#00684A">${tx('tails log', 'lê o log')}</text>
+      <text class="dt" x="${lx + 29}" y="337" font-size="8" fill="rgba(0,30,43,.5)">${tx('consensus replica', 'réplica de consenso', "réplica de consenso")}</text>
+      <text class="dt" x="${lx + 8}" y="373" font-size="8" fill="#00684A">${tx('tails log', 'lê o log', "sigue el log")}</text>
       <text class="dt" x="${lx + 69}" y="394" text-anchor="middle" font-size="8" fill="#00684A">phylog</text>
       <text x="${px}" y="438" text-anchor="middle" font-size="9" font-weight="700" fill="#00684A">Page Service</text>
-      <text class="dt" x="${px}" y="450" text-anchor="middle" font-size="8" fill="rgba(0,30,43,.5)">${tx('materialized pages', 'páginas materializadas')}</text>
+      <text class="dt" x="${px}" y="450" text-anchor="middle" font-size="8" fill="rgba(0,30,43,.5)">${tx('materialized pages', 'páginas materializadas', "páginas materializadas")}</text>
       <text class="dt" x="${lx + 8}" y="469" font-size="8" fill="#00684A">oplog + phylog</text>`;
   }
   // Object storage
   s += `<rect x="40" y="492" width="720" height="66" rx="10" fill="#FFFFFF" stroke="rgba(0,30,43,.28)" stroke-width="1.5"/>
     ${bucketIcon(72, 509)}
     <text x="122" y="516" font-size="11" font-weight="700" fill="#001E2B">Object Index Service → Amazon S3</text>
-    <text class="dt" x="122" y="532" font-size="9" fill="#001E2B">${tx('durability floor — designed for eleven nines of durability', 'piso de durabilidade — projetado para onze noves de durabilidade')} (blog)</text>
-    <text class="dt" x="122" y="546" font-size="8.5" fill="#00684A">${tx('backups, restores and point-in-time recovery also run here, independent of compute', 'backups, restores e point-in-time recovery também rodam aqui, independentes do compute')}</text>`;
+    <text class="dt" x="122" y="532" font-size="9" fill="#001E2B">${tx('durability floor — designed for eleven nines of durability', 'piso de durabilidade — projetado para onze noves de durabilidade', "base de durabilidad — diseñada para ofrecer once nueves de durabilidad")} (blog)</text>
+    <text class="dt" x="122" y="546" font-size="8.5" fill="#00684A">${tx('backups, restores and point-in-time recovery also run here, independent of compute', 'backups, restores e point-in-time recovery também rodam aqui, independentes do compute', "los backups, las restauraciones y la recuperación a un punto en el tiempo también se ejecutan aquí, independientes del compute")}</text>`;
 
   // Compute nodes
   AP.client = [400, 46];
-  s += clientBox(400, 8, 300, tx('CLIENT APP', 'APLICAÇÃO CLIENTE'), tx('MongoDB driver — same drivers & APIs as Atlas Core', 'driver MongoDB — mesmos drivers e APIs do Atlas Core'));
+  s += clientBox(400, 8, 300, tx('CLIENT APP', 'APLICAÇÃO CLIENTE', "APLICACIÓN CLIENTE"), tx('MongoDB driver — same drivers & APIs as Atlas Core', 'driver MongoDB — mesmos drivers e APIs do Atlas Core', "driver de MongoDB — mismos drivers y API que Atlas Core"));
   AP.nodes = {};
   const ex = [130, 280];
   nodes.forEach((n, i) => { AP.nodes[n.id] = [ex[i], 140]; });
@@ -96,13 +96,13 @@ function archRender() {
     if (li !== undefined) {
       const [lx, ly] = AP.log[li];
       s += `<path data-connection="log-standby" d="M${lx + 8},${ly - 20} C${lx + 8},${ly - 70} ${sx},${sy + 90} ${sx},${sy + 59}" fill="none" stroke="#00684A" stroke-width="1.3" stroke-dasharray="2 4" stroke-linecap="round" opacity=".8"/>
-        <text class="dt" x="${sx + 46}" y="${sy + 34}" font-size="8" fill="#00684A" font-weight="600">${tx('tails the oplog', 'acompanha o oplog')}</text>`;
+        <text class="dt" x="${sx + 46}" y="${sy + 34}" font-size="8" fill="#00684A" font-weight="600">${tx('tails the oplog', 'acompanha o oplog', "sigue el oplog")}</text>`;
     }
   }
   nodes.forEach(n => {
     const [x, y] = AP.nodes[n.id];
     const role = n.role, st = n.state;
-    const roleLbl = st === 'DOWN' ? tx('DOWN', 'FORA') : (role === 'PRIMARY' ? tx('PRIMARY', 'PRIMÁRIO') : 'STANDBY');
+    const roleLbl = st === 'DOWN' ? tx('DOWN', 'FORA', "CAÍDO") : (role === 'PRIMARY' ? tx('PRIMARY', 'PRIMÁRIO', "PRIMARIO") : 'STANDBY');
     s += `<g class="${role === 'PRIMARY' && st === 'UP' ? 'gnod' : ''}">${mdbNodeIcon(x, y, 50, st, role)}</g>
       <text x="${x}" y="${y + 38}" text-anchor="middle" font-size="9" fill="rgba(0,30,43,.72)">${n.id} · ${AZ_NAMES[n.az]}</text>
       ${roleBadge(x, y + 44, role, st, roleLbl)}`;
@@ -110,22 +110,22 @@ function archRender() {
   // Extra nodes (read-only / analytics)
   if (!extra.length) {
     s += `<rect x="400" y="108" width="362" height="66" rx="10" fill="none" stroke="rgba(0,30,43,.4)" stroke-dasharray="5 4"/>
-      <text x="581" y="136" text-anchor="middle" font-size="10" font-weight="600" fill="rgba(0,30,43,.5)">${tx('+ up to 5 read-only / analytics nodes', '+ até 5 nós read-only / analytics')}</text>
-      <text x="581" y="152" text-anchor="middle" font-size="10.5" fill="rgba(0,30,43,.4)">${tx('add them in tab 4 — they attach to storage, no initial sync', 'adicione na aba 4 — conectam no storage, sem initial sync')}</text>`;
+      <text x="581" y="136" text-anchor="middle" font-size="10" font-weight="600" fill="rgba(0,30,43,.5)">${tx('+ up to 5 read-only / analytics nodes', '+ até 5 nós read-only / analytics', "+ hasta 5 nodos read-only / analytics")}</text>
+      <text x="581" y="152" text-anchor="middle" font-size="10.5" fill="rgba(0,30,43,.4)">${tx('add them in tab 4 — they attach to storage, no initial sync', 'adicione na aba 4 — conectam no storage, sem initial sync', "agrégalos en la pestaña 4 — se conectan al storage, sin sincronización inicial")}</text>`;
   } else {
     extra.forEach((n, i) => {
       const x = 440 + i * 72, y = 140;
       AP.nodes[n.id] = [x, y];
-      const lbl = n.state === 'PROVISIONING' ? tx('ATTACHING', 'CONECTANDO') : n.state === 'DOWN' ? tx('DOWN', 'FORA') : (n.type === 'READ_ONLY' ? 'READ-ONLY' : 'ANALYTICS');
+      const lbl = n.state === 'PROVISIONING' ? tx('ATTACHING', 'CONECTANDO', "CONECTANDO") : n.state === 'DOWN' ? tx('DOWN', 'FORA', "CAÍDO") : (n.type === 'READ_ONLY' ? 'READ-ONLY' : 'ANALYTICS');
       s += `<g class="${n.state === 'PROVISIONING' ? 'prov' : ''}">${mdbNodeIcon(x, y, 40, n.state, n.type)}</g>
         <text x="${x}" y="${y + 31}" text-anchor="middle" font-size="9" fill="rgba(0,30,43,.72)">${n.id} · ${AZ_NAMES[n.az]}</text>
         ${roleBadge(x, y + 36, n.type, n.state, lbl)}`;
     });
-    s += `<text class="dt" x="${440 + (extra.length - 1) * 36}" y="${206}" text-anchor="middle" font-size="8" fill="#00684A">${tx('↓ read pages straight from the Page Service', '↓ leem páginas direto do Page Service')}</text>`;
+    s += `<text class="dt" x="${440 + (extra.length - 1) * 36}" y="${206}" text-anchor="middle" font-size="8" fill="#00684A">${tx('↓ read pages straight from the Page Service', '↓ leem páginas direto do Page Service', "↓ lee páginas directamente del Page Service")}</text>`;
   }
   s += `</svg>`;
   $('arch-svg').innerHTML = s;
-  $('arch-mode-label').textContent = tx('Atlas Infinite · disaggregated', 'Atlas Infinite · desagregado');
+  $('arch-mode-label').textContent = tx('Atlas Infinite · disaggregated', 'Atlas Infinite · desagregado', "Atlas Infinite · desagregado");
   $('arch-legend').innerHTML = archLegend();
 }
 
@@ -133,9 +133,9 @@ function archRenderCore() {
   let s = `<svg viewBox="0 0 800 520" width="100%" xmlns="http://www.w3.org/2000/svg">
     <defs><marker id="arch-core-repl-arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#001E2B"/></marker></defs>`;
   s += `<rect x="20" y="64" width="760" height="380" rx="12" fill="#FAFBFC" stroke="rgba(0,30,43,.14)" stroke-width="1.5"/>
-    <text x="34" y="83" font-size="10" font-weight="800" fill="#001E2B" letter-spacing="1">${tx('REPLICA SET — EVERY NODE = COMPUTE + ITS OWN STORAGE', 'REPLICA SET — CADA NÓ = COMPUTE + SEU PRÓPRIO STORAGE')}</text>`;
+    <text x="34" y="83" font-size="10" font-weight="800" fill="#001E2B" letter-spacing="1">${tx('REPLICA SET — EVERY NODE = COMPUTE + ITS OWN STORAGE', 'REPLICA SET — CADA NÓ = COMPUTE + SEU PRÓPRIO STORAGE', "REPLICA SET — CADA NODO = COMPUTE + SU PROPIO STORAGE")}</text>`;
   AP.client = [400, 46];
-  s += clientBox(400, 8, 230, tx('CLIENT APP', 'APLICAÇÃO CLIENTE'), tx('MongoDB driver', 'driver MongoDB'));
+  s += clientBox(400, 8, 230, tx('CLIENT APP', 'APLICAÇÃO CLIENTE', "APLICACIÓN CLIENTE"), tx('MongoDB driver', 'driver MongoDB', "driver de MongoDB"));
   const xs = [160, 400, 640];
   AP.core = xs.map(x => [x, 175]);
   AP.coreDisk = xs.map(x => [x, 300]);
@@ -146,37 +146,37 @@ function archRenderCore() {
   s += `<line x1="400" y1="46" x2="160" y2="146" stroke="#00684A" stroke-width="1.5" stroke-dasharray="5 4" opacity=".55"/>`;
   s += `<path data-connection="core-oplog" d="M190,175 H278 V118 H640 V146" fill="none" stroke="#001E2B" stroke-width="1.5" stroke-linejoin="round" class="repl" marker-end="url(#arch-core-repl-arrow)"/>
         <path data-connection="core-oplog" d="M400,118 V146" fill="none" stroke="#001E2B" stroke-width="1.5" class="repl" marker-end="url(#arch-core-repl-arrow)"/>
-        <text x="460" y="107" text-anchor="middle" font-size="9" font-weight="600" fill="#001E2B">${tx('oplog replication', 'replicação do oplog')}</text>`;
+        <text x="460" y="107" text-anchor="middle" font-size="9" font-weight="600" fill="#001E2B">${tx('oplog replication', 'replicação do oplog', "replicación del oplog")}</text>`;
   xs.forEach((x, i) => {
     s += `<g class="${i === 0 ? 'gnod' : ''}">${mdbNodeIcon(x, 175, 50, 'UP', i === 0 ? 'PRIMARY' : 'SECONDARY')}</g>`;
-    s += roleBadge(x, 208, i === 0 ? 'PRIMARY' : 'SECONDARY', 'UP', i === 0 ? tx('PRIMARY', 'PRIMÁRIO') : tx('SECONDARY', 'SECUNDÁRIO'));
+    s += roleBadge(x, 208, i === 0 ? 'PRIMARY' : 'SECONDARY', 'UP', i === 0 ? tx('PRIMARY', 'PRIMÁRIO', "PRIMARIO") : tx('SECONDARY', 'SECUNDÁRIO', "SECUNDARIO"));
     s += `<line x1="${x}" y1="226" x2="${x}" y2="270" stroke="#001E2B" stroke-width="1.3"/>`;
-    s += diskIcon(x, 300, 110, 46, tx('full data copy', 'cópia completa'));
-    s += `<text class="dt" x="${x}" y="356" text-anchor="middle" font-size="8.5" fill="rgba(0,30,43,.5)">${tx('local volume — sized by tier', 'volume local — dimensionado pelo tier')}</text>`;
+    s += diskIcon(x, 300, 110, 46, tx('full data copy', 'cópia completa', "copia completa de los datos"));
+    s += `<text class="dt" x="${x}" y="356" text-anchor="middle" font-size="8.5" fill="rgba(0,30,43,.5)">${tx('local volume — sized by tier', 'volume local — dimensionado pelo tier', "volumen local — dimensionado por nivel")}</text>`;
   });
   s += `<rect x="40" y="396" width="720" height="36" rx="8" fill="rgba(0,30,43,.05)"/>
-    <text x="400" y="411" text-anchor="middle" font-size="9.5" fill="#001E2B" font-weight="600">${tx('Each node stores and replicates a full copy of the data', 'Cada nó armazena e replica uma cópia completa dos dados')}</text>
-    <text x="400" y="425" text-anchor="middle" font-size="8.5" fill="rgba(0,30,43,.72)">${tx('Adding or replacing a node means copying data (initial sync) · failover = election by majority vote', 'Adicionar ou substituir um nó implica copiar dados (initial sync) · failover = eleição por voto majoritário')}</text>`;
-  s += `<text class="dt" x="400" y="472" text-anchor="middle" font-size="10" fill="rgba(0,30,43,.72)">${tx('Atlas Core runs on AWS, Azure and Google Cloud with the full Atlas feature set —', 'O Atlas Core roda em AWS, Azure e Google Cloud com o conjunto completo de recursos do Atlas —')}</text>
-    <text class="dt" x="400" y="487" text-anchor="middle" font-size="10" fill="rgba(0,30,43,.72)">${tx('multi-region, multi-cloud, sharding, Atlas Search and Vector Search.', 'multi-region, multi-cloud, sharding, Atlas Search e Vector Search.')}</text>`;
+    <text x="400" y="411" text-anchor="middle" font-size="9.5" fill="#001E2B" font-weight="600">${tx('Each node stores and replicates a full copy of the data', 'Cada nó armazena e replica uma cópia completa dos dados', "Cada nodo almacena y replica una copia completa de los datos")}</text>
+    <text x="400" y="425" text-anchor="middle" font-size="8.5" fill="rgba(0,30,43,.72)">${tx('Adding or replacing a node means copying data (initial sync) · failover = election by majority vote', 'Adicionar ou substituir um nó implica copiar dados (initial sync) · failover = eleição por voto majoritário', "Agregar o reemplazar un nodo requiere copiar datos (sincronización inicial) · failover = elección por mayoría de votos")}</text>`;
+  s += `<text class="dt" x="400" y="472" text-anchor="middle" font-size="10" fill="rgba(0,30,43,.72)">${tx('Atlas Core runs on AWS, Azure and Google Cloud with the full Atlas feature set —', 'O Atlas Core roda em AWS, Azure e Google Cloud com o conjunto completo de recursos do Atlas —', "Atlas Core funciona en AWS, Azure y Google Cloud con todas las funciones de Atlas —")}</text>
+    <text class="dt" x="400" y="487" text-anchor="middle" font-size="10" fill="rgba(0,30,43,.72)">${tx('multi-region, multi-cloud, sharding, Atlas Search and Vector Search.', 'multi-region, multi-cloud, sharding, Atlas Search e Vector Search.', "múltiples regiones, múltiples nubes, sharding, Atlas Search y Vector Search.")}</text>`;
   s += `</svg>`;
   $('arch-svg').innerHTML = s;
-  $('arch-mode-label').textContent = tx('Atlas Core · coupled', 'Atlas Core · acoplado');
+  $('arch-mode-label').textContent = tx('Atlas Core · coupled', 'Atlas Core · acoplado', "Atlas Core · integrado");
   $('arch-legend').innerHTML = `
-    <div class="li-leg"><div class="ld" style="background:#00ED64;border:2px solid #001E2B"></div> ${tx('Primary', 'Primário')}</div>
-    <div class="li-leg"><div class="ld" style="background:#001E2B"></div> ${tx('Secondary', 'Secundário')}</div>
-    <div class="li-leg"><div class="ls-sq" style="background:#fff;border:1.5px solid #001E2B;border-top:4px solid #00ED64"></div> ${tx('Local storage (full copy per node)', 'Storage local (cópia completa por nó)')}</div>`;
+    <div class="li-leg"><div class="ld" style="background:#00ED64;border:2px solid #001E2B"></div> ${tx('Primary', 'Primário', "Primario")}</div>
+    <div class="li-leg"><div class="ld" style="background:#001E2B"></div> ${tx('Secondary', 'Secundário', "Secundario")}</div>
+    <div class="li-leg"><div class="ls-sq" style="background:#fff;border:1.5px solid #001E2B;border-top:4px solid #00ED64"></div> ${tx('Local storage (full copy per node)', 'Storage local (cópia completa por nó)', "Storage local (copia completa por nodo)")}</div>`;
 }
 
 function archLegend() {
   return `
-    <div class="li-leg"><div class="ld" style="background:#00ED64;border:2px solid #001E2B"></div> ${tx('Primary', 'Primário')}</div>
+    <div class="li-leg"><div class="ld" style="background:#00ED64;border:2px solid #001E2B"></div> ${tx('Primary', 'Primário', "Primario")}</div>
     <div class="li-leg"><div class="ld" style="background:#001E2B"></div> Standby</div>
     <div class="li-leg"><div class="ld" style="background:#fff;border:2.5px solid #001E2B"></div> Read-only</div>
     <div class="li-leg"><div class="ld" style="background:#fff;border:3px solid #00ED64"></div> Analytics</div>
-    <div class="li-leg"><div class="ld" style="background:#00ED64;border:1.5px solid #001E2B;width:9px;height:9px"></div> ${tx('write', 'escrita')}</div>
-    <div class="li-leg"><div class="ld" style="background:#001E2B;width:9px;height:9px"></div> ${tx('read', 'leitura')}</div>
-    <div class="li-leg"><div class="ld" style="background:#00684A;border:1.5px solid #001E2B;width:9px;height:9px"></div> ACK / ${tx('result', 'resultado')}</div>`;
+    <div class="li-leg"><div class="ld" style="background:#00ED64;border:1.5px solid #001E2B;width:9px;height:9px"></div> ${tx('write', 'escrita', "escritura")}</div>
+    <div class="li-leg"><div class="ld" style="background:#001E2B;width:9px;height:9px"></div> ${tx('read', 'leitura', "lectura")}</div>
+    <div class="li-leg"><div class="ld" style="background:#00684A;border:1.5px solid #001E2B;width:9px;height:9px"></div> ACK / ${tx('result', 'resultado', "resultado")}</div>`;
 }
 
 // ── Side panel texts ─────────────────────────────────────────────────────────
@@ -187,36 +187,36 @@ function archUpdateInfo() {
   $('arch-cache').value = S.arch.readCache;
   $('arch-mode-desc').innerHTML = core
     ? tx(`<strong>Atlas Core</strong> (the existing Atlas offering, now renamed) keeps compute and storage together on each node of a replica set. Best for steady, predictable workloads; full Atlas feature set.${src('B2', 'B7')}`,
-         `<strong>Atlas Core</strong> (a oferta atual do Atlas, agora renomeada) mantém compute e storage juntos em cada nó do replica set. Ideal para workloads estáveis e previsíveis; conjunto completo de recursos do Atlas.${src('B2', 'B7')}`)
+         `<strong>Atlas Core</strong> (a oferta atual do Atlas, agora renomeada) mantém compute e storage juntos em cada nó do replica set. Ideal para workloads estáveis e previsíveis; conjunto completo de recursos do Atlas.${src('B2', 'B7')}`, `<strong>Atlas Core</strong> (la oferta de Atlas existente, ahora con este nombre) mantiene compute y storage juntos en cada nodo de un replica set. Ideal para cargas estables y predecibles; incluye todas las funciones de Atlas.${src('B2', 'B7')}`)
     : tx(`<strong>Atlas Infinite</strong> is a new deployment option in Atlas — not a new database. Same document model, drivers and APIs; built for spiky, AI-driven, fast-growing workloads. Runs MongoDB 9.0+ (always latest, auto-upgrades).${src('B3', 'B6', 'D1')}`,
-         `<strong>Atlas Infinite</strong> é uma nova opção de deployment no Atlas — não um novo banco de dados. Mesmo document model, drivers e APIs; feito para workloads com picos, guiados por IA e de crescimento rápido. Roda MongoDB 9.0+ (sempre a última versão, com auto-upgrade).${src('B3', 'B6', 'D1')}`);
+         `<strong>Atlas Infinite</strong> é uma nova opção de deployment no Atlas — não um novo banco de dados. Mesmo document model, drivers e APIs; feito para workloads com picos, guiados por IA e de crescimento rápido. Roda MongoDB 9.0+ (sempre a última versão, com auto-upgrade).${src('B3', 'B6', 'D1')}`, `<strong>Atlas Infinite</strong> es una nueva opción de despliegue en Atlas, no una nueva base de datos. Mismo modelo de documentos, drivers y API; diseñado para cargas variables, impulsadas por IA y de rápido crecimiento. Ejecuta MongoDB 9.0+ (siempre la última versión, con actualizaciones automáticas).${src('B3', 'B6', 'D1')}`);
 
   const wcDesc = {
-    w0: core ? tx('<strong>w:0</strong> — fire-and-forget. No acknowledgment; fastest, but the client never knows if the write landed.', '<strong>w:0</strong> — fire-and-forget. Sem confirmação; mais rápido, mas o cliente nunca sabe se a escrita foi gravada.')
-             : tx(`<strong>w:0</strong> — accepted as sent: fire-and-forget, no acknowledgment.${src('D2')}`, `<strong>w:0</strong> — aceito como enviado: fire-and-forget, sem confirmação.${src('D2')}`),
-    w1: core ? tx('<strong>w:1</strong> — ACK after the primary applies the write. May be rolled back if the primary fails before replicating.', '<strong>w:1</strong> — ACK depois que o primário aplica a escrita. Pode sofrer rollback se o primário falhar antes de replicar.')
-             : tx(`<strong>w:1</strong> — accepted as sent. The storage layer guarantees the write and it returns sooner than <code>w:"majority"</code>, but <strong>Atlas can roll it back in rare failures</strong>.${src('D2')}`, `<strong>w:1</strong> — aceito como enviado. A camada de storage garante a escrita e ela retorna antes do <code>w:"majority"</code>, mas <strong>o Atlas pode fazer rollback em falhas raras</strong>.${src('D2')}`),
-    wmaj: core ? tx('<strong>w:"majority"</strong> — ACK when a majority of voting, data-bearing nodes (2 of 3) have the write.', '<strong>w:"majority"</strong> — ACK quando a maioria dos nós votantes com dados (2 de 3) tem a escrita.')
-               : tx(`<strong>w:"majority"</strong> — ACK once a <strong>majority within the storage layer</strong> holds the write (not a majority of compute nodes). Atlas <strong>never rolls back</strong> a majority write. <code>j</code> has no effect: every write is persisted outside node memory before the ACK.${src('D2')}`, `<strong>w:"majority"</strong> — ACK quando a <strong>maioria dentro da camada de storage</strong> tem a escrita (não a maioria dos nós de compute). O Atlas <strong>nunca faz rollback</strong> de uma escrita majority. <code>j</code> não tem efeito: toda escrita é persistida fora da memória do nó antes do ACK.${src('D2')}`),
-    wnum: core ? tx('<strong>w:3</strong> — on a 3-node replica set, every node must acknowledge (if one is down, the write waits).', '<strong>w:3</strong> — num replica set de 3 nós, todos precisam confirmar (se um cair, a escrita espera).')
-               : tx(`<strong>w:3</strong> — on Atlas Infinite, <strong>w: 2 or any greater number is applied as "majority"</strong>; you effectively choose between 0, 1 and "majority". The default is "majority"; the Atlas UI does not allow changing it.${src('D2', 'D20')}`, `<strong>w:3</strong> — no Atlas Infinite, <strong>w: 2 ou qualquer número maior é aplicado como "majority"</strong>; na prática você escolhe entre 0, 1 e "majority". O padrão é "majority"; a interface do Atlas não permite alterá-lo.${src('D2', 'D20')}`),
+    w0: core ? tx('<strong>w:0</strong> — fire-and-forget. No acknowledgment; fastest, but the client never knows if the write landed.', '<strong>w:0</strong> — fire-and-forget. Sem confirmação; mais rápido, mas o cliente nunca sabe se a escrita foi gravada.', "<strong>w:0</strong> — envío sin esperar respuesta. Sin confirmación; más rápido, pero el cliente nunca sabe si la escritura llegó.")
+             : tx(`<strong>w:0</strong> — accepted as sent: fire-and-forget, no acknowledgment.${src('D2')}`, `<strong>w:0</strong> — aceito como enviado: fire-and-forget, sem confirmação.${src('D2')}`, `<strong>w:0</strong> — se acepta tal como se envía: sin esperar respuesta ni confirmación.${src('D2')}`),
+    w1: core ? tx('<strong>w:1</strong> — ACK after the primary applies the write. May be rolled back if the primary fails before replicating.', '<strong>w:1</strong> — ACK depois que o primário aplica a escrita. Pode sofrer rollback se o primário falhar antes de replicar.', "<strong>w:1</strong> — ACK después de que el primario aplica la escritura. Puede revertirse si el primario falla antes de replicarla.")
+             : tx(`<strong>w:1</strong> — accepted as sent. The storage layer guarantees the write and it returns sooner than <code>w:"majority"</code>, but <strong>Atlas can roll it back in rare failures</strong>.${src('D2')}`, `<strong>w:1</strong> — aceito como enviado. A camada de storage garante a escrita e ela retorna antes do <code>w:"majority"</code>, mas <strong>o Atlas pode fazer rollback em falhas raras</strong>.${src('D2')}`, `<strong>w:1</strong> — se acepta tal como se envía. La capa de storage garantiza la escritura y responde antes que <code>w:"majority"</code>, pero <strong>Atlas puede revertirla en fallos poco frecuentes</strong>.${src('D2')}`),
+    wmaj: core ? tx('<strong>w:"majority"</strong> — ACK when a majority of voting, data-bearing nodes (2 of 3) have the write.', '<strong>w:"majority"</strong> — ACK quando a maioria dos nós votantes com dados (2 de 3) tem a escrita.', "<strong>w:\"majority\"</strong> — ACK cuando una mayoría de los nodos con voto que almacenan datos (2 de 3) tiene la escritura.")
+               : tx(`<strong>w:"majority"</strong> — ACK once a <strong>majority within the storage layer</strong> holds the write (not a majority of compute nodes). Atlas <strong>never rolls back</strong> a majority write. <code>j</code> has no effect: every write is persisted outside node memory before the ACK.${src('D2')}`, `<strong>w:"majority"</strong> — ACK quando a <strong>maioria dentro da camada de storage</strong> tem a escrita (não a maioria dos nós de compute). O Atlas <strong>nunca faz rollback</strong> de uma escrita majority. <code>j</code> não tem efeito: toda escrita é persistida fora da memória do nó antes do ACK.${src('D2')}`, `<strong>w:"majority"</strong> — ACK cuando una <strong>mayoría dentro de la capa de storage</strong> tiene la escritura (no una mayoría de nodos de compute). Atlas <strong>nunca revierte</strong> una escritura majority. <code>j</code> no tiene efecto: cada escritura se persiste fuera de la memoria del nodo antes del ACK.${src('D2')}`),
+    wnum: core ? tx('<strong>w:3</strong> — on a 3-node replica set, every node must acknowledge (if one is down, the write waits).', '<strong>w:3</strong> — num replica set de 3 nós, todos precisam confirmar (se um cair, a escrita espera).', "<strong>w:3</strong> — en un replica set de 3 nodos, todos deben confirmar (si uno está caído, la escritura espera).")
+               : tx(`<strong>w:3</strong> — on Atlas Infinite, <strong>w: 2 or any greater number is applied as "majority"</strong>; you effectively choose between 0, 1 and "majority". The default is "majority"; the Atlas UI does not allow changing it.${src('D2', 'D20')}`, `<strong>w:3</strong> — no Atlas Infinite, <strong>w: 2 ou qualquer número maior é aplicado como "majority"</strong>; na prática você escolhe entre 0, 1 e "majority". O padrão é "majority"; a interface do Atlas não permite alterá-lo.${src('D2', 'D20')}`, `<strong>w:3</strong> — en Atlas Infinite, <strong>w: 2 o cualquier número mayor se aplica como "majority"</strong>; en la práctica eliges entre 0, 1 y "majority". El valor predeterminado es "majority"; la interfaz de Atlas no permite cambiarlo.${src('D2', 'D20')}`),
   };
-  $('arch-wc-desc').innerHTML = wcDesc[S.wc] + (S.wc !== 'w0' && !core ? '<br>' + tx(`⏱ Always set <strong>wtimeout</strong>: without it, a write that can't be acknowledged waits indefinitely.${src('D2')}`, `⏱ Sempre defina <strong>wtimeout</strong>: sem ele, uma escrita que não pode ser confirmada espera indefinidamente.${src('D2')}`) : '');
+  $('arch-wc-desc').innerHTML = wcDesc[S.wc] + (S.wc !== 'w0' && !core ? '<br>' + tx(`⏱ Always set <strong>wtimeout</strong>: without it, a write that can't be acknowledged waits indefinitely.${src('D2')}`, `⏱ Sempre defina <strong>wtimeout</strong>: sem ele, uma escrita que não pode ser confirmada espera indefinidamente.${src('D2')}`, `⏱ Configura siempre <strong>wtimeout</strong>: sin él, una escritura que no puede confirmarse espera indefinidamente.${src('D2')}`) : '');
   $('arch-wc-desc').className = 'desc' + (S.wc === 'w0' ? ' bad' : S.wc === 'w1' ? ' warn' : '');
 
   const rcTxt = {
-    local: tx('<strong>local</strong> returns the node\'s most recent data — it may include writes not yet majority-committed.', '<strong>local</strong> retorna o dado mais recente do nó — pode incluir escritas ainda não confirmadas pela maioria.'),
-    available: tx('<strong>available</strong> — like local, lowest latency, no guarantees about majority commit.', '<strong>available</strong> — como local, menor latência, sem garantias de commit majoritário.'),
-    majority: tx('<strong>majority</strong> returns only majority-committed data — it can\'t be rolled back.', '<strong>majority</strong> retorna apenas dados confirmados pela maioria — não sofrem rollback.'),
-    linearizable: tx('<strong>linearizable</strong> — strongest guarantee; reads from the <strong>primary only</strong> and reflects all majority writes acknowledged before the read.', '<strong>linearizable</strong> — garantia mais forte; lê <strong>somente do primário</strong> e reflete todas as escritas majority confirmadas antes da leitura.'),
-    snapshot: tx('<strong>snapshot</strong> — for multi-document transactions: reads a majority-committed snapshot.', '<strong>snapshot</strong> — para transações multi-documento: lê um snapshot confirmado pela maioria.'),
+    local: tx('<strong>local</strong> returns the node\'s most recent data — it may include writes not yet majority-committed.', '<strong>local</strong> retorna o dado mais recente do nó — pode incluir escritas ainda não confirmadas pela maioria.', "<strong>local</strong> devuelve los datos más recientes del nodo; puede incluir escrituras aún no confirmadas por una mayoría."),
+    available: tx('<strong>available</strong> — like local, lowest latency, no guarantees about majority commit.', '<strong>available</strong> — como local, menor latência, sem garantias de commit majoritário.', "<strong>available</strong> — como local, mínima latencia, sin garantías de confirmación por mayoría."),
+    majority: tx('<strong>majority</strong> returns only majority-committed data — it can\'t be rolled back.', '<strong>majority</strong> retorna apenas dados confirmados pela maioria — não sofrem rollback.', "<strong>majority</strong> devuelve solo datos confirmados por una mayoría; no pueden revertirse."),
+    linearizable: tx('<strong>linearizable</strong> — strongest guarantee; reads from the <strong>primary only</strong> and reflects all majority writes acknowledged before the read.', '<strong>linearizable</strong> — garantia mais forte; lê <strong>somente do primário</strong> e reflete todas as escritas majority confirmadas antes da leitura.', "<strong>linearizable</strong> — la garantía más fuerte; lee <strong>solo del primario</strong> y refleja todas las escrituras majority confirmadas antes de la lectura."),
+    snapshot: tx('<strong>snapshot</strong> — for multi-document transactions: reads a majority-committed snapshot.', '<strong>snapshot</strong> — para transações multi-documento: lê um snapshot confirmado pela maioria.', "<strong>snapshot</strong> — para transacciones de varios documentos: lee una instantánea confirmada por mayoría."),
   };
   const rpTxt = core ? '' : (['secondary', 'secondaryPreferred', 'nearest'].includes(S.rp)
     ? tx(` Secondary reads land on the <strong>single standby</strong> unless you add read-only nodes; the docs suggest <strong>secondaryPreferred</strong> to spread reads across standby and read-only nodes. Secondary reads can be slightly stale (standby lag is in milliseconds per the engineering blog).${src('D2', 'B4')}`,
-         ` Leituras em secundários caem no <strong>único standby</strong>, a menos que você adicione nós read-only; a documentação sugere <strong>secondaryPreferred</strong> para distribuir leituras entre standby e nós read-only. Leituras em secundários podem estar levemente defasadas (lag do standby em milissegundos, segundo o blog de engenharia).${src('D2', 'B4')}`)
-    : tx(` Default read preference is <strong>primary</strong> — every read goes to the primary unless you change it.${src('D2')}`, ` O read preference padrão é <strong>primary</strong> — toda leitura vai ao primário, a menos que você altere.${src('D2')}`));
+         ` Leituras em secundários caem no <strong>único standby</strong>, a menos que você adicione nós read-only; a documentação sugere <strong>secondaryPreferred</strong> para distribuir leituras entre standby e nós read-only. Leituras em secundários podem estar levemente defasadas (lag do standby em milissegundos, segundo o blog de engenharia).${src('D2', 'B4')}`, ` Las lecturas de secundarios llegan al <strong>único standby</strong> salvo que agregues nodos read-only; la documentación sugiere <strong>secondaryPreferred</strong> para distribuir las lecturas entre el standby y los nodos read-only. Las lecturas de secundarios pueden estar ligeramente desactualizadas (según el blog de ingeniería, el retraso del standby es de milisegundos).${src('D2', 'B4')}`)
+    : tx(` Default read preference is <strong>primary</strong> — every read goes to the primary unless you change it.${src('D2')}`, ` O read preference padrão é <strong>primary</strong> — toda leitura vai ao primário, a menos que você altere.${src('D2')}`, ` La preferencia de lectura predeterminada es <strong>primary</strong>: todas las lecturas van al primario salvo que la cambies.${src('D2')}`));
   let warn = '';
-  if (S.rc === 'linearizable' && S.rp !== 'primary') warn = '<br>⚠ ' + tx('linearizable requires readPreference <strong>primary</strong> — this combination is rejected by the server.', 'linearizable exige readPreference <strong>primary</strong> — esta combinação é rejeitada pelo servidor.');
+  if (S.rc === 'linearizable' && S.rp !== 'primary') warn = '<br>⚠ ' + tx('linearizable requires readPreference <strong>primary</strong> — this combination is rejected by the server.', 'linearizable exige readPreference <strong>primary</strong> — esta combinação é rejeitada pelo servidor.', "linearizable requiere readPreference <strong>primary</strong>; el servidor rechaza esta combinación.");
   $('arch-read-desc').innerHTML = rcTxt[S.rc] + rpTxt + warn;
   $('arch-read-desc').className = 'desc' + (warn ? ' bad' : '');
 
@@ -226,46 +226,46 @@ function archUpdateInfo() {
 
 function archRenderIdeas() {
   const ideas = [
-    ['🧱', tx('Two layers, scaled independently', 'Duas camadas, escaladas de forma independente'),
+    ['🧱', tx('Two layers, scaled independently', 'Duas camadas, escaladas de forma independente', "Dos capas que escalan de forma independiente"),
      tx(`Compute nodes run queries and transactions; the storage layer keeps data durable. Scaling the tier, adding read-only nodes and recovering from a node failure <strong>don't move or replicate data</strong>.${src('D2')}`,
-        `Os nós de compute executam queries e transações; a camada de storage mantém os dados duráveis. Escalar o tier, adicionar nós read-only e recuperar de uma falha de nó <strong>não movem nem replicam dados</strong>.${src('D2')}`)],
-    ['🗳', tx('"Majority" = storage majority', '"Majority" = maioria do storage'),
+        `Os nós de compute executam queries e transações; a camada de storage mantém os dados duráveis. Escalar o tier, adicionar nós read-only e recuperar de uma falha de nó <strong>não movem nem replicam dados</strong>.${src('D2')}`, `Los nodos de compute ejecutan consultas y transacciones; la capa de storage conserva los datos de forma duradera. Cambiar de nivel, agregar nodos read-only y recuperarse de un fallo de nodo <strong>no mueve ni replica datos</strong>.${src('D2')}`)],
+    ['🗳', tx('"Majority" = storage majority', '"Majority" = maioria do storage', "\"Majority\" = mayoría del storage"),
      tx(`On Atlas Infinite, <em>majority</em> means a majority <strong>within the storage layer</strong> — not of your cluster's nodes. The Log Service commits on a majority spread across 3 AZs.${src('D2', 'B4')}`,
-        `No Atlas Infinite, <em>majority</em> significa maioria <strong>dentro da camada de storage</strong> — não dos nós do cluster. O Log Service faz commit numa maioria distribuída em 3 AZs.${src('D2', 'B4')}`)],
-    ['↩', tx('No rollbacks for majority writes', 'Sem rollback de escritas majority'),
+        `No Atlas Infinite, <em>majority</em> significa maioria <strong>dentro da camada de storage</strong> — não dos nós do cluster. O Log Service faz commit numa maioria distribuída em 3 AZs.${src('D2', 'B4')}`, `En Atlas Infinite, <em>majority</em> significa una mayoría <strong>dentro de la capa de storage</strong>, no de los nodos del clúster. El Log Service confirma con una mayoría distribuida entre 3 AZ.${src('D2', 'B4')}`)],
+    ['↩', tx('No rollbacks for majority writes', 'Sem rollback de escritas majority', "Sin reversiones para escrituras majority"),
      tx(`Writes acknowledged with w:"majority" are durable in the storage layer and never roll back. Writes acknowledged with w:1 can roll back in rare failures.${src('D2', 'D8')}`,
-        `Escritas confirmadas com w:"majority" estão duráveis na camada de storage e nunca sofrem rollback. Escritas confirmadas com w:1 podem sofrer rollback em falhas raras.${src('D2', 'D8')}`)],
-    ['🧩', tx('Three storage services', 'Três serviços de storage'),
+        `Escritas confirmadas com w:"majority" estão duráveis na camada de storage e nunca sofrem rollback. Escritas confirmadas com w:1 podem sofrer rollback em falhas raras.${src('D2', 'D8')}`, `Las escrituras confirmadas con w:"majority" son duraderas en la capa de storage y nunca se revierten. Las escrituras confirmadas con w:1 pueden revertirse en fallos poco frecuentes.${src('D2', 'D8')}`)],
+    ['🧩', tx('Three storage services', 'Três serviços de storage', "Tres servicios de storage"),
      tx(`<strong>Log Service</strong> (consensus on every write), <strong>Page Service</strong> (warm materialized pages in each AZ) and <strong>Object Index Service</strong> over object storage — each scales, fails and recovers independently. Data is held in three forms at once: replicated log, materialized pages and object store.${src('B4')}`,
-        `<strong>Log Service</strong> (consenso em cada escrita), <strong>Page Service</strong> (páginas materializadas e aquecidas em cada AZ) e <strong>Object Index Service</strong> sobre object storage — cada um escala, falha e se recupera de forma independente. Os dados existem em três formas ao mesmo tempo: log replicado, páginas materializadas e object store.${src('B4')}`)],
-    ['🔐', tx('Encrypted before it leaves compute', 'Criptografado antes de sair do compute'),
+        `<strong>Log Service</strong> (consenso em cada escrita), <strong>Page Service</strong> (páginas materializadas e aquecidas em cada AZ) e <strong>Object Index Service</strong> sobre object storage — cada um escala, falha e se recupera de forma independente. Os dados existem em três formas ao mesmo tempo: log replicado, páginas materializadas e object store.${src('B4')}`, `<strong>Log Service</strong> (consenso en cada escritura), <strong>Page Service</strong> (páginas materializadas ya disponibles en cada AZ) y <strong>Object Index Service</strong> sobre almacenamiento de objetos: cada uno escala, falla y se recupera de forma independiente. Los datos existen en tres formas a la vez: log replicado, páginas materializadas y almacenamiento de objetos.${src('B4')}`)],
+    ['🔐', tx('Encrypted before it leaves compute', 'Criptografado antes de sair do compute', "Cifrado antes de salir del compute"),
      tx(`Data is always encrypted on the compute node before it reaches the shared storage layer, with keys unique per customer; the storage layer can't read it. Encryption can't be disabled; bring your own key via AWS KMS.${src('D1', 'D2', 'D19')}`,
-        `Os dados são sempre criptografados no nó de compute antes de chegar à camada de storage compartilhada, com chaves exclusivas por cliente; o storage não consegue lê-los. A criptografia não pode ser desligada; traga sua chave via AWS KMS.${src('D1', 'D2', 'D19')}`)],
-    ['📜', tx('The oplog no longer drives replication', 'O oplog não conduz mais a replicação'),
+        `Os dados são sempre criptografados no nó de compute antes de chegar à camada de storage compartilhada, com chaves exclusivas por cliente; o storage não consegue lê-los. A criptografia não pode ser desligada; traga sua chave via AWS KMS.${src('D1', 'D2', 'D19')}`, `Los datos siempre se cifran en el nodo de compute antes de llegar a la capa de storage compartida, con claves únicas por cliente; la capa de storage no puede leerlos. El cifrado no puede desactivarse; puedes usar tu propia clave mediante AWS KMS.${src('D1', 'D2', 'D19')}`)],
+    ['📜', tx('The oplog no longer drives replication', 'O oplog não conduz mais a replicação', "El oplog ya no dirige la replicación"),
      tx(`Replication happens in the storage layer, so <code>local.oplog.rs</code> only serves change streams and internal functions (24 h minimum retention by default). A node that joins or rejoins can't fall behind the oplog window.${src('D2')}`,
-        `A replicação acontece na camada de storage, então o <code>local.oplog.rs</code> só atende change streams e funções internas (retenção mínima padrão de 24 h). Um nó que entra ou volta ao cluster não fica para trás da janela do oplog.${src('D2')}`)],
-    ['🔌', tx('Same MongoDB, no code changes', 'Mesmo MongoDB, sem mudar código'),
+        `A replicação acontece na camada de storage, então o <code>local.oplog.rs</code> só atende change streams e funções internas (retenção mínima padrão de 24 h). Um nó que entra ou volta ao cluster não fica para trás da janela do oplog.${src('D2')}`, `La replicación ocurre en la capa de storage, por lo que <code>local.oplog.rs</code> solo sirve a los change streams y a funciones internas (retención mínima predeterminada de 24 h). Un nodo que se une o vuelve a unirse no puede quedar fuera de la ventana del oplog.${src('D2')}`)],
+    ['🔌', tx('Same MongoDB, no code changes', 'Mesmo MongoDB, sem mudar código', "El mismo MongoDB, sin cambios de código"),
      tx(`Same document model, APIs, drivers, security protocols and tooling. Adoption requires no application code changes and no new system to learn.${src('B6', 'B1')}`,
-        `Mesmo document model, APIs, drivers, protocolos de segurança e ferramentas. A adoção não exige mudanças no código da aplicação nem aprender um novo sistema.${src('B6', 'B1')}`)],
-    ['📈', tx('Built for AI-scale demand', 'Feito para demanda em escala de IA'),
+        `Mesmo document model, APIs, drivers, protocolos de segurança e ferramentas. A adoção não exige mudanças no código da aplicação nem aprender um novo sistema.${src('B6', 'B1')}`, `Mismo modelo de documentos, API, drivers, protocolos de seguridad y herramientas. Adoptarlo no requiere cambios en el código de la aplicación ni aprender un sistema nuevo.${src('B6', 'B1')}`)],
+    ['📈', tx('Built for AI-scale demand', 'Feito para demanda em escala de IA', "Diseñado para la demanda de la IA"),
      tx(`MongoDB reports >96% less time to scale reads vs Atlas Core, replica sets holding 10× the data, and 189% more throughput per dollar in internal MongoDB 9.0 tests (vendor claims).${src('B3', 'B2')}`,
-        `A MongoDB reporta >96% menos tempo para escalar leituras vs Atlas Core, replica sets com 10× mais dados e 189% mais throughput por dólar em testes internos com MongoDB 9.0 (afirmações do fabricante).${src('B3', 'B2')}`)],
+        `A MongoDB reporta >96% menos tempo para escalar leituras vs Atlas Core, replica sets com 10× mais dados e 189% mais throughput por dólar em testes internos com MongoDB 9.0 (afirmações do fabricante).${src('B3', 'B2')}`, `MongoDB informa de más del 96% menos tiempo para escalar lecturas frente a Atlas Core, replica sets que almacenan 10 veces más datos y un 189% más de rendimiento por dólar en pruebas internas de MongoDB 9.0 (afirmaciones del proveedor).${src('B3', 'B2')}`)],
   ];
   $('arch-ideas').innerHTML = ideas.map(([i, t, d]) => `<div class="idea"><div class="it">${i} ${t}</div>${d}</div>`).join('');
 }
 
 function archRenderCmp() {
   const rows = [
-    [tx('Architecture', 'Arquitetura'), tx('Compute + storage on each node (full copy per node)', 'Compute + storage em cada nó (cópia completa por nó)'), tx(`Compute and storage as independent layers${src('D2')}`, `Compute e storage como camadas independentes${src('D2')}`)],
-    ['xr', tx('High availability', 'Alta disponibilidade'), tx('Replica set of 3+ electable, data-bearing nodes', 'Replica set com 3+ nós elegíveis que guardam dados'), tx(`An "HA shard" of 2 electable compute nodes (primary + standby) in separate AZs + storage layer replicated across 3 AZs${src('D1', 'D2', 'B4')}`, `Um "HA shard" com 2 nós de compute elegíveis (primário + standby) em AZs separadas + camada de storage replicada em 3 AZs${src('D1', 'D2', 'B4')}`)],
-    [tx('Failover', 'Failover'), tx('Election — nodes vote, majority wins', 'Eleição — nós votam, a maioria vence'), tx(`Coordinated by the storage layer — no vote among compute nodes${src('D2')}`, `Coordenado pela camada de storage — sem votação entre nós de compute${src('D2')}`)],
-    ['xr', tx('"majority" means', '"majority" significa'), tx('Majority of voting nodes', 'Maioria dos nós votantes'), tx(`Majority within the storage layer${src('D2')}`, `Maioria dentro da camada de storage${src('D2')}`)],
-    ['xr', tx('Rollbacks', 'Rollbacks'), tx('Possible for writes not majority-committed', 'Possíveis para escritas não confirmadas pela maioria'), tx(`No rollback for writes acknowledged with w:"majority"; w:1 can roll back in rare failures${src('D2')}`, `Sem rollback para escritas confirmadas com w:"majority"; w:1 pode sofrer rollback em falhas raras${src('D2')}`)],
-    [tx('Storage', 'Storage'), tx(`Tied to the cluster tier; shard when nearing the tier limit${src('B7')}`, `Atrelado ao tier; shard quando se aproxima do limite do tier${src('B7')}`), tx(`Grows automatically up to 128 TB (logical) per replica set, independent of tier${src('D4', 'B7')}`, `Cresce automaticamente até 128 TB (lógico) por replica set, independente do tier${src('D4', 'B7')}`)],
-    [tx('Adding read capacity', 'Adicionar capacidade de leitura'), tx('New node needs an initial sync (data copy)', 'Novo nó precisa de initial sync (cópia de dados)'), tx(`Read-only nodes attach to storage and serve reads in minutes — no initial sync${src('D6', 'B3')}`, `Nós read-only se conectam ao storage e atendem leituras em minutos — sem initial sync${src('D6', 'B3')}`)],
-    ['xr', tx('Write scale-out', 'Escala horizontal de escrita'), tx(`Sharding & Global Clusters${src('B7')}`, `Sharding e Global Clusters${src('B7')}`), tx(`Not available in public preview${src('D1')}`, `Não disponível no public preview${src('D1')}`)],
-    [tx('Pricing model', 'Modelo de preço'), tx(`Provision-based${src('B7')}`, `Baseado em provisionamento${src('B7')}`), tx(`Compute on a reserved instance tier (billed for the running HA shard, not query volume); storage metered by data stored; backup billed separately${src('B6', 'D3')}`, `Compute num tier de instância reservada (cobrado pelo HA shard em execução, não por volume de queries); storage medido pelos dados armazenados; backup cobrado à parte${src('B6', 'D3')}`)],
-    [tx('Clouds & regions', 'Clouds e regiões'), tx(`AWS, Azure, Google Cloud · multi-region · multi-cloud${src('B7')}`, `AWS, Azure, Google Cloud · multi-region · multi-cloud${src('B7')}`), tx(`AWS only, single region, select regions (public preview)${src('D1', 'B1')}`, `Somente AWS, single-region, regiões selecionadas (public preview)${src('D1', 'B1')}`)],
+    [tx('Architecture', 'Arquitetura', "Arquitectura"), tx('Compute + storage on each node (full copy per node)', 'Compute + storage em cada nó (cópia completa por nó)', "Compute + storage en cada nodo (copia completa por nodo)"), tx(`Compute and storage as independent layers${src('D2')}`, `Compute e storage como camadas independentes${src('D2')}`, `Compute y storage como capas independientes${src('D2')}`)],
+    ['xr', tx('High availability', 'Alta disponibilidade', "Alta disponibilidad"), tx('Replica set of 3+ electable, data-bearing nodes', 'Replica set com 3+ nós elegíveis que guardam dados', "Replica set de 3 o más nodos elegibles que almacenan datos"), tx(`An "HA shard" of 2 electable compute nodes (primary + standby) in separate AZs + storage layer replicated across 3 AZs${src('D1', 'D2', 'B4')}`, `Um "HA shard" com 2 nós de compute elegíveis (primário + standby) em AZs separadas + camada de storage replicada em 3 AZs${src('D1', 'D2', 'B4')}`, `Un "HA shard" de 2 nodos de compute elegibles (primario + standby) en AZ distintas + capa de storage replicada entre 3 AZ${src('D1', 'D2', 'B4')}`)],
+    [tx('Failover', 'Failover', "Failover"), tx('Election — nodes vote, majority wins', 'Eleição — nós votam, a maioria vence', "Elección: los nodos votan y gana la mayoría"), tx(`Coordinated by the storage layer — no vote among compute nodes${src('D2')}`, `Coordenado pela camada de storage — sem votação entre nós de compute${src('D2')}`, `Coordinado por la capa de storage, sin votación entre nodos de compute${src('D2')}`)],
+    ['xr', tx('"majority" means', '"majority" significa', "\"majority\" significa"), tx('Majority of voting nodes', 'Maioria dos nós votantes', "Mayoría de los nodos con voto"), tx(`Majority within the storage layer${src('D2')}`, `Maioria dentro da camada de storage${src('D2')}`, `Mayoría dentro de la capa de storage${src('D2')}`)],
+    ['xr', tx('Rollbacks', 'Rollbacks', "Reversiones"), tx('Possible for writes not majority-committed', 'Possíveis para escritas não confirmadas pela maioria', "Posibles para escrituras sin confirmación por mayoría"), tx(`No rollback for writes acknowledged with w:"majority"; w:1 can roll back in rare failures${src('D2')}`, `Sem rollback para escritas confirmadas com w:"majority"; w:1 pode sofrer rollback em falhas raras${src('D2')}`, `Sin reversiones para escrituras confirmadas con w:"majority"; w:1 puede revertirse en fallos poco frecuentes${src('D2')}`)],
+    [tx('Storage', 'Storage', "Storage"), tx(`Tied to the cluster tier; shard when nearing the tier limit${src('B7')}`, `Atrelado ao tier; shard quando se aproxima do limite do tier${src('B7')}`, `Vinculado al nivel del clúster; usa sharding al acercarte al límite del nivel${src('B7')}`), tx(`Grows automatically up to 128 TB (logical) per replica set, independent of tier${src('D4', 'B7')}`, `Cresce automaticamente até 128 TB (lógico) por replica set, independente do tier${src('D4', 'B7')}`, `Crece automáticamente hasta 128 TB (lógicos) por replica set, independientemente del nivel${src('D4', 'B7')}`)],
+    [tx('Adding read capacity', 'Adicionar capacidade de leitura', "Agregar capacidad de lectura"), tx('New node needs an initial sync (data copy)', 'Novo nó precisa de initial sync (cópia de dados)', "El nodo nuevo necesita una sincronización inicial (copia de datos)"), tx(`Read-only nodes attach to storage and serve reads in minutes — no initial sync${src('D6', 'B3')}`, `Nós read-only se conectam ao storage e atendem leituras em minutos — sem initial sync${src('D6', 'B3')}`, `Los nodos read-only se conectan al storage y atienden lecturas en minutos, sin sincronización inicial${src('D6', 'B3')}`)],
+    ['xr', tx('Write scale-out', 'Escala horizontal de escrita', "Escalado horizontal de escrituras"), tx(`Sharding & Global Clusters${src('B7')}`, `Sharding e Global Clusters${src('B7')}`, `Sharding y Global Clusters${src('B7')}`), tx(`Not available in public preview${src('D1')}`, `Não disponível no public preview${src('D1')}`, `No disponible en la vista previa pública${src('D1')}`)],
+    [tx('Pricing model', 'Modelo de preço', "Modelo de precios"), tx(`Provision-based${src('B7')}`, `Baseado em provisionamento${src('B7')}`, `Basado en recursos aprovisionados${src('B7')}`), tx(`Compute on a reserved instance tier (billed for the running HA shard, not query volume); storage metered by data stored; backup billed separately${src('B6', 'D3')}`, `Compute num tier de instância reservada (cobrado pelo HA shard em execução, não por volume de queries); storage medido pelos dados armazenados; backup cobrado à parte${src('B6', 'D3')}`, `Compute en un nivel de instancia reservado (se factura por el HA shard en ejecución, no por el volumen de consultas); storage según los datos almacenados; backup facturado por separado${src('B6', 'D3')}`)],
+    [tx('Clouds & regions', 'Clouds e regiões', "Nubes y regiones"), tx(`AWS, Azure, Google Cloud · multi-region · multi-cloud${src('B7')}`, `AWS, Azure, Google Cloud · multi-region · multi-cloud${src('B7')}`, `AWS, Azure, Google Cloud · múltiples regiones · múltiples nubes${src('B7')}`), tx(`AWS only, single region, select regions (public preview)${src('D1', 'B1')}`, `Somente AWS, single-region, regiões selecionadas (public preview)${src('D1', 'B1')}`, `Solo AWS, una única región, regiones seleccionadas (vista previa pública)${src('D1', 'B1')}`)],
   ];
   $('arch-cmp').innerHTML = `<table class="cmp"><thead><tr><th></th><th>Atlas Core</th><th class="inf">Atlas Infinite</th></tr></thead><tbody>
     ${rows.map(r => { const xr = r[0] === 'xr', c = xr ? r.slice(1) : r; return `<tr class="${xr ? 'xr' : ''}"><td>${c[0]}</td><td>${c[1]}</td><td class="inf">${c[2]}</td></tr>`; }).join('')}</tbody></table>`;

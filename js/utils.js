@@ -4,8 +4,20 @@ function $(id) { return document.getElementById(id); }
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
 
-// Bilingual text helper — every dynamic string is written in both languages
-function tx(en, pt) { return S.lang === 'pt' ? pt : en; }
+// Dynamic copy keeps its three translations next to the UI that uses it.
+// Remember variants so an active manual lesson can change language in place.
+const knownTranslations = new Map();
+function tx(en, pt, es) {
+  const variants = { en, pt, es };
+  for (const value of Object.values(variants)) {
+    if (typeof value === 'string') knownTranslations.set(value, variants);
+  }
+  return variants[S.lang] ?? en;
+}
+function translateKnownText(value) {
+  const variants = knownTranslations.get(value);
+  return variants ? (variants[S.lang] ?? variants.en) : value;
+}
 
 // Source chip: <a class="src">D2</a> linking to the official page
 function src(...ids) {

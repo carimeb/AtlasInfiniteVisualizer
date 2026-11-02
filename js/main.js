@@ -27,7 +27,7 @@ function switchTab(name) {
 }
 
 // Shared settings — every tab reads them
-function setWC(v) { archResetPlayback(); S.wc = v; log('INFO', 'CONCERNS', `writeConcern → ${{ w0: 'w:0', w1: 'w:1', wmaj: 'w:"majority"', wnum: 'w:3' }[v]}${v === 'wnum' ? tx(' (mapped to "majority" on Atlas Infinite)', ' (mapeado para "majority" no Atlas Infinite)') : ''}`); syncAll(); }
+function setWC(v) { archResetPlayback(); S.wc = v; log('INFO', 'CONCERNS', `writeConcern → ${{ w0: 'w:0', w1: 'w:1', wmaj: 'w:"majority"', wnum: 'w:3' }[v]}${v === 'wnum' ? tx(' (mapped to "majority" on Atlas Infinite)', ' (mapeado para "majority" no Atlas Infinite)', ' (asignado a "majority" en Atlas Infinite)') : ''}`); syncAll(); }
 function setRC(v) { archResetPlayback(); S.rc = v; log('INFO', 'CONCERNS', `readConcern → ${v}`); syncAll(); }
 function setRP(v) { archResetPlayback(); S.rp = v; log('INFO', 'CONCERNS', `readPreference → ${v}`); syncAll(); }
 
@@ -43,13 +43,23 @@ function syncAll() {
 }
 
 // Language switch — re-render every tab so hidden ones are ready too
-function rerenderAll() {
-  archResetPlayback();
+function rerenderAll({ preservePlayback = false } = {}) {
+  // Language changes keep the selected lesson and its current stage. Move the
+  // same motion elements into the redrawn SVG so pending frames stay attached.
+  const motion = preservePlayback ? [...$('arch-svg').querySelectorAll('[data-arch-motion]')] : [];
+  if (preservePlayback) {
+    if (typeof archRefreshLanguage === 'function') archRefreshLanguage();
+  } else archResetPlayback();
   TABS.forEach(renderTab);
+  const svg = $('arch-svg').querySelector('svg');
+  if (svg) motion.forEach(el => svg.appendChild(el));
   document.querySelectorAll('.tc').forEach(el => el.classList.toggle('active', el.id === 'tab-' + S.tab));
-  renderSteps('arch-steps', []);
-  $('arch-steps-label').textContent = '';
-  if (!S.ha.failingOver) { renderSteps('ha-steps', haFoSteps()); haUpdateCapacityStep(); }
+  if (!preservePlayback) {
+    renderSteps('arch-steps', []);
+    $('arch-steps-label').textContent = '';
+  }
+  if (preservePlayback) haRefreshLanguage();
+  else if (!S.ha.failingOver) { renderSteps('ha-steps', haFoSteps()); haUpdateCapacityStep(); }
   vsSetTimer();
   footRender();
 }

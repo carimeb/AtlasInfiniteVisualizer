@@ -2,7 +2,7 @@
 
 An interactive, browser-based tool that explains **MongoDB Atlas Infinite** — the new deployment option in public preview — and how it handles **high availability, failover, vertical & horizontal scaling and backup**.
 
-**▶ Live:** https://carimeb.github.io/AtlasInfiniteVisualizer/ · The main link always opens tab ① in Portuguese and Essentials, regardless of browser language or earlier visits. Explicit URL parameters override these defaults: English `?lang=en`, another tab `?tab=ha` (`arch`, `ha`, `vs`, `hs`, `bk`, `lim`), or `?view=detailed` for Deep dive.
+**▶ Live:** https://carimeb.github.io/AtlasInfiniteVisualizer/ · The main link always opens tab ① in Portuguese and Essentials, regardless of browser language or earlier visits. Use EN / PT / ES to change language without resetting the scenario. Explicit URL parameters override the defaults: English `?lang=en`, Spanish `?lang=es`, another tab `?tab=ha` (`arch`, `ha`, `vs`, `hs`, `bk`, `lim`), or `?view=detailed` for Deep dive.
 
 ### Two views
 
@@ -42,7 +42,7 @@ AtlasInfiniteVisualizer/
 ├── index.html            # HTML + CSS shell (MongoDB 2026 brand palette)
 ├── js/
 │   ├── state.js          # global state S, tiers, official SOURCES registry
-│   ├── i18n.js           # EN (in the HTML) + PT-BR dictionary, setLang()
+│   ├── i18n.js           # EN (in the HTML) + PT-BR/ES dictionaries, setLang()
 │   ├── utils.js          # helpers, brand colors, SVG icons, packet animation
 │   ├── arch-playback.js  # active-time clock and stage controller
 │   ├── tab-arch.js       # ① architecture diagrams and explanatory text
