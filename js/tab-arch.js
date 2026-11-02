@@ -25,7 +25,6 @@ function archSetReadCache(value) {
 }
 
 function archRender() {
-  $('arch-extra-prompt').hidden = S.arch.mode === 'core';
   if (S.arch.mode === 'core') return archRenderCore();
   const nodes = archElectable();
   const extra = S.extra;
@@ -112,7 +111,7 @@ function archRender() {
   if (!extra.length) {
     s += `<rect x="400" y="108" width="362" height="66" rx="10" fill="none" stroke="rgba(0,30,43,.4)" stroke-dasharray="5 4"/>
       <text x="581" y="136" text-anchor="middle" font-size="10" font-weight="600" fill="rgba(0,30,43,.5)">${tx('+ up to 5 read-only / analytics nodes', '+ até 5 nós read-only / analytics')}</text>
-      <text class="dt" x="581" y="152" text-anchor="middle" font-size="8.5" fill="rgba(0,30,43,.4)">${tx('attach to storage without initial sync', 'conectam ao storage sem initial sync')}</text>`;
+      <text x="581" y="152" text-anchor="middle" font-size="10.5" fill="rgba(0,30,43,.4)">${tx('add them in tab 4 — they attach to storage, no initial sync', 'adicione na aba 4 — conectam no storage, sem initial sync')}</text>`;
   } else {
     extra.forEach((n, i) => {
       const x = 440 + i * 72, y = 140;
