@@ -350,6 +350,8 @@ function haSetAutoHeal(enabled) {
 
 // ── Failover sequence ────────────────────────────────────────────────────────
 
+const HA_TIMELINE_STEP_MS = 4000; // Reading pace for the illustration, not a failover duration.
+
 function haFailover(reason) {
   if (S.ha.failingOver) return;
   const sequence = ++haFailoverSeq;
@@ -358,7 +360,7 @@ function haFailover(reason) {
   const steps = haFoSteps();
   const sb = haStandby();
   renderSteps('ha-steps', steps);
-  setStep('ha-steps', 0, 'done');
+  setStep('ha-steps', 0, sb ? 'active' : 'done');
   if (!sb) {
     setStep('ha-steps', 1, 'fail');
     $('ha-steps').children[1].innerHTML = stepHTML(tx('<b>No standby available.</b> There is no other electable compute node to promote right now. Data stays durable in the storage layer; service resumes when a compute node is back.', '<b>Nenhum standby disponível.</b> Não há outro nó de compute elegível para promover agora. Os dados seguem duráveis na camada de storage; o serviço volta quando um nó de compute retornar.'));
@@ -372,10 +374,13 @@ function haFailover(reason) {
   log('WARN', 'STORAGE', tx('Primary unreachable — storage layer coordinates failover (no election among compute nodes)', 'Primário inacessível — a camada de storage coordena o failover (sem eleição entre nós de compute)'));
   haRender(); syncAll();
   let t = 0;
-  const tick = () => { $('ha-fo-timer').textContent = (++t * 0.5).toFixed(1) + 's'; };
-  $('ha-fo-timer').textContent = '0.0s';
+  const tick = () => {
+    const elapsed = (++t * 0.5).toFixed(1);
+    $('ha-fo-timer').textContent = tx(`Animation: ${elapsed}s`, `Animação: ${elapsed}s`);
+  };
+  $('ha-fo-timer').textContent = tx('Animation: 0.0s', 'Animação: 0.0s');
   const iv = setInterval(tick, 500); S.ha.timers.push(iv);
-  setStep('ha-steps', 1, 'active');
+  later(() => { setStep('ha-steps', 0, 'done'); setStep('ha-steps', 1, 'active'); }, HA_TIMELINE_STEP_MS);
   later(() => {
     if (!S.ha.nodes.includes(sb) || sb.state !== 'UP' || S.ha.azDown[sb.az]) {
       ++haFailoverSeq;
@@ -389,22 +394,22 @@ function haFailover(reason) {
     sb.role = 'PRIMARY';
     log('SUCCESS', 'STORAGE', tx(`${sb.id} promoted to primary in ${AZ_NAMES[sb.az]} — warm, no log replay`, `${sb.id} promovido a primário em ${AZ_NAMES[sb.az]} — aquecido, sem replay de log`));
     haRender();
-  }, 1100);
+  }, HA_TIMELINE_STEP_MS * 2);
   later(() => {
     setStep('ha-steps', 2, 'done'); setStep('ha-steps', 3, 'active');
     S.ha.failingOver = false;
     clearInterval(iv);
     log('INFO', 'DRIVER', tx(`Driver discovered new primary ${sb.id}; retryable writes resumed`, `Driver descobriu o novo primário ${sb.id}; retryable writes retomados`));
     haRender(); syncAll();
-  }, 2100);
-  later(() => { setStep('ha-steps', 3, 'done'); setStep('ha-steps', 4, 'active'); log('INFO', 'ATLAS', tx('Acknowledged majority writes remain committed after failover; w:1 can roll back in rare failures', 'Escritas confirmadas com majority permanecem confirmadas após o failover; w:1 pode sofrer rollback em falhas raras')); }, 2900);
+  }, HA_TIMELINE_STEP_MS * 3);
+  later(() => { setStep('ha-steps', 3, 'done'); setStep('ha-steps', 4, 'active'); log('INFO', 'ATLAS', tx('Acknowledged majority writes remain committed after failover; w:1 can roll back in rare failures', 'Escritas confirmadas com majority permanecem confirmadas após o failover; w:1 pode sofrer rollback em falhas raras')); }, HA_TIMELINE_STEP_MS * 4);
   later(() => {
     setStep('ha-steps', 4, 'done');
     S.ha.foPhase = 5;
     if (reason === 'test' && old) haRecoverNode(old);
     haReplaceStandby(old);
     haUpdateCapacityStep(); haRender(); syncAll();
-  }, 3700);
+  }, HA_TIMELINE_STEP_MS * 5);
 }
 
 function haTestFailover() {

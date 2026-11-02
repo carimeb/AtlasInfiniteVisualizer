@@ -316,16 +316,19 @@ test('a second primary failure after reconnection cannot receive the first failo
   sim.testFailover();
   // Reconnection opens interactions before the old failover reaches capacity recovery.
   sim.clock.until(() => !sim.state().failingOver, 'first failover must finish reconnecting the driver');
+  const oldPostReconnectAt = sim.clock.nextAt;
   assert.notEqual(sim.capacityState(), 'done');
   const promoted = sim.state().nodes.find(node => node.role === 'PRIMARY' && node.state === 'UP');
   sim.clickNode(promoted.id);
   const secondSteps = sim.steps();
   assert.equal(secondSteps[1].state, 'fail', 'the second primary loss has no standby to promote yet');
-  const nodesAfterSecondLoss = sim.state().nodes;
-  // The next due callback belongs to the earlier failover (its post-reconnection step).
-  sim.clock.advance(sim.clock.nextAt - sim.clock.now);
-  assert.deepEqual(sim.steps(), secondSteps, 'the old failover cannot advance the newer timeline');
-  assert.deepEqual(sim.state().nodes, nodesAfterSecondLoss, 'the old failover cannot recover or promote a node');
+  // A legitimate recovery may start before the earlier failover's next callback.
+  sim.clock.advance(oldPostReconnectAt - sim.clock.now - 1);
+  const stepsBeforeOldCallback = sim.steps();
+  const nodesBeforeOldCallback = sim.state().nodes;
+  sim.clock.advance(1);
+  assert.deepEqual(sim.steps(), stepsBeforeOldCallback, 'the old failover cannot advance the newer timeline');
+  assert.deepEqual(sim.state().nodes, nodesBeforeOldCallback, 'the old failover cannot recover or promote a node');
   sim.clock.settle();
   assert.ok(healthyPair(sim.state()), 'the current recovery must eventually restore the HA pair');
   assert.equal(sim.capacityState(), 'done');
