@@ -37,10 +37,6 @@ code{font-family:'SF Mono','Consolas',monospace;font-size:.92em;background:var(-
 .lang{display:flex;border:1px solid rgba(0,237,100,.35);border-radius:6px;overflow:hidden}
 .lang button{background:none;border:none;color:rgba(255,255,255,.65);font-family:inherit;font-size:10.5px;font-weight:700;padding:4px 9px;cursor:pointer;letter-spacing:.4px}
 .lang button.on{background:var(--spring);color:var(--slate)}
-.hdr-btn{background:rgba(0,237,100,.1);color:var(--spring);border:1px solid rgba(0,237,100,.35);border-radius:6px;padding:4px 12px;font-size:11px;font-weight:600;font-family:'Lexend Deca',sans-serif;cursor:pointer;white-space:nowrap;transition:background .2s,border-color .2s;letter-spacing:.3px}
-.hdr-btn:hover{background:rgba(0,237,100,.2);border-color:var(--spring)}
-.hdr-btn.lav{background:rgba(249,235,255,.1);color:var(--lavender);border-color:rgba(249,235,255,.4)}
-.hdr-btn.lav:hover{background:rgba(249,235,255,.2)}
 
 /* TABS */
 #tab-nav{background:var(--white);border-bottom:1px solid var(--border);display:flex;padding:0 20px;flex-shrink:0;overflow-x:auto}
@@ -280,7 +276,6 @@ body.view-basic .cmp tr.xr{display:none}
     <button data-lang="en" onclick="setLang('en')">EN</button>
     <button data-lang="pt" onclick="setLang('pt')">PT</button>
   </div>
-  <button class="hdr-btn lav" onclick="switchTab('lim')" data-i18n="hdr.limits">⚠ Preview limits</button>
 </div>
 
 <div id="tab-nav">
@@ -746,7 +741,6 @@ const PT = {
   'hdr.badge': 'Public Preview',
   'view.basic': 'Essencial',
   'view.detailed': 'Detalhado',
-  'hdr.limits': '⚠ Limitações do preview',
   'tab.arch': '① Arquitetura e Caminho da Escrita',
   'tab.ha': '② Alta Disponibilidade e Failover',
   'tab.vs': '③ Escala Vertical e Storage',

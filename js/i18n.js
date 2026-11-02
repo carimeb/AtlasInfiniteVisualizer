@@ -10,7 +10,6 @@ const PT = {
   'hdr.badge': 'Public Preview',
   'view.basic': 'Essencial',
   'view.detailed': 'Detalhado',
-  'hdr.limits': '⚠ Limitações do preview',
   'tab.arch': '① Arquitetura e Caminho da Escrita',
   'tab.ha': '② Alta Disponibilidade e Failover',
   'tab.vs': '③ Escala Vertical e Storage',
