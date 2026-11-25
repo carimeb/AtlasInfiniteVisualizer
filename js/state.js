@@ -80,5 +80,5 @@ const SOURCES = {
   B5:  { url: 'https://www.mongodb.com/products/updates/now-in-public-preview-atlas-infinite-built-for-extreme-elasticity-and-ai-scale/', t: 'Product update — Atlas Infinite built for Extreme Elasticity and AI-scale' },
   B6:  { url: 'https://www.mongodb.com/products/platform/atlas-database/deployment-options', t: 'MongoDB Atlas Deployment Options: Core vs. Infinite' },
   B7:  { url: 'https://www.mongodb.com/resources/products/platform/atlas-core-vs-atlas-infinite', t: 'MongoDB Atlas Core vs. Atlas Infinite: What’s the Difference?' },
-  B8:  { url: 'https://www.mongodb.com/products/updates/atlas-search-and-vector-search-on-atlas-infinite-built-for-ai-scale-retrieval/', t: 'Product update — Atlas Search and Vector Search on Atlas Infinite (November 12, 2026)' },
+  B8:  { url: 'https://www.mongodb.com/products/updates/atlas-search-and-vector-search-on-atlas-infinite-built-for-ai-scale-retrieval/', t: 'Product update — Atlas Search and Vector Search on Atlas Infinite (November 12, 2026)', published: '2026-11-12' },
 };

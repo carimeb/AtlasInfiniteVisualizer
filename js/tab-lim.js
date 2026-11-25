@@ -35,7 +35,7 @@ function limRender() {
       ['lim', tx('After Atlas automatically adds Search Nodes, <b>removing them requires dropping all search indexes first</b>.', 'Depois que o Atlas adiciona Search Nodes automaticamente, <b>removê-los exige excluir todos os índices de busca primeiro</b>.', 'Después de que Atlas añada Search Nodes automáticamente, <b>para quitarlos debes eliminar primero todos los índices de búsqueda</b>.'), ['D22']],
       ['no', tx('<b>MongoDB MCP Server</b> and <b>MongoDB Agent Skills</b>.', '<b>MongoDB MCP Server</b> e <b>MongoDB Agent Skills</b>.', "<b>MongoDB MCP Server</b> y <b>MongoDB Agent Skills</b>."), ['D1']],
       ['lim', tx('<b>AI Cluster Assistant</b> is aware of Atlas Infinite clusters but lacks full context on their capabilities.', 'O <b>AI Cluster Assistant</b> reconhece clusters Atlas Infinite, mas sem contexto completo das capacidades.', "<b>AI Cluster Assistant</b> reconoce los clústeres Atlas Infinite, pero no tiene todo el contexto sobre sus capacidades."), ['D1']],
-    ]],
+    ], 'B8'],
     ['⚙', tx('Cluster & operations', 'Cluster e operação', "Clúster y operaciones"), [
       ['lim', tx('<b>Tiers:</b> M10–M60 General and M40–M60 Low-CPU; M80 and larger not supported.', '<b>Tiers:</b> M10–M60 General e M40–M60 Low-CPU; M80 ou maiores não suportados.', "<b>Niveles:</b> M10–M60 General y M40–M60 Low-CPU; M80 y superiores no son compatibles."), ['D1', 'D3']],
       ['no', tx('<b>No uptime SLA</b> during the public preview.', '<b>Sem SLA de uptime</b> durante o public preview.', "<b>Sin SLA de disponibilidad</b> durante la vista previa pública."), ['D1']],
@@ -73,7 +73,7 @@ function limRender() {
   ];
   const ico = { no: '✕', lim: '!', yes: '✓', plan: '→' };
   const renderItems = items => items.map(([k, h, ids]) => `<div class="lim-item"><span class="ico ${k}">${ico[k]}</span><span>${h}${src(...ids)}</span></div>`).join('');
-  $('lim-search').innerHTML = `<div class="card-title">${tx('Search and Vector Search are now available', 'Search e Vector Search agora disponíveis', 'Search y Vector Search ya disponibles')}</div>${renderItems(searchItems)}`;
+  $('lim-search').innerHTML = `<div class="announcement-heading"><div class="card-title">${tx('Search and Vector Search are now available', 'Search e Vector Search agora disponíveis', 'Search y Vector Search ya disponibles')}</div>${announcementMeta('B8')}</div>${renderItems(searchItems)}`;
   // Essentials: the restrictions that matter most when positioning Atlas Infinite
   const key = [
     ['no', tx('Multi-region clusters', 'Clusters multi-region', "Clústeres con varias regiones")],
@@ -88,7 +88,7 @@ function limRender() {
   $('lim-basic').innerHTML = `<div class="card-title">${tx('Not available yet in the public preview', 'Ainda não disponível no public preview', "Todavía no disponible en la vista previa pública")}</div>
     <div class="mini-list">${key.map(([k, t]) => `<div class="lim-item"><span class="ico ${k}">${ico[k]}</span><span><b>${t}</b></span></div>`).join('')}</div>`;
 
-  $('lim-grid').innerHTML = groups.map(([i, t, items]) => `<div class="card lim-group" style="margin-bottom:0"><h3>${i} ${t}</h3>
+  $('lim-grid').innerHTML = groups.map(([i, t, items, announcement]) => `<div class="card lim-group" style="margin-bottom:0"><div class="announcement-heading"><h3>${i} ${t}</h3>${announcement ? announcementMeta(announcement) : ''}</div>
     ${renderItems(items)}</div>`).join('');
 
   $('src-list').innerHTML = Object.entries(SOURCES).map(([id, s]) =>

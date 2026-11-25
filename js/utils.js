@@ -29,6 +29,17 @@ function src(...ids) {
   }).join('');
 }
 
+// Announcement metadata remains visible in both views. Use the publication
+// date from the official source, with UTC to keep the calendar day unchanged.
+function announcementMeta(id) {
+  const source = SOURCES[id];
+  if (!source?.published) return '';
+  const date = new Intl.DateTimeFormat(tx('en-US', 'pt-BR', 'es'), {
+    day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC',
+  }).format(new Date(`${source.published}T00:00:00Z`));
+  return `<span class="announcement-meta"><span>${tx('Announced', 'Divulgado em', 'Anunciado el')} <time datetime="${source.published}">${date}</time></span><span aria-hidden="true">·</span><a href="${source.url}" target="_blank" rel="noopener">${tx('Official announcement', 'Anúncio oficial', 'Anuncio oficial')} ↗</a></span>`;
+}
+
 // Keep simulation event calls compatible after removing the on-screen event feed.
 function log() {}
 

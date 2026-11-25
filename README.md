@@ -28,6 +28,14 @@ Companion to the [Data Resilience Visualizer](https://carimeb.github.io/DataResi
 | **⑤ Backup & Restore** | Storage-layer backups, **24-hour continuous (point-in-time) window**, snapshots kept up to 3 years, and allowed restore targets. The animation illustrates the **storage step**: creating a log branch reuses existing data without copying it; the complete restore job includes other steps before the target is ready. General database cloning is identified as a future possibility built on this architecture. |
 | **⑥ Preview Limits & Sources** | **Search and Vector Search are supported**, with automatic index synchronization and the same drivers, APIs and Atlas tools as Core. Both views explain the combined 10 GB index limit per compute node, automatic migration to Dedicated Search Nodes above 8 GB (on by default), and additional Search Node cost. Deep dive also explains the removal restriction. Remaining preview limits include **multi-region, multi-cloud**, sharding, Global Clusters, Online Archive, live migration, Atlas Charts and MCP Server. Includes the 10 supported AWS regions and every official source. |
 
+## Product update convention
+
+Every newly announced capability incorporated into the visualizer must show its **official announcement date and a direct link to the announcement beside its heading**, in Essentials and Deep dive. Keep the label and date format localized for EN, PT and ES. On narrow screens, the metadata may wrap below the heading.
+
+Store the announcement's publication date as `published: 'YYYY-MM-DD'` in its `SOURCES` entry and render it with `announcementMeta(sourceId)`. This link remains visible in Essentials, independently of the detailed source chips. Verify the date in the official announcement; keep any content-review date separate. If the announcement gives a different availability date, explain that distinction explicitly.
+
+For scheduled checks, compare announcements with the existing sources and Git history before making changes. Incorporate confirmed Atlas Infinite news that affects this tool, preserve its simulation behavior, update all three languages and both views, refresh changed script hashes, rebuild the standalone, run the tests, check the affected UI, and verify the published commit. Do not create a commit just to advance a review date when the information is unchanged.
+
 ## Run it
 
 No server, no build step required.
