@@ -531,7 +531,7 @@ body.view-basic .cmp tr.xr{display:none}
 
     <!-- ═══════════════ TAB 4: HORIZONTAL READ SCALING ═══════════════ -->
     <div id="tab-hs" class="tc">
-      <div class="tip only-detailed" data-i18n="hs.tip"><strong>Scale reads out in minutes.</strong> Add up to <strong>5 read-only or analytics nodes</strong> (7 nodes max). New nodes read straight from the shared storage layer — <strong>no initial sync, no data copy</strong>. Then change the <strong>read preference</strong> and <strong>tags</strong> to see where every read lands.</div>
+      <div class="tip only-detailed" data-i18n="hs.tip"><strong>Scale reads out in minutes.</strong> Add up to <strong>5 read-only or analytics nodes</strong> (7 compute nodes max). New nodes read straight from the shared storage layer — <strong>no initial sync, no data copy</strong>. Then change the <strong>read preference</strong> and <strong>tags</strong> to see where every read lands.</div>
       <div class="two-col">
         <div>
           <div class="card">
@@ -640,8 +640,9 @@ body.view-basic .cmp tr.xr{display:none}
 
     <!-- ═══════════════ TAB 6: PREVIEW LIMITS & SOURCES ═══════════════ -->
     <div id="tab-lim" class="tc">
-      <div class="tip only-detailed" data-i18n="lim.tip"><strong>Atlas Infinite is in Public Preview</strong>. Capabilities and documentation may change before general availability. Below is what is <strong>not yet available</strong> or limited — check the linked official pages before making decisions.</div>
+      <div class="tip only-detailed" data-i18n="lim.tip"><strong>Atlas Infinite is in Public Preview</strong>. Capabilities and documentation may change before general availability. Review <strong>supported features and current limits</strong> below, including Search and Vector Search — check the linked official pages before making decisions.</div>
       <div class="lim-hero" id="lim-hero"></div>
+      <div class="card only-basic" id="lim-search"></div>
       <div class="card only-basic" id="lim-basic"></div>
       <div class="lim-grid only-detailed" id="lim-grid"></div>
       <div class="card only-detailed" style="margin-top:12px">
@@ -657,17 +658,17 @@ body.view-basic .cmp tr.xr{display:none}
 
 </div>
 
-<script src="js/state.js?v=0e69431abc"></script>
-<script src="js/i18n.js?v=908be11693"></script>
+<script src="js/state.js?v=943c335af9"></script>
+<script src="js/i18n.js?v=d73f64b8b0"></script>
 <script src="js/utils.js?v=588c3e9d76"></script>
 <script src="js/arch-playback.js?v=7138003859"></script>
-<script src="js/tab-arch.js?v=a34723b3cd"></script>
+<script src="js/tab-arch.js?v=3033f288e9"></script>
 <script src="js/arch-simulation.js?v=9b07128e6d"></script>
 <script src="js/tab-ha.js?v=6b99d92683"></script>
 <script src="js/tab-vs.js?v=3d3c9fa23e"></script>
-<script src="js/tab-hs.js?v=ea25fbc6bb"></script>
+<script src="js/tab-hs.js?v=aa4a9f5be1"></script>
 <script src="js/tab-bk.js?v=2ff92cff53"></script>
-<script src="js/tab-lim.js?v=db39a02803"></script>
+<script src="js/tab-lim.js?v=40b72fe831"></script>
 <script src="js/main.js?v=34f85ed16a"></script>
 </body>
 </html>

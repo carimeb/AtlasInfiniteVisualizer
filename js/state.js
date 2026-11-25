@@ -72,6 +72,7 @@ const SOURCES = {
   D19: { url: 'https://www.mongodb.com/legal/customer-service-agreement/technical-and-organizational-security-measures', t: 'Technical and Organizational Security Measures (MongoDB legal)' },
   D20: { url: 'https://www.mongodb.com/docs/atlas/cluster-additional-settings/', t: 'Configure Additional Settings — backup options (Atlas docs)' },
   D21: { url: 'https://www.mongodb.com/docs/atlas/cli/current/command/atlas-backups-restores-start/', t: 'atlas backups restores start — Atlas CLI (docs)' },
+  D22: { url: 'https://www.mongodb.com/docs/atlas/cluster-config/multi-cloud-distribution/#std-label-atlas-infinite-workload-isolation', t: 'Workload Isolation on Atlas Infinite — Search index limits and automatic Search Nodes (Atlas docs)' },
   B1:  { url: 'https://www.mongodb.com/company/newsroom/press-releases/mongodb-launches-mongodb-9-0-the-best-version-ever-built-and-atlas-infinite-for-ai-scale-demand', t: 'Press release — MongoDB Launches MongoDB 9.0 … and Atlas Infinite for AI-Scale Demand' },
   B2:  { url: 'https://www.mongodb.com/company/blog/product-release-announcements/everything-announced-mongodb-local-nyc-2026', t: 'Blog — Everything Announced at MongoDB.local NYC 2026' },
   B3:  { url: 'https://www.mongodb.com/company/blog/product-release-announcements/ai-demand-constant-unpredictable-extreme-mongodb-is-built-for-it', t: 'Blog — AI Demand is Constant, Unpredictable, and Extreme. MongoDB is Built for It.' },
@@ -79,4 +80,5 @@ const SOURCES = {
   B5:  { url: 'https://www.mongodb.com/products/updates/now-in-public-preview-atlas-infinite-built-for-extreme-elasticity-and-ai-scale/', t: 'Product update — Atlas Infinite built for Extreme Elasticity and AI-scale' },
   B6:  { url: 'https://www.mongodb.com/products/platform/atlas-database/deployment-options', t: 'MongoDB Atlas Deployment Options: Core vs. Infinite' },
   B7:  { url: 'https://www.mongodb.com/resources/products/platform/atlas-core-vs-atlas-infinite', t: 'MongoDB Atlas Core vs. Atlas Infinite: What’s the Difference?' },
+  B8:  { url: 'https://www.mongodb.com/products/updates/atlas-search-and-vector-search-on-atlas-infinite-built-for-ai-scale-retrieval/', t: 'Product update — Atlas Search and Vector Search on Atlas Infinite (November 12, 2026)' },
 };

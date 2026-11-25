@@ -6,11 +6,18 @@ function limRender() {
     [tx('10 regions', '10 regiões', "10 regiones"), tx('AWS regions with Infinite support · 1 region per cluster', 'regiões AWS com Infinite · 1 região por cluster', "Regiones de AWS compatibles con Infinite · 1 región por clúster")],
     ['M10–M60', tx('General · Low-CPU M40–M60', 'General · Low-CPU M40–M60', "General · Low-CPU M40–M60")],
     ['128 TB', tx('logical data per replica set (HA shard)', 'dados lógicos por replica set (HA shard)', "datos lógicos por replica set (HA shard)")],
-    [tx('7 nodes', '7 nós', "7 nodos"), tx('2 electable + up to 5 read-only/analytics', '2 elegíveis + até 5 read-only/analytics', "2 elegibles + hasta 5 read-only/analytics")],
+    [tx('7 compute nodes', '7 nós de compute', "7 nodos de compute"), tx('2 electable + up to 5 read-only/analytics', '2 elegíveis + até 5 read-only/analytics', "2 elegibles + hasta 5 read-only/analytics")],
     ['9.0+', tx('MongoDB version, always latest', 'versão do MongoDB, sempre a mais recente', "Versión de MongoDB, siempre la más reciente")],
   ];
   $('lim-hero').innerHTML = hero.map(([b, s]) => `<div class="h"><div class="big">${b}</div><div class="sm">${s}</div></div>`).join('');
   const regions = INF_REGIONS.map(([r, n]) => `<code>${r}</code> ${n}`).join(' · ');
+
+  // Shared by Essentials and Deep dive: availability plus the limits that affect use.
+  const searchItems = [
+    ['yes', tx('<b>Atlas Search and Vector Search are supported.</b> Run full-text, similarity and hybrid searches on your operational data. Indexes stay in sync automatically, using the same drivers, APIs and Atlas tools as on Atlas Core.', '<b>Atlas Search e Vector Search são suportados.</b> Faça buscas textuais, por similaridade e híbridas nos dados do banco. Os índices acompanham os dados automaticamente, com os mesmos drivers, APIs e ferramentas do Atlas Core.', '<b>Atlas Search y Vector Search son compatibles.</b> Realiza búsquedas de texto, por similitud e híbridas sobre los datos de la base. Los índices se sincronizan automáticamente, con los mismos drivers, APIs y herramientas de Atlas Core.'), ['B8', 'D1']],
+    ['lim', tx('<b>Indexes on database nodes:</b> Search and Vector Search indexes have a combined <b>10 GB limit per compute node</b>. At that limit, replication into the search indexes pauses.', '<b>Índices nos nós do banco:</b> os índices de Search e Vector Search têm limite combinado de <b>10 GB por nó de compute</b>. Nesse limite, a replicação para os índices de busca é pausada.', '<b>Índices en los nodos de la base:</b> los índices de Search y Vector Search tienen un límite combinado de <b>10 GB por nodo de compute</b>. Al alcanzarlo, se pausa la replicación hacia los índices de búsqueda.'), ['D22']],
+    ['yes', tx('<b>Automatic migration is on by default.</b> When these indexes exceed <b>8 GB per node</b>, Atlas adds <b>Dedicated Search Nodes</b> in the same region to isolate search workloads. They incur additional cost. You can turn off automatic migration.', '<b>A migração automática vem ativada.</b> Quando esses índices ultrapassam <b>8 GB por nó</b>, o Atlas adiciona <b>Search Nodes dedicados</b> na mesma região para isolar as buscas. Eles têm custo adicional. Você pode desativar a migração automática.', '<b>La migración automática viene activada.</b> Cuando estos índices superan <b>8 GB por nodo</b>, Atlas añade <b>Search Nodes dedicados</b> en la misma región para aislar las búsquedas. Tienen un costo adicional. Puedes desactivar la migración automática.'), ['D22']],
+  ];
 
   const groups = [
     ['🌎', tx('Topology & clouds', 'Topologia e clouds', "Topología y nubes"), [
@@ -24,9 +31,8 @@ function limRender() {
       ['no', tx('<b>Additional electable nodes</b> — always 2 (primary + standby).', '<b>Nós elegíveis adicionais</b> — sempre 2 (primário + standby).', "<b>Nodos elegibles adicionales</b>: siempre son 2 (primario + standby)."), ['D6']],
     ]],
     ['🔎', tx('Search & AI', 'Search e IA', "Búsqueda e IA"), [
-      ['no', tx('<b>Atlas Search</b> — not supported on Atlas Infinite clusters in public preview.', '<b>Atlas Search</b> — não suportado em clusters Atlas Infinite no public preview.', "<b>Atlas Search</b>: no compatible con clústeres Atlas Infinite en la vista previa pública."), ['D1']],
-      ['no', tx('<b>Atlas Vector Search</b> — not supported on Atlas Infinite clusters in public preview.', '<b>Atlas Vector Search</b> — não suportado em clusters Atlas Infinite no public preview.', "<b>Atlas Vector Search</b>: no compatible con clústeres Atlas Infinite en la vista previa pública."), ['D1', 'D13']],
-      ['no', tx('<b>Search Nodes</b> — not supported.', '<b>Search Nodes</b> — não suportados.', "<b>Search Nodes</b>: no compatibles."), ['D2', 'D6']],
+      ...searchItems,
+      ['lim', tx('After Atlas automatically adds Search Nodes, <b>removing them requires dropping all search indexes first</b>.', 'Depois que o Atlas adiciona Search Nodes automaticamente, <b>removê-los exige excluir todos os índices de busca primeiro</b>.', 'Después de que Atlas añada Search Nodes automáticamente, <b>para quitarlos debes eliminar primero todos los índices de búsqueda</b>.'), ['D22']],
       ['no', tx('<b>MongoDB MCP Server</b> and <b>MongoDB Agent Skills</b>.', '<b>MongoDB MCP Server</b> e <b>MongoDB Agent Skills</b>.', "<b>MongoDB MCP Server</b> y <b>MongoDB Agent Skills</b>."), ['D1']],
       ['lim', tx('<b>AI Cluster Assistant</b> is aware of Atlas Infinite clusters but lacks full context on their capabilities.', 'O <b>AI Cluster Assistant</b> reconhece clusters Atlas Infinite, mas sem contexto completo das capacidades.', "<b>AI Cluster Assistant</b> reconoce los clústeres Atlas Infinite, pero no tiene todo el contexto sobre sus capacidades."), ['D1']],
     ]],
@@ -62,16 +68,16 @@ function limRender() {
     ]],
     ['🧭', tx('Choosing during the preview', 'Como escolher durante o preview', "Elegir durante la vista previa"), [
       ['lim', tx('MongoDB positions <b>Atlas Core as the default for production</b> while Infinite is in public preview; Infinite is an opt-in choice for spiky, unpredictable workloads.', 'A MongoDB posiciona o <b>Atlas Core como padrão para produção</b> enquanto o Infinite está em public preview; o Infinite é uma escolha opcional para workloads com picos e imprevisíveis.', "MongoDB presenta <b>Atlas Core como la opción predeterminada para producción</b> mientras Infinite esté en vista previa pública; Infinite es una opción voluntaria para cargas con picos e impredecibles."), ['B7']],
-      ['yes', tx('Pick Core when you need multi-region, multi-cloud, sharding, Search/Vector Search or fixed, predictable capacity.', 'Escolha o Core quando precisar de multi-region, multi-cloud, sharding, Search/Vector Search ou capacidade fixa e previsível.', "Elige Core cuando necesites varias regiones, varias nubes, sharding, Search/Vector Search o capacidad fija y predecible."), ['B6', 'B7']],
+      ['yes', tx('Pick Core when you need multi-region, multi-cloud, sharding or fixed, predictable capacity.', 'Escolha o Core quando precisar de multi-region, multi-cloud, sharding ou capacidade fixa e previsível.', "Elige Core cuando necesites varias regiones, varias nubes, sharding o capacidad fija y predecible."), ['B6', 'B7']],
     ]],
   ];
   const ico = { no: '✕', lim: '!', yes: '✓', plan: '→' };
+  const renderItems = items => items.map(([k, h, ids]) => `<div class="lim-item"><span class="ico ${k}">${ico[k]}</span><span>${h}${src(...ids)}</span></div>`).join('');
+  $('lim-search').innerHTML = `<div class="card-title">${tx('Search and Vector Search are now available', 'Search e Vector Search agora disponíveis', 'Search y Vector Search ya disponibles')}</div>${renderItems(searchItems)}`;
   // Essentials: the restrictions that matter most when positioning Atlas Infinite
   const key = [
     ['no', tx('Multi-region clusters', 'Clusters multi-region', "Clústeres con varias regiones")],
     ['no', tx('Multi-cloud (AWS only for now)', 'Multi-cloud (por enquanto só AWS)', "Varias nubes (solo AWS por ahora)")],
-    ['no', tx('Atlas Search', 'Atlas Search', "Atlas Search")],
-    ['no', tx('Atlas Vector Search', 'Atlas Vector Search', "Atlas Vector Search")],
     ['no', tx('Sharded & Global Clusters', 'Clusters shardeados e Global Clusters', "Clústeres con sharding y Global Clusters")],
     ['no', tx('Uptime SLA (during preview)', 'SLA de uptime (durante o preview)', "SLA de disponibilidad (durante la vista previa)")],
     ['lim', tx('Tiers M10–M60 (no M80+)', 'Tiers M10–M60 (sem M80+)', "Niveles M10–M60 (sin M80 o superior)")],
@@ -83,7 +89,7 @@ function limRender() {
     <div class="mini-list">${key.map(([k, t]) => `<div class="lim-item"><span class="ico ${k}">${ico[k]}</span><span><b>${t}</b></span></div>`).join('')}</div>`;
 
   $('lim-grid').innerHTML = groups.map(([i, t, items]) => `<div class="card lim-group" style="margin-bottom:0"><h3>${i} ${t}</h3>
-    ${items.map(([k, h, ids]) => `<div class="lim-item"><span class="ico ${k}">${ico[k]}</span><span>${h}${src(...ids)}</span></div>`).join('')}</div>`).join('');
+    ${renderItems(items)}</div>`).join('');
 
   $('src-list').innerHTML = Object.entries(SOURCES).map(([id, s]) =>
     `<li><span class="sid">${src(id)}</span><a href="${s.url}" target="_blank" rel="noopener">${s.t}</a></li>`).join('');
@@ -91,6 +97,6 @@ function limRender() {
 
 function footRender() {
   $('foot').innerHTML = tx(
-    `Educational, unofficial tool · based on MongoDB public documentation, blog posts and press releases as of October 2026 · Atlas Infinite is in Public Preview and may change · simplified illustrations are labelled as such · see <a href="javascript:switchTab('lim')">sources</a>`,
-    `Ferramenta educativa e não oficial · baseada em documentação pública, posts de blog e press releases da MongoDB até outubro de 2026 · o Atlas Infinite está em Public Preview e pode mudar · ilustrações simplificadas estão sinalizadas · veja as <a href="javascript:switchTab('lim')">fontes</a>`, `Herramienta educativa no oficial · basada en documentación pública, blogs y comunicados de MongoDB hasta octubre de 2026 · Atlas Infinite está en vista previa pública y puede cambiar · las ilustraciones simplificadas se identifican como tales · consulta las <a href="javascript:switchTab('lim')">fuentes</a>`);
+    `Educational, unofficial tool · based on MongoDB public documentation, blog posts and press releases · Search/Vector Search information reviewed on November 25, 2026 · Atlas Infinite is in Public Preview and may change · simplified illustrations are labelled as such · see <a href="javascript:switchTab('lim')">sources</a>`,
+    `Ferramenta educativa e não oficial · baseada em documentação pública, posts de blog e press releases da MongoDB · informações de Search/Vector Search revisadas em 25 de novembro de 2026 · o Atlas Infinite está em Public Preview e pode mudar · ilustrações simplificadas estão sinalizadas · veja as <a href="javascript:switchTab('lim')">fontes</a>`, `Herramienta educativa no oficial · basada en documentación pública, blogs y comunicados de MongoDB · información de Search/Vector Search revisada el 25 de noviembre de 2026 · Atlas Infinite está en vista previa pública y puede cambiar · las ilustraciones simplificadas se identifican como tales · consulta las <a href="javascript:switchTab('lim')">fuentes</a>`);
 }

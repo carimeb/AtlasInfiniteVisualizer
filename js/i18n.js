@@ -77,7 +77,7 @@ const PT = {
   'vs.ingest': '＋ Ingerir dados',
   'vs.delete': '− Apagar dados',
 
-  'hs.tip': '<strong>Escale leituras em minutos.</strong> Adicione até <strong>5 nós read-only ou analytics</strong> (máx. 7 nós). Os novos nós leem direto da camada de storage compartilhada — <strong>sem initial sync, sem cópia de dados</strong>. Depois altere o <strong>read preference</strong> e as <strong>tags</strong> para ver onde cada leitura cai.',
+  'hs.tip': '<strong>Escale leituras em minutos.</strong> Adicione até <strong>5 nós read-only ou analytics</strong> (máx. 7 nós de compute). Os novos nós leem direto da camada de storage compartilhada — <strong>sem initial sync, sem cópia de dados</strong>. Depois altere o <strong>read preference</strong> e as <strong>tags</strong> para ver onde cada leitura cai.',
   'hs.topo': 'Roteamento de leituras e carga por nó',
   'hs.time': 'Tempo para adicionar capacidade de leitura',
   'hs.nodes': 'Nós read-only e analytics',
@@ -107,7 +107,7 @@ const PT = {
   'bk.run': '▶ Simular restore',
   'bk.facts': 'Fatos sobre backup',
 
-  'lim.tip': '<strong>O Atlas Infinite está em Public Preview</strong>. Recursos e documentação podem mudar antes do GA. Abaixo está o que <strong>ainda não está disponível</strong> ou tem limitações — confira as páginas oficiais linkadas antes de tomar decisões.',
+  'lim.tip': '<strong>O Atlas Infinite está em Public Preview</strong>. Recursos e documentação podem mudar antes do GA. Veja os <strong>recursos suportados e os limites atuais</strong> abaixo, incluindo Search e Vector Search — confira as páginas oficiais linkadas antes de tomar decisões.',
   'lim.sources': 'Fontes oficiais usadas neste visualizador',
   'lim.legend': 'Chips como <a class="src">D2</a> apontam para a documentação da MongoDB; <a class="src blog">B4</a> apontam para posts de blog, press releases ou páginas de produto da MongoDB (afirmações do fabricante). Todo o resto nesta ferramenta é uma ilustração simplificada.',
 
@@ -188,7 +188,7 @@ const ES = {
   'vs.ingest': '＋ Ingerir datos',
   'vs.delete': '− Eliminar datos',
 
-  'hs.tip': '<strong>Escala las lecturas en minutos.</strong> Añade hasta <strong>5 nodos read-only o analytics</strong> (máx. 7 nodos). Los nuevos nodos leen directamente de la capa de storage compartida — <strong>sin initial sync, sin copiar datos</strong>. Después cambia el <strong>read preference</strong> y las <strong>tags</strong> para ver a dónde va cada lectura.',
+  'hs.tip': '<strong>Escala las lecturas en minutos.</strong> Añade hasta <strong>5 nodos read-only o analytics</strong> (máx. 7 nodos de compute). Los nuevos nodos leen directamente de la capa de storage compartida — <strong>sin initial sync, sin copiar datos</strong>. Después cambia el <strong>read preference</strong> y las <strong>tags</strong> para ver a dónde va cada lectura.',
   'hs.topo': 'Enrutamiento de lecturas y carga por nodo',
   'hs.time': 'Tiempo para añadir capacidad de lectura',
   'hs.nodes': 'Nodos read-only y analytics',
@@ -218,7 +218,7 @@ const ES = {
   'bk.run': '▶ Simular restauración',
   'bk.facts': 'Datos sobre backup',
 
-  'lim.tip': '<strong>Atlas Infinite está en Public Preview</strong>. Las funciones y la documentación pueden cambiar antes de GA. A continuación se muestra lo que <strong>aún no está disponible</strong> o tiene limitaciones — consulta las páginas oficiales enlazadas antes de tomar decisiones.',
+  'lim.tip': '<strong>Atlas Infinite está en Public Preview</strong>. Las funciones y la documentación pueden cambiar antes de GA. Consulta las <strong>funciones compatibles y los límites actuales</strong> a continuación, incluidos Search y Vector Search — revisa las páginas oficiales enlazadas antes de tomar decisiones.',
   'lim.sources': 'Fuentes oficiales usadas en este visualizador',
   'lim.legend': 'Las etiquetas como <a class="src">D2</a> enlazan a la documentación de MongoDB; <a class="src blog">B4</a> enlazan a publicaciones de blog, comunicados de prensa o páginas de producto de MongoDB (afirmaciones del fabricante). Todo lo demás en esta herramienta es una ilustración simplificada.',
 };
